@@ -1,0 +1,2255 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI拍檔</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800&family=Noto+Sans+HK:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: Uber-style look — black bar, white page, flat grey tiles instead of shadowed cards, black pill and square buttons; the two side colours stay only on 我要搵人 / 我要搵工 */
+:root {
+  --bg: #FFFFFF;
+  --surface: #FFFFFF;
+  --tile: #F3F3F3;
+  --tile-2: #E8E8E8;
+  --ink: #000000;
+  --muted: #5E5E5E;
+  --line: #E2E2E2;
+  --shadow: none;
+  --accent: #000000;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #F3F3F3;
+  --signal: #8A5A00;
+  --signal-soft: #FFF3D6;
+  --star: #000000;
+  --boss: #000000; --boss-ink: #FFFFFF; --boss-soft: #F3F3F3; --boss-top: #FF7B86;
+  --worker: #000000; --worker-ink: #FFFFFF; --worker-soft: #F3F3F3; --worker-top: #5CB8EA;
+  --top-bg: #000000; --top-ink: #FFFFFF; --top-muted: #CBCBCB; --top-line: #333333; --top-tile: #1F1F1F;
+  --danger: #D1302A;
+  --f-body: "Noto Sans HK", "Figtree", "PingFang HK", "Microsoft JhengHei", system-ui, sans-serif;
+  --f-display: "Figtree", "Noto Sans HK", "PingFang HK", system-ui, sans-serif;
+  --f-num: "Figtree", "Noto Sans HK", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000; --surface: #000000; --tile: #1F1F1F; --tile-2: #2B2B2B; --ink: #FFFFFF; --muted: #AFAFAF; --line: #2E2E2E;
+    --accent: #FFFFFF; --accent-ink: #000000; --accent-soft: #1F1F1F;
+    --signal: #F0BC52; --signal-soft: #2D2513; --star: #FFFFFF;
+    --boss: #FFFFFF; --boss-ink: #000000; --boss-soft: #1F1F1F;
+    --worker: #FFFFFF; --worker-ink: #000000; --worker-soft: #1F1F1F;
+    --top-bg: #000000; --top-line: #333333; --top-tile: #1F1F1F; --danger: #FF7A6E;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #000000; --surface: #000000; --tile: #1F1F1F; --tile-2: #2B2B2B; --ink: #FFFFFF; --muted: #AFAFAF; --line: #2E2E2E;
+  --accent: #FFFFFF; --accent-ink: #000000; --accent-soft: #1F1F1F;
+  --signal: #F0BC52; --signal-soft: #2D2513; --star: #FFFFFF;
+  --boss: #FFFFFF; --boss-ink: #000000; --boss-soft: #1F1F1F;
+  --worker: #FFFFFF; --worker-ink: #000000; --worker-soft: #1F1F1F;
+  --top-bg: #000000; --top-line: #333333; --top-tile: #1F1F1F; --danger: #FF7A6E;
+  color-scheme: dark;
+}
+body[data-side="boss"] { --accent: var(--boss); --accent-ink: var(--boss-ink); --accent-soft: var(--boss-soft); --side: var(--boss-top); }
+body[data-side="worker"] { --accent: var(--worker); --accent-ink: var(--worker-ink); --accent-soft: var(--worker-soft); --side: var(--worker-top); }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.6; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--top-bg); }
+h1, h2, h3 { margin: 0; line-height: 1.3; text-wrap: balance; }
+h1 { font-size: clamp(26px, 5vw, 36px); font-weight: 900; }
+h2 { font-size: 20px; font-weight: 700; }
+h3 { font-size: 16px; font-weight: 700; }
+p { margin: 0; }
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.num { font-family: var(--f-num); font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.small { font-size: 13.5px; }
+
+.wrap { max-width: 1480px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--top-bg); color: var(--top-ink); box-shadow: inset 0 -3px 0 var(--accent), 0 4px 16px -8px rgba(20, 33, 61, .4); }
+.top :focus-visible { outline-color: var(--top-ink); }
+.top .wrap { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px 20px; padding-block: 10px; }
+.top .logo { justify-self: start; }
+.top .role { justify-self: center; }
+.top-right { justify-self: end; display: flex; align-items: center; gap: 10px; }
+.gbtn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 14px 6px 10px; font-weight: 700; font-size: 14.5px; cursor: pointer; white-space: nowrap; }
+.gbtn:hover { border-color: var(--muted); }
+.gbtn svg { width: 18px; height: 18px; flex: none; }
+.gbtn.big { width: 100%; justify-content: center; padding: 11px 16px; font-size: 16px; border-radius: 10px; }
+.me-btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--top-line); background: transparent; color: var(--top-ink); border-radius: 999px; padding: 3px 12px 3px 3px; cursor: pointer; font-weight: 700; font-size: 14.5px; white-space: nowrap; }
+.me-btn .avatar { width: 30px; height: 30px; font-size: 14px; }
+#account { display: flex; align-items: center; gap: 8px; }
+.bell { position: relative; display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--top-line); background: transparent; color: var(--top-ink); cursor: pointer; }
+.bell .count { position: absolute; top: -4px; right: -6px; background: var(--accent); color: var(--accent-ink); }
+.note-item { display: flex; justify-content: space-between; gap: 12px; width: 100%; text-align: left; background: none; border: 0; border-top: 1px solid var(--line); cursor: pointer; }
+.note-item.unread { background: var(--accent-soft); font-weight: 700; }
+.acc-list { display: grid; gap: 8px; }
+.acc { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 12px; cursor: pointer; }
+.acc:hover { border-color: var(--accent); }
+.acc .avatar { width: 36px; height: 36px; }
+.rating-sec { display: grid; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); }
+.rating-sum { display: flex; align-items: center; gap: 12px; }
+.rating-sum > b { font-size: 34px; line-height: 1; }
+.rating-sum .stars-text { font-size: 18px; }
+.review-list { display: grid; gap: 8px; }
+.login-page { min-height: calc(100vh - 200px); min-height: calc(100dvh - 200px); display: grid; place-items: center; padding-block: 32px; }
+.login-wrap { position: relative; display: grid; width: min(100%, 440px); }
+.login-wrap.wide { width: min(100%, 720px); }
+.login-x { position: absolute; top: 10px; right: 10px; z-index: 1; width: 40px; height: 40px; border-radius: 50%; font-size: 26px; }
+.login-x:hover { background: var(--bg); color: var(--ink); }
+.login-page { cursor: default; }
+.login-card { width: 100%; display: grid; gap: 16px; padding: 28px 24px; }
+.login-card h1 { font-size: 26px; }
+.login-card .link { justify-self: center; }
+.setup-card .group { gap: 8px; }
+.field-title { font-weight: 700; font-size: 15px; }
+.req { color: var(--danger); margin-left: 2px; }
+.err { color: var(--danger); font-size: 13px; }
+.setup-card .tier-card .small { color: var(--muted); }
+.setup-card .tier-card .tier { justify-self: start; }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; }
+.check input { margin-top: 4px; accent-color: var(--accent); }
+.role { display: inline-flex; gap: 8px; }
+.role button { border: 2px solid var(--c); background: transparent; color: var(--c); padding: 7px 22px; border-radius: 999px; cursor: pointer; font-size: 17px; font-weight: 900; white-space: nowrap; transition: background .15s ease, color .15s ease; }
+.role button[data-role="boss"] { --c: var(--boss-top); }
+.role button[data-role="worker"] { --c: var(--worker-top); }
+.role button:hover { background: color-mix(in srgb, var(--c) 16%, transparent); }
+.role button[aria-pressed="true"] { background: var(--c); color: var(--top-bg); box-shadow: 0 6px 18px -6px var(--c); }
+
+.count { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--signal-soft); color: var(--signal); font-size: 12px; font-family: var(--f-num); }
+@media (max-width: 900px) {
+  .top-right { display: contents; }
+  .top #account { grid-column: 3; grid-row: 1; justify-self: end; }
+  .top .nav { grid-column: 1 / -1; grid-row: 2; justify-self: center; }
+}
+@media (max-width: 560px) { .me-btn .long { display: none; } .me-btn { padding: 3px; } }
+@media (max-width: 420px) { .role button { padding: 6px 14px; font-size: 15.5px; } }
+.logo { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 19px; background: none; border: 0; padding: 0; cursor: pointer; color: var(--top-ink); }
+.logo-mark { width: 28px; height: 20px; position: relative; flex: none; }
+.logo-mark::before, .logo-mark::after { content: ""; position: absolute; top: 0; width: 20px; height: 20px; border-radius: 50%; }
+.logo-mark::before { left: 0; background: var(--boss-top); }
+.logo-mark::after { right: 0; background: var(--worker-top); opacity: .9; }
+.nav { display: flex; gap: 4px; }
+.nav button { background: none; border: 0; padding: 7px 14px; font-weight: 500; border-radius: 999px; cursor: pointer; color: var(--top-muted); white-space: nowrap; }
+.nav button:hover { color: var(--top-ink); }
+.nav button[aria-current="page"] { color: var(--top-ink); background: rgba(255, 255, 255, .14); }
+.nav .count { background: rgba(255, 255, 255, .14); color: var(--top-ink); }
+.nav button[aria-current="page"] .count { background: var(--accent); color: var(--accent-ink); }
+body[data-side="boss"] .nav button[aria-current="page"] .count { background: var(--boss-top); color: var(--top-bg); }
+body[data-side="worker"] .nav button[aria-current="page"] .count { background: var(--worker-top); color: var(--top-bg); }
+@media (max-width: 420px) { .logo-text { display: none; } .nav button { padding: 7px 10px; } }
+
+main { padding-block: 28px 64px; display: grid; gap: 28px; }
+.view { display: grid; gap: 24px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 18px; border-radius: 10px; border: 1px solid transparent; cursor: pointer; font-weight: 700; white-space: nowrap; }
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary { box-shadow: 0 4px 12px -6px var(--accent); }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-ghost { background: var(--surface); border-color: var(--line); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sm { padding: 6px 14px; font-size: 14px; }
+.link { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; font-weight: 700; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; padding: 2px 10px; border-radius: 999px; font-size: 13px; background: var(--bg); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+button.chip { cursor: pointer; }
+button.chip:hover { border-color: var(--accent); color: var(--accent); }
+button.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 18px; display: grid; gap: 12px; min-width: 0; }
+textarea, input[type="text"], input[type="number"], input[type="tel"], select { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--bg); }
+textarea { resize: vertical; min-height: 76px; }
+textarea:focus, input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+.ask-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+/* wide screens: action column on the left stays put, the list fills the rest */
+.split { display: grid; grid-template-columns: minmax(340px, 420px) minmax(0, 1fr); gap: 28px; align-items: start; }
+.split > .side { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 76px); display: grid; gap: 16px; min-width: 0; }
+.split > .main { display: grid; gap: 12px; min-width: 0; }
+@media (max-width: 980px) {
+  .split { grid-template-columns: minmax(0, 1fr); }
+  .split > .side { position: static; }
+}
+.side .fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.side .fields:not(.pair) label:first-child { grid-column: 1 / -1; }
+.fields.pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.h-side { font-size: clamp(24px, 3vw, 30px); }
+.field-label { font-size: 13px; color: var(--muted); }
+.tabs .chip { font-size: 14px; padding: 5px 14px; }
+.pill { font-size: 12.5px; padding: 2px 10px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.pill.waiting { color: var(--signal); }
+.pill.accepted { color: var(--accent); }
+.pill.declined { color: var(--muted); }
+.person { display: flex; gap: 12px; align-items: center; min-width: 0; }
+.hard { margin: 4px 0 0; padding-left: 1.2em; font-size: 14px; }
+.hard li::marker { color: var(--signal); }
+.tier { display: inline-block; font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 999px; vertical-align: 2px; white-space: nowrap; }
+.tier.master { background: var(--signal-soft); color: var(--signal); }
+.tier.mid { background: var(--accent-soft); color: var(--accent); }
+.tier.backup { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+.tiers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.tier-card { display: grid; gap: 6px; align-content: start; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 14px; cursor: pointer; }
+.tier-card:hover { border-color: var(--accent); }
+@media (max-width: 700px) { .tiers { grid-template-columns: minmax(0, 1fr); } }
+.modes { display: grid; gap: 8px; }
+.modes label { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; background: var(--surface); }
+.modes label > span { display: grid; gap: 2px; }
+.modes label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.modes input { margin-top: 4px; accent-color: var(--accent); }
+.trial-tag { color: var(--signal); font-weight: 700; }
+.trial-box { border-top: 1px dashed var(--line); padding-top: 12px; display: grid; gap: 6px; }
+.subs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.sub { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; display: grid; align-content: start; min-width: 0; }
+.sub.passed { opacity: .5; }
+.sub-media { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 4px; background: var(--bg); }
+.sub-media:empty { display: none; }
+.sub-media img, .sub-media video { display: block; width: 100%; max-width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+.sub-media audio { width: 100%; padding: 8px; }
+.file-name { padding: 12px; font-size: 13px; overflow-wrap: anywhere; }
+.sub-body { padding: 12px 14px; display: grid; gap: 8px; }
+.drop { display: grid; gap: 4px; border: 2px dashed var(--line); border-radius: 10px; padding: 14px; cursor: pointer; }
+.drop:hover { border-color: var(--accent); }
+.drop input { font-size: 13px; max-width: 100%; }
+.snip { color: var(--muted); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+.row-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+@media (max-width: 700px) { .row-tags { display: none; } }
+
+.step { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.step > span:first-child { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 13px; font-family: var(--f-num); }
+.group { display: grid; gap: 6px; }
+.fields.trio { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.side .fields.trio label:first-child { grid-column: auto; }
+.tier-card[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+button.row { width: 100%; background: var(--surface); border-left: 0; border-right: 0; border-bottom: 0; text-align: left; cursor: pointer; font: inherit; color: inherit; }
+button.row:first-child { border-top: 0; }
+.need-item[aria-current="true"] { background: var(--accent-soft); }
+.need-item:hover h3 { color: var(--accent); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.reviews { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 10px; }
+.review { display: grid; gap: 4px; align-content: start; background: var(--bg); border-radius: 10px; padding: 10px 12px; }
+.stars-text { color: var(--star); letter-spacing: 2px; }
+.stars-text .off { color: var(--line); }
+.stars.big button { font-size: 32px; }
+.stats b { font-size: 24px; }
+@media (max-width: 560px) { .stats { grid-template-columns: minmax(0, 1fr); } }
+.empty { justify-items: start; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.tag-direct { color: var(--accent); font-weight: 700; }
+
+/* rows */
+.rows { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 16px; border-top: 1px solid var(--line); }
+.row:first-child { border-top: 0; }
+.row:hover { background: color-mix(in srgb, var(--accent-soft) 45%, transparent); }
+.row-main { display: flex; gap: 12px; align-items: center; min-width: 0; text-align: left; background: none; border: 0; padding: 0; cursor: pointer; }
+.row-main > div { min-width: 0; }
+.row-main:hover h3 { color: var(--accent); }
+.row-side { display: flex; align-items: center; gap: 12px; }
+.meta { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 13.5px; color: var(--muted); }
+.price { font-family: var(--f-num); font-weight: 700; white-space: nowrap; }
+@media (max-width: 560px) {
+  .row { grid-template-columns: minmax(0, 1fr); }
+  .row-side { justify-content: space-between; }
+}
+.avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: #fff; flex: none; overflow: hidden; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar.big { width: 72px; height: 72px; font-size: 28px; }
+/* uploads, thumbnails and the big-picture viewer */
+.gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; min-width: 0; }
+.gal.big { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.thumb { position: relative; display: block; width: 100%; padding: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--bg); color: var(--ink); cursor: zoom-in; aspect-ratio: 4 / 3; text-align: left; }
+.thumb img, .thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb .play { position: absolute; left: 6px; bottom: 6px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: rgba(0, 0, 0, .65); color: #fff; font-size: 11px; }
+.thumb .doc { display: grid; gap: 2px; align-content: center; height: 100%; padding: 8px 10px; font-size: 12px; min-width: 0; }
+.thumb .doc b { color: var(--accent); font-family: var(--f-num); font-size: 14px; }
+.thumb .doc span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.thumb .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 16px 8px 5px; font-size: 12px; color: #fff; background: linear-gradient(transparent, rgba(0, 0, 0, .72)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thumb:hover { border-color: var(--accent); }
+.thumb[aria-pressed] { cursor: pointer; }
+.thumb[aria-pressed="true"] { outline: 3px solid var(--accent); outline-offset: -3px; }
+.thumb[aria-pressed="true"]::after { content: "✓"; position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font-size: 13px; font-weight: 700; }
+.gal-more { aspect-ratio: 4 / 3; border: 1px dashed var(--line); border-radius: 10px; background: var(--bg); color: var(--muted); font-weight: 700; cursor: zoom-in; }
+.upl { display: grid; gap: 8px; min-width: 0; }
+.upl.over .drop { border-color: var(--accent); background: var(--bg); }
+.upl-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+.upl-list:empty { display: none; }
+.upl-item { position: relative; display: grid; gap: 4px; align-content: start; min-width: 0; }
+.upl-x { position: absolute; top: 4px; right: 4px; width: 26px; height: 26px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, .7); color: #fff; cursor: pointer; font-size: 15px; line-height: 1; z-index: 1; }
+input.upl-cap { font-size: 12.5px; padding: 6px 8px; }
+.files-sec { display: grid; gap: 6px; min-width: 0; }
+.span-all { grid-column: 1 / -1; min-width: 0; }
+.job-thumb { width: 64px; height: 48px; border-radius: 8px; object-fit: cover; flex: none; background: var(--bg); border: 1px solid var(--line); }
+.cat-tile { display: grid; place-items: center; font-size: 12.5px; font-weight: 700; color: var(--accent); }
+.mini { display: flex; gap: 4px; margin-top: 6px; }
+.mini img { width: 56px; height: 42px; border-radius: 6px; object-fit: cover; border: 1px solid var(--line); display: block; }
+@media (max-width: 560px) { .job-thumb { width: 52px; height: 40px; } .mini img { width: 48px; height: 36px; } }
+.avatar-row { display: flex; gap: 14px; align-items: center; }
+.avatar-row .upl { flex: 1; }
+.sub > .gal { padding: 6px; background: var(--bg); }
+.lb { position: fixed; inset: 0; z-index: 80; background: rgba(6, 10, 18, .94); display: grid; place-items: center; padding: 60px 16px 24px; }
+.lb-stage { margin: 0; display: grid; gap: 10px; justify-items: center; max-width: min(1100px, 100%); }
+.lb-stage img, .lb-stage video { max-width: 100%; max-height: calc(100vh - 140px); border-radius: 8px; object-fit: contain; background: #000; }
+.lb figcaption { color: #E8ECF4; font-size: 14px; text-align: center; }
+.lb-x, .lb-nav { position: fixed; width: 46px; height: 46px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, .16); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; display: grid; place-items: center; }
+.lb-x { top: 12px; right: 12px; }
+.lb-nav { top: 50%; transform: translateY(-50%); }
+.lb-nav.prev { left: 12px; } .lb-nav.next { right: 12px; }
+.lb-doc { background: var(--surface); color: var(--ink); border-radius: 14px; padding: 24px; display: grid; gap: 10px; justify-items: center; text-align: center; width: min(360px, 100%); }
+.lb-doc b { font-family: var(--f-num); font-size: 28px; color: var(--accent); }
+.lb-doc audio { width: 100%; }
+.score { display: grid; place-items: center; min-width: 52px; padding: 2px 8px; border-radius: 6px; background: var(--signal-soft); color: var(--signal); border: 1px solid var(--signal); line-height: 1.15; }
+.score b { font-family: var(--f-num); font-size: 18px; }
+.score span { font-size: 10px; }
+
+.ai { font-size: 12.5px; font-weight: 700; color: var(--accent); letter-spacing: .04em; }
+.fields { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.fields label { display: grid; gap: 2px; font-size: 13px; color: var(--muted); }
+.fields input { color: var(--ink); font-size: 15px; }
+@media (max-width: 560px) { .fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .fields label:first-child { grid-column: 1 / -1; } }
+.note { font-size: 13.5px; padding: 8px 10px; border-radius: 8px; background: var(--signal-soft); }
+.thinking { color: var(--muted); }
+.reveal { animation: rise .3s ease both; }
+@keyframes rise { from { transform: translateY(6px); opacity: .2; } to { transform: none; opacity: 1; } }
+
+/* drawer */
+.scrim { position: fixed; inset: 0; background: rgba(14, 12, 24, .55); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); z-index: 40; }
+/* centred dialog on wide screens, bottom sheet on phones */
+.drawer { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(520px, calc(100% - 32px)); max-height: min(680px, calc(100% - 48px)); background: var(--surface); z-index: 50; display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: 0 24px 70px rgba(14, 12, 24, .35); }
+@media (max-width: 560px) {
+  .drawer { left: 0; right: 0; top: auto; bottom: 0; transform: none; width: 100%; max-height: 88%; border-radius: 18px 18px 0 0; padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+}
+#drawer:has(#chat-log) { height: min(680px, calc(100% - 48px)); }
+.drawer-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.drawer-body { flex: 1; overflow-y: auto; padding: 16px; display: grid; gap: 12px; align-content: start; }
+.drawer-foot { border-top: 1px solid var(--line); padding: 12px 16px; display: grid; gap: 10px; }
+.x { background: none; border: 0; font-size: 24px; cursor: pointer; color: var(--muted); line-height: 1; padding: 4px 8px; }
+.msg { max-width: 85%; padding: 9px 12px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg.me { justify-self: end; background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.msg.sys { justify-self: center; background: none; border: 0; color: var(--muted); font-size: 12.5px; text-align: center; }
+.msg.ai { max-width: 100%; background: var(--signal-soft); border-color: var(--signal); }
+.compose { display: flex; gap: 8px; }
+.compose input { flex: 1; min-width: 0; }
+.sum { display: grid; gap: 6px; }
+.sum div { display: flex; justify-content: space-between; gap: 10px; }
+.sum .total { border-top: 1px solid var(--line); padding-top: 6px; font-weight: 700; }
+.pay-opt { display: flex; gap: 8px; }
+.pay-opt label { flex: 1; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; cursor: pointer; display: flex; gap: 8px; align-items: center; }
+.btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* orders */
+.progress { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; }
+.deliv { display: grid; gap: 6px; padding: 10px 12px; border-radius: 10px; background: var(--bg); }
+.deliv .sub-media img, .deliv .sub-media video { max-height: 160px; }
+.progress i { height: 5px; border-radius: 3px; background: var(--line); }
+.progress i.done { background: var(--accent); }
+.progress i.now { background: var(--signal); }
+.stars button { background: none; border: 0; font-size: 22px; cursor: pointer; color: var(--line); padding: 0 1px; }
+.stars button.on { color: var(--star); }
+
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; z-index: 60; font-size: 14px; max-width: calc(100% - 32px); text-align: center; }
+
+footer .wrap { padding-block: 0 24px; font-size: 12.5px; color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) { .reveal { animation: none; } }
+
+/* ===== Uber look: overrides the component styles above; layout and content stay the same ===== */
+body { -webkit-font-smoothing: antialiased; }
+h1, h2 { font-family: var(--f-display); letter-spacing: -.01em; }
+h1 { font-weight: 800; }
+h2 { font-size: 22px; font-weight: 800; }
+.h-side { font-size: clamp(28px, 3.4vw, 40px); font-weight: 800; line-height: 1.15; }
+.small { font-size: 14px; }
+
+/* top bar: black, the two roles as one segmented switch */
+.top { box-shadow: none; border-bottom: 1px solid var(--top-line); }
+.top .wrap { padding-block: 12px; }
+.logo { font-family: var(--f-display); font-weight: 800; font-size: 22px; letter-spacing: -.01em; }
+.logo-mark { display: none; }
+.role { background: var(--top-tile); border-radius: 999px; padding: 4px; gap: 2px; }
+.role button { border: 0; background: none; color: var(--top-muted); padding: 8px 18px; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; box-shadow: none; }
+.role button::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.role button:hover { background: rgba(255, 255, 255, .08); color: var(--top-ink); }
+.role button[aria-pressed="true"] { background: #FFFFFF; color: #000000; box-shadow: none; }
+.nav button { font-weight: 600; color: var(--top-ink); padding: 8px 12px; }
+.nav button:hover { background: var(--top-tile); }
+.nav button[aria-current="page"] { background: #FFFFFF; color: #000000; }
+.nav .count { background: var(--top-tile); color: var(--top-ink); }
+.nav button[aria-current="page"] .count, body[data-side="boss"] .nav button[aria-current="page"] .count, body[data-side="worker"] .nav button[aria-current="page"] .count { background: #000000; color: #FFFFFF; }
+.bell { border: 0; background: var(--top-tile); }
+.bell .count { background: #FFFFFF; color: #000000; }
+.me-btn { border: 0; background: var(--top-tile); }
+.count { background: var(--tile); color: var(--ink); font-family: var(--f-num); font-weight: 700; }
+
+/* buttons: black squares, grey secondary */
+.btn { border-radius: 8px; padding: 12px 20px; font-weight: 700; border: 0; }
+.btn-primary { background: var(--accent); color: var(--accent-ink); box-shadow: none; }
+.btn-primary:hover { filter: none; opacity: .86; }
+.btn-ghost { background: var(--tile); color: var(--ink); border: 0; }
+.btn-ghost:hover { background: var(--tile-2); color: var(--ink); border-color: transparent; }
+.btn-sm { padding: 8px 14px; font-size: 14px; border-radius: 999px; }
+.btn[disabled] { opacity: .5; cursor: default; }
+.link { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
+.gbtn { border-radius: 8px; border: 0; background: var(--tile); }
+.gbtn:hover { background: var(--tile-2); }
+
+/* chips and pills: grey, selected = black */
+.chip { background: var(--tile); border: 0; color: var(--ink); font-weight: 600; padding: 5px 12px; font-size: 13.5px; }
+button.chip:hover { background: var(--tile-2); color: var(--ink); }
+button.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.tabs .chip { padding: 8px 16px; font-size: 14.5px; }
+.pill { border: 0; background: var(--tile); color: var(--ink); font-weight: 700; padding: 3px 10px; border-radius: 4px; }
+.pill.waiting { background: var(--signal-soft); color: var(--signal); }
+.pill.accepted { background: var(--ink); color: var(--bg); }
+.pill.declined { background: var(--tile); color: var(--muted); }
+.tier { border-radius: 999px; padding: 1px 8px; font-weight: 700; }
+.tier.master { background: var(--ink); color: var(--bg); }
+.tier.mid { background: var(--tile); color: var(--ink); }
+.tier.backup { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+.trial-tag { color: var(--ink); background: var(--tile); padding: 0 6px; border-radius: 4px; }
+.tag-direct { color: var(--ink); }
+.ai { color: var(--muted); }
+.score { background: var(--tile); color: var(--ink); border: 0; border-radius: 8px; }
+.score b { font-family: var(--f-num); font-weight: 800; }
+
+/* panels: flat, no shadow; the action column is a bordered panel, lists are plain rows */
+.box { border: 1px solid var(--line); border-radius: 12px; box-shadow: none; padding: 20px; }
+.rows { border: 0; border-radius: 0; box-shadow: none; background: transparent; }
+.row { padding: 16px 4px; border-top: 0; border-bottom: 1px solid var(--line); }
+.row:first-child { border-top: 0; }
+.row:hover { background: transparent; }
+.row-main:hover h3 { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+button.row { border-bottom: 1px solid var(--line); }
+.need-item[aria-current="true"] { background: var(--tile); border-radius: 8px; }
+.need-item:hover h3 { color: var(--ink); }
+.tier-card { border: 0; background: var(--tile); box-shadow: none; border-radius: 12px; padding: 16px; }
+.tier-card:hover { background: var(--tile-2); border-color: transparent; }
+.tier-card[aria-pressed="true"] { background: var(--ink); color: var(--bg); box-shadow: none; }
+.tier-card[aria-pressed="true"] .small, .tier-card[aria-pressed="true"] .meta, .tier-card[aria-pressed="true"] .num { color: var(--bg); }
+.tier-card[aria-pressed="true"] .tier { background: var(--bg); color: var(--ink); border: 0; }
+.modes label { border: 2px solid transparent; background: var(--tile); border-radius: 8px; }
+.modes label:has(input:checked) { border-color: var(--ink); background: var(--bg); }
+.modes input, .check input { accent-color: var(--ink); }
+.sub { border: 0; box-shadow: none; border-radius: 12px; background: var(--tile); }
+.sub > .gal { background: transparent; padding: 0; }
+.sub > .gal .thumb { border-radius: 12px 12px 0 0; border: 0; }
+.stats .box { background: var(--tile); border: 0; }
+.stats b { font-family: var(--f-num); font-weight: 800; font-size: 26px; }
+.review { background: var(--tile); border-radius: 8px; }
+.stars-text { color: var(--star); }
+.note { background: var(--tile); border-radius: 8px; padding: 10px 12px; }
+.deliv { background: var(--tile); border-radius: 8px; }
+.progress i { height: 4px; border-radius: 0; background: var(--line); }
+.progress i.done { background: var(--ink); }
+.progress i.now { background: var(--muted); }
+.step > span:first-child { background: var(--ink); color: var(--bg); font-family: var(--f-num); font-weight: 700; border-radius: 4px; }
+.price { font-family: var(--f-num); font-weight: 800; font-size: 17px; }
+.num { font-family: var(--f-num); font-weight: 600; }
+.hard li::marker { color: var(--ink); }
+
+/* form fields: grey fill, black ring when typing */
+textarea, input[type="text"], input[type="number"], input[type="tel"], select { border: 2px solid transparent; background: var(--tile); border-radius: 8px; padding: 12px 14px; font-weight: 500; }
+textarea:focus, input:focus, select:focus { border-color: var(--ink); background: var(--bg); box-shadow: none; outline: none; }
+.fields label, .field-label { color: var(--muted); font-weight: 600; }
+.drop { border: 2px dashed var(--line); background: var(--tile); border-radius: 12px; }
+.drop:hover, .upl.over .drop { border-color: var(--ink); }
+
+/* pictures */
+.thumb { border: 0; border-radius: 8px; background: var(--tile); }
+.thumb:hover { border-color: transparent; opacity: .9; }
+.thumb .doc b { color: var(--ink); }
+.thumb[aria-pressed="true"] { outline-color: var(--ink); }
+.thumb[aria-pressed="true"]::after { background: var(--ink); color: var(--bg); }
+.gal-more { border: 0; background: var(--tile); border-radius: 8px; }
+.job-thumb { border: 0; border-radius: 8px; width: 72px; height: 72px; }
+.cat-tile { background: var(--tile); color: var(--ink); }
+.mini img { border: 0; border-radius: 6px; }
+.avatar { background-color: var(--tile-2); }
+@media (max-width: 560px) { .job-thumb { width: 56px; height: 56px; } }
+
+/* dialogs: sheet-like, no border */
+.scrim { background: rgba(0, 0, 0, .5); backdrop-filter: none; -webkit-backdrop-filter: none; }
+.drawer { border: 0; border-radius: 16px; box-shadow: 0 8px 40px rgba(0, 0, 0, .25); }
+.drawer-head { border-bottom: 0; padding: 18px 20px 6px; }
+.drawer-head h3 { font-family: var(--f-display); font-size: 22px; font-weight: 800; }
+.drawer-body { padding: 14px 20px; }
+.drawer-foot { border-top: 1px solid var(--line); padding: 14px 20px; }
+.drawer-foot .btn { padding-block: 14px; }
+.x { width: 36px; height: 36px; border-radius: 50%; background: var(--tile); color: var(--ink); font-size: 20px; padding: 0; display: grid; place-items: center; }
+.msg { border: 0; background: var(--tile); border-radius: 12px; }
+.msg.me { background: var(--ink); color: var(--bg); }
+.msg.ai { background: var(--signal-soft); }
+.login-card { border: 0; background: var(--bg); }
+.login-x { background: var(--tile); }
+.acc { border: 0; background: var(--tile); border-radius: 8px; }
+.acc:hover { background: var(--tile-2); }
+.toast { background: var(--ink); color: var(--bg); border-radius: 8px; font-weight: 600; }
+footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
+:focus-visible { outline-color: var(--ink); }
+.top :focus-visible { outline-color: #FFFFFF; }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <button class="logo" id="logo" type="button" aria-label="AI拍檔首頁"><span class="logo-mark" aria-hidden="true"></span><span class="logo-text">AI拍檔</span></button>
+    <div class="role" role="group" aria-label="身份">
+      <button type="button" data-role="boss">我要搵人</button>
+      <button type="button" data-role="worker">我要搵工</button>
+    </div>
+    <div class="top-right">
+      <nav class="nav" id="nav" aria-label="主選單"></nav>
+      <div id="account"></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="view" id="v-post"></section>
+  <section class="view" id="v-login" hidden></section>
+  <section class="view" id="v-needs" hidden></section>
+  <section class="view" id="v-hired" hidden></section>
+  <section class="view" id="v-find" hidden></section>
+  <section class="view" id="v-sent" hidden></section>
+  <section class="view" id="v-work" hidden></section>
+</main>
+
+<footer><div class="wrap">網站模型：AI 回應、工作者報價、試工作品同客戶回覆都係模擬，工作、人才同訂單都係虛構例子，唔會真係收錢。平台只做配對：金額同付款由雙方自行處理，平台唔經手、唔收費、唔抽佣。</div></footer>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-modal="true" role="dialog" aria-labelledby="drawer-title"></aside>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- data ----------
+  // the middle ground: work you could learn to do with AI tools, but it takes skill, several tools and hours you would rather not spend
+  const CATS = [
+    { id: "video", name: "AI 影片", kw: ["片", "影片", "短片", "reels", "宣傳片", "廣告", "剪", "動畫", "小紅書", "youtube"], median: 6000,
+      skills: ["AI 影片生成", "剪接", "腳本", "字幕"],
+      deliver: ["成品影片", "直度同橫度版本", "兩次修改"],
+      hard: ["要串埋腳本、出畫面、配音、剪接四五個工具", "AI 畫面要揀同重出好多次", "人物同產品要前後一致"] },
+    { id: "photo", name: "AI 相片 / 設計", kw: ["相", "圖", "海報", "菜單", "插圖", "繪本", "形象照", "證件照", "背景", "設計"], median: 3500,
+      skills: ["AI 出圖", "修圖", "排版", "品牌設計"],
+      deliver: ["高解像度原圖", "印刷檔", "一次修改"],
+      hard: ["要出到似真、唔似 AI", "幾十張要風格統一", "手指、文字呢啲 AI 常錯位要逐張執"] },
+    { id: "avatar", name: "AI 分身 / 配音", kw: ["分身", "數字人", "虛擬", "主播", "配音", "聲", "旁白", "口型"], median: 8000,
+      skills: ["AI 數字人", "聲音複製", "粵語配音", "口型同步"],
+      deliver: ["分身模型", "成品影片", "講稿修改"],
+      hard: ["要錄素材訓練樣貌同聲線", "廣東話口型要對得上", "要調到唔怪、唔似機械人"] },
+    { id: "auto", name: "自動化 / 客服", kw: ["whatsapp", "自動", "覆客", "客服", "預約", "booking", "報表", "excel", "表格"], median: 8000,
+      skills: ["WhatsApp Business", "Make / Zapier", "Google Sheets", "ChatGPT API"],
+      deliver: ["設定好嘅流程", "使用教學", "一個月跟進"],
+      hard: ["要接幾個平台同帳戶", "要試晒客人各種講法", "出錯要識通知你"] },
+    { id: "bulk", name: "大量內容代做", kw: ["上架", "產品", "描述", "網店", "shopify", "文案", "翻譯", "post", "帖", "每月"], median: 5000,
+      skills: ["AI 文案", "Shopify", "修圖", "中英翻譯"],
+      deliver: ["全部內容", "上架完成", "檢查清單"],
+      hard: ["數量多，重複工夫好悶", "要逐件檢查 AI 有冇寫錯", "要統一語氣同格式"] },
+    { id: "audio", name: "Podcast / 音頻", kw: ["podcast", "音頻", "錄音", "訪問", "直播", "精華"], median: 4000,
+      skills: ["音頻剪接", "AI 降噪", "字幕", "短片精華"],
+      deliver: ["剪好嘅一集", "字幕檔", "精華短片"],
+      hard: ["一小時錄音要剪成精華", "雜音同口頭禪要清", "要揀到最吸引嘅片段"] },
+    { id: "leads", name: "搵客", kw: ["搵客", "客源", "潛在客", "名單", "lead", "落廣告", "廣告投放", "ads", "開發客", "多啲客", "生意", "推廣", "seo", "冷郵", "cold"], median: 5000,
+      skills: ["廣告投放", "客戶名單", "AI 外展訊息", "SEO"],
+      deliver: ["客戶名單或者廣告設定", "訊息範本", "效果報告"],
+      hard: ["要搵啱目標客，唔係亂撒", "AI 寫嘅訊息要似真人，唔可以似 spam", "要計清楚每個查詢用幾多錢"] },
+    { id: "other", name: "其他", kw: [], median: 3000,
+      skills: ["ChatGPT", "AI 工具教學"],
+      deliver: ["按需求講好嘅成品"],
+      hard: ["要先講清楚想要咩", "未必有現成做法，要邊試邊做"] },
+  ];
+  const catById = id => CATS.find(c => c.id === id);
+  const CAT_SHORT = { video: "影片", photo: "相片", avatar: "分身", auto: "自動化", bulk: "代做", audio: "音頻", leads: "搵客", other: "其他" };
+  const CAT_HUE = { video: "#0874AB", photo: "#C2410C", avatar: "#6D28D9", auto: "#047857", bulk: "#B45309", audio: "#BE185D", leads: "#0F766E", other: "#475569" };
+  // demo files: names without an extension become stand-in pictures, the rest are file cards
+  const REF_EG = {
+    video: ["產品相", "品牌 logo", "想要嘅風格"], photo: ["而家嘅相", "舊菜單.pdf"], avatar: ["本人正面相", "聲音樣本.mp3"],
+    auto: ["WhatsApp 查詢截圖", "價錢表.xlsx"], bulk: ["產品相", "規格表.xlsx"], audio: ["Podcast 封面", "錄音.mp3"],
+    leads: ["現有客戶名單.xlsx", "公司簡介.pdf"], other: ["報價單範本.pdf", "電郵例子.docx"],
+  };
+  const WORK_CAPS = {
+    video: ["護膚品 15 秒廣告", "餐廳開張 Reels", "樓盤介紹短片", "手機開箱短片"],
+    photo: ["泰菜館菜式相", "公司團隊形象照", "繪本角色設定", "中英菜單排版"],
+    avatar: ["老闆 AI 分身講解", "粵語旁白示範", "診所 FAQ 分身", "課程導師分身"],
+    auto: ["WhatsApp 自動覆流程", "預約接 Google Calendar", "每日銷售報表", "查詢自動分類"],
+    bulk: ["Shopify 上架 300 件", "中英產品描述", "小紅書 30 篇文案", "產品換白色背景"],
+    audio: ["Podcast 一集剪接", "訪問精華短片", "降噪前後比較", "字幕檔"],
+    leads: ["B2B 名單 200 間", "Facebook 廣告設定", "外展訊息範本", "查詢數字報告"],
+    other: ["ChatGPT 公司堂", "指令範本", "AI 工具比較", "內部流程教學"],
+  };
+  const ALL_SKILLS = [...new Set(CATS.flatMap(c => c.skills).concat(["Runway", "Kling", "Midjourney", "CapCut", "HeyGen", "ElevenLabs"]))];
+
+  const JOBS = [
+    { id: "j1", tier: "master", mode: "trial", trial: { brief: "用我哋畀嘅產品相，做一個 5 秒 AI 鏡頭樣板，產品樽要清楚。", max: 5, days: 3, refs: ["精華液正面", "精華液側面", "品牌色板"], others: 3, subs: [] }, title: "60 秒 AI 產品宣傳片 + 粵語配音", client: "觀塘 · 護膚品牌", cat: "video", skills: ["AI 影片生成", "剪接", "腳本"], budget: 6500, days: 10, posted: "2 小時前",
+      desc: "新出一支精華液，冇預算請團隊拍。想用 AI 做 60 秒宣傳片，有模特兒用產品嘅畫面、粵語旁白同字幕，出 IG 同 YouTube 版。",
+      hard: ["產品樽要每個鏡頭都一樣", "要寫腳本再出十幾個鏡頭", "配音同字幕要對齊"] },
+    { id: "j2", tier: "mid", mode: "direct", title: "每月 8 條 AI 短片（小紅書 + IG）", client: "銅鑼灣 · 美甲店", cat: "video", skills: ["AI 影片生成", "剪接", "字幕"], budget: 8000, days: 30, posted: "5 小時前",
+      desc: "每月 8 條 15–30 秒短片，介紹新款式同優惠。我提供相片，你用 AI 變成動態片，加音樂同字幕。",
+      hard: ["每星期都要出，好花時間", "要跟住潮流音樂同剪法", "要統一店舖風格"] },
+    { id: "j3", tier: "master", mode: "direct", title: "老闆 AI 分身講解產品 10 條", client: "荃灣 · 五金批發", cat: "avatar", skills: ["AI 數字人", "聲音複製", "口型同步"], budget: 12000, days: 21, posted: "昨日",
+      desc: "老闆唔想次次對鏡頭。想用佢樣貌同聲做 AI 分身，每條 1 分鐘用廣東話講解一款工具，以後改稿就可以再出。",
+      hard: ["要錄素材訓練分身", "廣東話口型要對", "要似真人唔怪"] },
+    { id: "j4", tier: "mid", mode: "trial", trial: { brief: "整 2 款菜式 AI 相：冬陰功同芒果糯米飯，要似真餸。", max: 8, days: 2, refs: ["冬陰功參考", "芒果糯米飯參考"], others: 5, subs: [] }, title: "40 款菜式 AI 相 + 中英菜單排版", client: "九龍城 · 泰菜館", cat: "photo", skills: ["AI 出圖", "修圖", "排版"], budget: 4800, days: 10, posted: "昨日",
+      desc: "冇時間逐碟影相。想用 AI 整 40 款菜式相，要似真餸，再排成中英對照菜單，出印刷檔同 WhatsApp 版。",
+      hard: ["要似真餸唔似 AI", "40 張要光線風格一致", "排版要印得出"] },
+    { id: "j5", tier: "backup", mode: "direct", title: "網店 300 件產品描述 + 換背景 + 上架", client: "旺角 · 電子配件網店", cat: "bulk", skills: ["AI 文案", "Shopify", "修圖"], budget: 6500, days: 14, posted: "3 日前",
+      desc: "300 件新貨，要 AI 寫中英產品描述、相片換白色背景，再上架 Shopify，分好類同價錢。",
+      hard: ["數量多，重複好悶", "規格唔可以寫錯", "上架要逐件核對"] },
+    { id: "j6", tier: "mid", mode: "direct", title: "WhatsApp 自動覆 + 預約接 Google Calendar", client: "灣仔 · 物理治療中心", cat: "auto", skills: ["WhatsApp Business", "Make / Zapier", "ChatGPT API"], budget: 9000, days: 14, posted: "3 日前",
+      desc: "晚上同假期有好多 WhatsApp 查詢。想 AI 自動答收費同地址，識幫客人揀時間預約，直接入 Google Calendar。",
+      hard: ["要接 WhatsApp 同日曆", "客人講法千奇百怪", "撞期要識處理"] },
+    { id: "j7", tier: "mid", mode: "direct", title: "Podcast 每月 4 集剪接 + 精華短片", client: "線上 · 理財 Podcast", cat: "audio", skills: ["音頻剪接", "AI 降噪", "短片精華"], budget: 5000, days: 30, posted: "4 日前",
+      desc: "每集錄 1 小時，要剪走口頭禪同冷場，加字幕，再每集剪 3 條 30 秒精華短片出 IG。",
+      hard: ["一小時要聽晒", "要揀最精彩片段", "每星期都要交"] },
+    { id: "j8", tier: "master", mode: "direct", title: "24 頁兒童繪本 AI 插圖 + 印刷排版", client: "沙田 · 幼稚園", cat: "photo", skills: ["AI 出圖", "排版", "品牌設計"], budget: 8000, days: 21, posted: "5 日前",
+      desc: "校長寫好故事，想用 AI 畫 24 頁插圖，主角每頁要一樣，排好版出印刷檔。",
+      hard: ["主角 24 頁要一模一樣", "畫風要適合小朋友", "要識印刷出血位"] },
+    { id: "j9", tier: "mid", mode: "direct", title: "公司 20 人 AI 形象照", client: "中環 · 會計師行", cat: "photo", skills: ["AI 出圖", "修圖"], budget: 3000, days: 7, posted: "6 日前",
+      desc: "同事交自拍，AI 變成統一背景同西裝嘅形象照，用喺網站同 LinkedIn，要似返本人。",
+      hard: ["要似返本人", "20 人光線背景統一", "要逐個同事確認"] },
+    { id: "j10", tier: "backup", mode: "direct", title: "120 張 AI 產品相人手執手指同文字", client: "深水埗 · 玩具批發", cat: "photo", skills: ["修圖"], budget: 1200, days: 4, posted: "6 日前",
+      desc: "我自己用 AI 出咗 120 張相，但有啲手指多咗、包裝上嘅字亂碼，要逐張執好。",
+      hard: ["逐張睇，好花眼", "包裝字要對返真品", "唔可以執到假"] },
+    { id: "j11", tier: "backup", mode: "trial", trial: { brief: "校對附件 1 分鐘片段嘅字幕，出 SRT。", max: 10, days: 1, refs: ["片段-1分鐘.mp4"], others: 2, subs: [] }, title: "20 條 AI 短片粵語字幕校對", client: "線上 · 旅遊 YouTuber", cat: "video", skills: ["字幕"], budget: 1500, days: 5, posted: "1 星期前",
+      desc: "AI 自動出咗字幕，但廣東話成日錯字同斷句唔啱，要逐條聽住改好再出 SRT。",
+      hard: ["要逐句聽", "廣東話口語字要寫啱", "時間軸要對齊"] },
+    { id: "j12", tier: "backup", mode: "direct", title: "AI 寫嘅 200 件產品描述逐件核對規格", client: "旺角 · 電子配件網店", cat: "bulk", skills: ["AI 文案"], budget: 900, days: 3, posted: "1 星期前",
+      desc: "AI 已經寫好描述，但有啲尺寸同兼容型號寫錯，要對住供應商規格表逐件改。",
+      hard: ["數量多好悶", "要對住規格表", "錯一個型號就有退貨"] },
+    { id: "j13", tier: "mid", mode: "trial", trial: { brief: "搵 20 間有可能用我哋服務嘅公司，附聯絡人同 AI 寫嘅開場 WhatsApp。", max: 5, days: 3, refs: ["目標地區地圖", "服務價目表.pdf"], others: 1, subs: [] }, title: "AI 搵 200 個公司客 + 外展訊息", client: "上環 · 辦公室清潔公司", cat: "leads", skills: ["客戶名單", "AI 外展訊息"], budget: 5000, days: 14, posted: "4 小時前",
+      desc: "想搵多啲寫字樓客。用 AI 幫我整理上環、中環 200 間公司嘅負責人，寫好一對一嘅開場訊息，我自己發。",
+      hard: ["名單要真、唔可以亂作", "訊息要逐間改，唔似群發", "要避開已經係我哋客嘅公司"] },
+    { id: "j14", tier: "mid", mode: "direct", title: "教我班員工用 ChatGPT 寫報價同電郵", client: "葵涌 · 物流公司", cat: "other", skills: ["ChatGPT", "AI 工具教學"], budget: 3500, days: 7, posted: "2 日前",
+      desc: "8 個文職同事，想上一堂 2 小時嘅實用堂，用我哋自己嘅報價單同電郵做例子，教完要有一份指令範本。",
+      hard: ["要用公司真實例子", "同事唔熟電腦，要講得淺", "指令範本要即刻用得"] },
+  ];
+
+  const TALENT = [
+    { id: "t1", tier: "mid", name: "Mandy", head: "AI 影片 · 短片", cat: "video", skills: ["AI 影片生成", "剪接", "字幕", "CapCut", "Kling"], rate: [2500, 10000], rating: 4.9, done: 81, avail: "now", hue: "#17694F",
+      bio: "每月做 30 條以上 AI 短片，美容同飲食類最熟，產品鏡頭會保持一致。" },
+    { id: "t2", tier: "master", name: "阿琛", head: "AI 宣傳片 · 腳本", cat: "video", skills: ["AI 影片生成", "腳本", "剪接", "Runway"], rate: [5000, 20000], rating: 4.8, done: 34, avail: "week", hue: "#B87A06",
+      bio: "前廣告公司剪接師，由腳本、AI 出畫面到配音一手包辦。" },
+    { id: "t3", tier: "master", name: "Sam", head: "AI 分身 · 粵語配音", cat: "avatar", skills: ["AI 數字人", "聲音複製", "粵語配音", "口型同步", "HeyGen"], rate: [4000, 15000], rating: 5.0, done: 22, avail: "now", hue: "#3E6FA8",
+      bio: "專做廣東話 AI 分身，口型同語氣調到似真人，亦可以真人配音。" },
+    { id: "t4", tier: "mid", name: "Coco", head: "AI 相片 · 修圖", cat: "photo", skills: ["AI 出圖", "修圖", "Midjourney"], rate: [1200, 6000], rating: 4.7, done: 63, avail: "now", hue: "#9A4E7A",
+      bio: "食物同產品相專家，AI 出圖再人手修，出到似真影。" },
+    { id: "t5", tier: "master", name: "Yan", head: "插圖 · 排版", cat: "photo", skills: ["AI 出圖", "排版", "品牌設計"], rate: [3000, 10000], rating: 4.8, done: 27, avail: "week", hue: "#5C7A2E",
+      bio: "做過十幾本繪本同菜單，角色一致同印刷規格都熟。" },
+    { id: "t6", tier: "mid", name: "Kelvin", head: "WhatsApp 自動化", cat: "auto", skills: ["WhatsApp Business", "Make / Zapier", "Google Sheets", "ChatGPT API"], rate: [4000, 15000], rating: 4.8, done: 23, avail: "now", hue: "#B4532E",
+      bio: "幫過 20 幾間診所同小店設定 WhatsApp 自動覆同預約。" },
+    { id: "t7", tier: "backup", name: "Ivy", head: "網店上架 · 核對", cat: "bulk", skills: ["AI 文案", "Shopify", "修圖", "中英翻譯"], rate: [2000, 8000], rating: 4.6, done: 41, avail: "now", hue: "#4A5BA0",
+      bio: "一星期可以上架 500 件貨，每件人手檢查規格。" },
+    { id: "t8", tier: "mid", name: "Leo", head: "Podcast 剪接", cat: "audio", skills: ["音頻剪接", "AI 降噪", "字幕", "短片精華"], rate: [1500, 6000], rating: 4.9, done: 52, avail: "week", hue: "#2F7F86",
+      bio: "幫 6 個 Podcast 長期剪接，精華短片平均多三成觀看。" },
+    { id: "t9", tier: "mid", name: "Joanne", head: "AI 形象照", cat: "photo", skills: ["AI 出圖", "修圖"], rate: [1500, 5000], rating: 4.7, done: 38, avail: "now", hue: "#7B5A2A",
+      bio: "專做公司團隊 AI 形象照，保證似返本人，唔滿意免費重做。" },
+    { id: "t10", tier: "backup", name: "阿明", head: "AI 相人手執", cat: "photo", skills: ["修圖", "AI 出圖"], rate: [300, 2000], rating: 4.8, done: 120, avail: "now", hue: "#6B6F2A",
+      bio: "專幫人執 AI 相嘅手指、文字同穿崩位，一日可以執 100 張。" },
+    { id: "t11", tier: "backup", name: "Kiki", head: "字幕校對 · 影片檢查", cat: "video", skills: ["字幕", "剪接"], rate: [300, 2500], rating: 4.9, done: 95, avail: "now", hue: "#8A3F5C",
+      bio: "中文系畢業，專校粵語字幕同檢查 AI 影片穿崩畫面。" },
+    { id: "t12", tier: "mid", name: "Fiona", head: "AI 搵客 · 廣告投放", cat: "leads", skills: ["廣告投放", "客戶名單", "AI 外展訊息", "SEO"], rate: [3000, 12000], rating: 4.8, done: 31, avail: "now", hue: "#2E6B7A",
+      bio: "幫小店同 B2B 公司搵客，AI 整理名單再逐個寫訊息，平均每月多 30 個查詢。" },
+    { id: "t13", tier: "mid", name: "阿Ken", head: "AI 工具教學 · 雜項", cat: "other", skills: ["ChatGPT", "AI 工具教學"], rate: [1500, 6000], rating: 4.7, done: 19, avail: "week", hue: "#6A4E8C",
+      bio: "幫公司上 AI 實用堂，亦接唔知點分類嘅 AI 雜項。" },
+  ];
+
+  const AVAIL = { now: "即時可接", week: "本星期有空", later: "下星期先有空", off: "暫停接單" };
+  // order status: 2 等交貨 → 3 等確認（客戶可以要求修改，返去 2）→ 5 互相評分 → 6 完成; money is settled between the two people
+  const STEPS = ["落實", "交貨", "確認完成", "互相評分"];
+  const STEP_AT = { 2: 1, 3: 2, 5: 3, 6: 4 };
+  const ORDER_TEXT = { 2: "等交貨", 3: "等客戶確認", 5: "互相評分", 6: "已完成" };
+  // mutual reviews: each side rates the other; neither is shown until both are in, so nobody rates in revenge
+  const REVIEW_TAGS = {
+    boss: ["準時交貨", "質素好", "溝通清楚", "肯改", "超出預期"],      // what a client says about a worker
+    worker: ["需求清楚", "準時確認", "溝通清楚", "尊重專業", "會再合作"], // what a worker says about a client
+  };
+  const THEIR_REVIEW = {
+    boss: { stars: 5, tags: ["需求清楚", "準時確認"], text: "老闆講得清楚，改稿意見好具體，合作愉快。" },
+    worker: { stars: 5, tags: ["準時交貨", "質素好"], text: "交得準時，樣板同成品一致，下次再搵。" },
+  };
+
+  // three kinds of worker: masters run a whole piece, regulars make it to brief, backup fix by hand what AI gets wrong
+  const TIERS = {
+    master: { name: "AI 大師", desc: "由構思到成品一手包辦，駕馭幾個 AI 工具，處理最難嘅部分", price: "HK$5,000–20,000" },
+    mid:    { name: "AI 熟手", desc: "熟用常見 AI 工具，按你嘅要求做出成品", price: "HK$1,500–10,000" },
+    backup: { name: "AI 兜底", desc: "AI 做唔好嘅位由真人執：修圖、校字幕、核對、上架", price: "HK$300–2,500" },
+  };
+  // TIER_FIT[tier the need asks for][tier of the worker]
+  const TIER_FIT = { master: { master: 1, mid: 0.4, backup: 0.1 }, mid: { master: 0.8, mid: 1, backup: 0.3 }, backup: { master: 0.4, mid: 0.8, backup: 1 } };
+  const MODES = {
+    direct: { name: "直接聯絡", desc: "AI 自動通知最啱嘅 3 個人，佢哋直接報價畀你揀" },
+    trial:  { name: "先試工", desc: "放個細任務，等工作者交樣板，睇完先揀" },
+  };
+  const TRIAL_EG = {
+    video: "用我提供嘅產品相，做一條 5–10 秒 AI 鏡頭樣板，要見到產品同字幕風格。",
+    photo: "整 2 張樣板相，風格要同最終成品一樣。",
+    avatar: "用我提供嘅 30 秒片段，做一段 10 秒廣東話 AI 分身樣板。",
+    auto: "畫一個流程，講你會點接 WhatsApp 同日曆，同埋客人問「幾錢」時點覆。",
+    bulk: "幫我寫 3 件產品嘅描述同上架樣板。",
+    audio: "剪附件嗰段 5 分鐘錄音，出一條 30 秒精華。",
+    leads: "搵 20 個合適嘅潛在客，附聯絡方法，再用 AI 寫一段開場訊息。",
+    other: "用半頁紙講你會點做，同埋第一步做咩。",
+  };
+  const HIRE_EG = ["想用 AI 整條 60 秒產品宣傳片，要粵語配音，預算 $6000，兩星期", "每月幫我出 8 條小紅書短片，我畀相，$8000", "我有 80 張 AI 相要人手執手指，$800，3 日"];
+  const WORK_EG = ["我做廣告剪接 8 年，識用 Runway 同 Kling 做 AI 宣傳片", "我識用 Kling 同 CapCut 做 AI 短片，做過 30 間小店", "我係學生，可以兼職幫人校對字幕同執相"];
+
+  // ---------- state ----------
+  const state = {
+    user: null, afterLogin: null, notes: [],
+    view: "post",
+    filter: "all",
+    tier: "all",
+    draft: null,          // the need being written on 發工作
+    needs: [],            // needs you posted as a client
+    selNeed: null,
+    needTab: "replies",
+    profile: null,        // you as a worker
+    quotes: [],
+    subs: [],
+    pending: null,        // a quote or trial waiting for the worker profile
+    orders: [],
+    chat: null,
+  };
+
+  // ---------- helpers ----------
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const hk = n => "HK$" + Math.round(n).toLocaleString("en-HK");
+  const round100 = n => Math.round(n / 100) * 100;
+  // every need, quote, sample and order belongs to the account that made it; examples are shown to everyone
+  const me = () => state.user ? state.user.email : "";
+  const ownedBy = x => x.example || x.owner === me();
+  const myNeeds = () => state.needs.filter(ownedBy);
+  const myOrders = side => state.orders.filter(o => o.side === side && ownedBy(o));
+  const myQuotes = () => state.quotes.filter(ownedBy);
+  const mySubs = () => state.subs.filter(ownedBy);
+  // the 搵工 list: listed jobs plus open needs that other accounts posted here
+  const openJobs = () => JOBS.concat(state.needs.filter(n => !n.example && n.owner !== me() && n.status === "open"));
+  const jobById = id => JOBS.find(j => j.id === id) || state.needs.find(n => n.id === id);
+  const needById = id => state.needs.find(n => n.id === id);
+  const talentById = id => TALENT.find(t => t.id === id) || (state.profile && state.profile.id === id ? state.profile : null)
+    || (id && id.startsWith("u:") && known[id.slice(2)] ? known[id.slice(2)].profile : null);
+  const reduced = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const wait = ms => new Promise(r => setTimeout(r, reduced() ? 0 : ms));
+  const later = (ms, fn) => setTimeout(fn, reduced() ? 200 : ms);
+
+  let toastTimer;
+  function toast(text) {
+    const t = $("#toast");
+    t.textContent = text; t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.hidden = true; }, 2800);
+  }
+
+  const CN_NUM = { "一": 1, "兩": 2, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10 };
+  // amounts followed by a counter (2 萬份, 5,000 張) are quantities, not money; take the largest money amount
+  const COUNTER = "(?![\\d,]|\\s*[份張個條件人次篇間架部款位])";
+  function parseBudget(text) {
+    const found = [];
+    const money = new RegExp("(?:HK\\$|\\$|港幣)\\s*([\\d,]+(?:\\.\\d+)?)\\s*(k|K|千|萬)?" + COUNTER + "|([\\d,]+(?:\\.\\d+)?)\\s*(k|K|千|萬|蚊|元)" + COUNTER, "g");
+    for (const m of text.matchAll(money)) {
+      let n = parseFloat((m[1] || m[3]).replace(/,/g, ""));
+      const unit = m[2] || m[4] || "";
+      if (/k|K|千/.test(unit)) n *= 1000;
+      if (unit === "萬") n *= 10000;
+      found.push(Math.round(n));
+    }
+    // 「預算 3000」: a bare number right after 預算 is money too
+    for (const m of text.matchAll(/預算\s*(?:大約|約)?\s*([\d,]{3,})(?![\d,]|\s*[份張個條件人次篇間架部款位kK千萬蚊元])/g)) found.push(parseInt(m[1].replace(/,/g, ""), 10));
+    for (const m of text.matchAll(new RegExp("([一兩二三四五六七八九十]+)\\s*(千|萬)" + COUNTER, "g"))) {
+      const n = m[1].length === 2 && m[1][0] === "十" ? 10 + CN_NUM[m[1][1]] : m[1].length === 2 && m[1][1] === "十" ? CN_NUM[m[1][0]] * 10 : CN_NUM[m[1]];
+      if (n) found.push(n * (m[2] === "萬" ? 10000 : 1000));
+    }
+    return found.length ? Math.max(...found) : null;
+  }
+  function parseDays(text) {
+    const m = text.match(/(\d+|[一兩二三四五六七八九十])\s*(日|天|個星期|星期|週|個禮拜|禮拜|個月|月)/);
+    if (!m) return null;
+    const n = /\d/.test(m[1]) ? parseInt(m[1], 10) : CN_NUM[m[1]];
+    if (/星期|週|禮拜/.test(m[2])) return n * 7;
+    if (/月/.test(m[2])) return n * 30;
+    return n;
+  }
+  function detectCat(text) {
+    const low = text.toLowerCase();
+    const best = CATS.map(c => ({ c, s: c.kw.reduce((a, k) => a + (low.includes(k.toLowerCase()) ? 1 : 0), 0) }))
+      .filter(x => x.s > 0).sort((a, b) => b.s - a.s)[0];
+    return best ? best.c : catById("other");
+  }
+  const skillsIn = text => ALL_SKILLS.filter(s => text.toLowerCase().includes(s.toLowerCase()));
+  function titleFrom(raw, cat) {
+    let title = raw.replace(/^我(間|個|嘅)?[^，,。想要]{0,6}(想|要|有)\s*/, "").replace(/^(我想|我要|想|要|幫我|請人)\s*/, "")
+      .replace(new RegExp("(?:HK\\$|\\$|港幣)\\s*[\\d,]+(?:\\.\\d+)?\\s*(?:k|K|千|萬)?" + COUNTER, "g"), "")
+      .replace(new RegExp("[\\d,]+\\s*(?:k|K|千|萬|蚊|元)" + COUNTER, "g"), "").replace(new RegExp("[一兩二三四五六七八九十]+\\s*(?:千|萬)" + COUNTER + "蚊?", "g"), "")
+      .replace(/(預算|大約|左右)/g, "")
+      .replace(/(\d+|[一兩二三四五六七八九十])\s*(日|天|個星期|星期|週|個禮拜|禮拜|個月|月)\s*(內|之內)?/g, "")
+      .split(/[，。；;]|,(?!\d)/).map(s => s.trim()).filter(Boolean)
+      .map(s => s.replace(/^.{0,8}?(?:我想|我要|需要|想|要|幫我|請人)\s*(?:用|搵人)?\s*/, "").replace(/^(用|搵人)\s*/, "").trim()).filter(Boolean);
+    // pick the clause that says what the work is: a quantity, the category's words, AI
+    const score = c => (/\d+\s*(條|張|款|件|集|頁|個|人|篇|秒|分鐘)/.test(c) ? 3 : 0) + (cat.kw.some(k => c.toLowerCase().includes(k)) ? 3 : 0) + (/AI/i.test(c) ? 2 : 0) + Math.min(c.length, 20) / 20;
+    title = title.slice().sort((a, b) => score(b) - score(a))[0] || cat.name + "工作";
+    return title.length > 26 ? title.slice(0, 26) + "…" : title;
+  }
+  const FIX_WORDS = /執|校對|核對|檢查|修正|覆核|人手/;
+  function suggestJobTier(raw, cat, budget) {
+    if (FIX_WORDS.test(raw) && budget < 3000) return "backup";
+    if (cat.id === "avatar" || budget >= 10000 || /宣傳片|廣告|品牌|一手包辦/.test(raw)) return "master";
+    return FIX_WORDS.test(raw) ? "backup" : "mid";
+  }
+  function suggestWorkerTier(raw) {
+    const years = raw.match(/(\d+)\s*年/);
+    if (/大師|導演|前廣告|監製|一手包辦/.test(raw) || (years && +years[1] >= 5)) return "master";
+    if (/執|校對|核對|檢查|上架|兼職|學生|入門/.test(raw)) return "backup";
+    return "mid";
+  }
+  function rateFor(tier, cat) {
+    if (tier === "master") return [round100(cat.median * 0.8), round100(cat.median * 3)];
+    if (tier === "backup") return [300, Math.max(800, round100(cat.median * 0.4))];
+    return [round100(cat.median * 0.4), round100(cat.median * 1.5)];
+  }
+  const quoteFor = (job, t) => Math.max(t.rate[0], Math.min(t.rate[1], round100(job.budget * 0.95)));
+
+  // matching: skills 45, tier 15, budget 15, rating 15, availability 10
+  function match(job, t) {
+    const need = job.skills.length ? job.skills : catById(job.cat).skills.slice(0, 3);
+    const hit = need.filter(s => t.skills.includes(s));
+    let skill = hit.length / need.length;
+    if (t.cat === job.cat) skill = Math.min(1, skill + 0.25);
+    const budget = job.budget >= t.rate[0] ? 1 : Math.max(0, job.budget / t.rate[0]);
+    const rating = Math.max(0, Math.min(1, t.rating - 4));
+    const avail = { now: 1, week: 0.7, later: 0.35, off: 0 }[t.avail];
+    const tier = TIER_FIT[job.tier || "mid"][t.tier || "mid"];
+    const total = Math.min(99, Math.round(45 * skill + 15 * tier + 15 * budget + 15 * rating + 10 * avail));
+    let why = hit.length ? "識 " + hit.slice(0, 2).join("、") : "技能唔太啱";
+    if (tier < 0.5) why += job.tier === "master" ? " · 呢單要大師級" : " · 呢單用唔著咁高級";
+    if (budget < 1) why += " · 收費高過預算";
+    else if (t.avail === "now") why += " · 即時可接";
+    return { total, why };
+  }
+  const ranked = (job, list) => list.map(t => ({ t, m: match(job, t) })).sort((a, b) => b.m.total - a.m.total);
+
+  // ---------- small pieces ----------
+  const tierBadge = id => `<span class="tier ${id}">${TIERS[id || "mid"].name}</span>`;
+  const scoreBadge = m => `<div class="score" title="配對分"><b>${m.total}</b><span>配對分</span></div>`;
+  const avatar = (t, big) => `<div class="avatar${big ? " big" : ""}" style="background:${t.hue}" aria-hidden="true">${t.photo ? `<img src="${t.photo}" alt="">` : esc(t.name.slice(0, 1))}</div>`;
+  const chipRow = (label, key, items, cur) => `<div class="chips" role="group" aria-label="${label}">${items.map(([id, n]) => `<button type="button" class="chip" data-${key}="${id}" aria-pressed="${cur === id}">${n}</button>`).join("")}</div>`;
+  const tierChips = () => chipRow("級別", "tier", [["all", "全部級別"]].concat(Object.entries(TIERS).map(([k, v]) => [k, v.name])), state.tier);
+  const catChips = () => chipRow("類別", "filter", [["all", "全部類別"]].concat(CATS.map(c => [c.id, c.name])), state.filter);
+  const inFilters = x => (state.filter === "all" || x.cat === state.filter) && (state.tier === "all" || (x.tier || "mid") === state.tier);
+  // a worker quoting for a job that asks for a higher tier gets a gentle warning
+  const TIER_RANK = { backup: 0, mid: 1, master: 2 };
+  const tierWarn = (job, p) => p && TIER_RANK[p.tier] < TIER_RANK[job.tier || "mid"]
+    ? `<div class="note">呢份工搵 ${TIERS[job.tier].name}，你係 ${TIERS[p.tier].name}。可以照報，但最好講清楚你點做到，或者報你做得最好嘅部分。</div>` : "";
+  const tabs = (key, items, cur) => `<div class="chips tabs" role="group" aria-label="分頁">${items.map(([id, n]) => `<button type="button" class="chip" data-${key}="${id}" aria-pressed="${cur === id}">${n}</button>`).join("")}</div>`;
+
+  // stand-in pictures for the made-up examples: a gradient, a few shapes and a caption
+  const PIC_TINTS = ["#F4E6C8", "#E3ECF7", "#F6DCE0", "#DDEFE5"];
+  function samplePic(hue, label, seed) {
+    try {
+      const k = seed || [...label].reduce((a, ch) => a + ch.charCodeAt(0), 0);
+      const c = document.createElement("canvas"); c.width = 480; c.height = 360;
+      const g = c.getContext("2d");
+      const grad = g.createLinearGradient(0, 0, 480, 360);
+      grad.addColorStop(0, hue); grad.addColorStop(1, PIC_TINTS[k % 4]);
+      g.fillStyle = grad; g.fillRect(0, 0, 480, 360);
+      g.fillStyle = "rgba(255,255,255,.22)";
+      g.beginPath(); g.arc(120 + (k % 7) * 40, 120, 70 + (k % 5) * 10, 0, Math.PI * 2); g.fill();
+      g.fillStyle = "rgba(255,255,255,.35)"; g.fillRect(250 - (k % 3) * 30, 70, 150, 170);
+      g.fillStyle = "rgba(0,0,0,.35)"; g.fillRect(0, 290, 480, 70);
+      g.fillStyle = "#fff"; g.font = "bold 28px sans-serif"; g.fillText(label, 22, 336);
+      return c.toDataURL("image/jpeg", 0.82);
+    } catch (e) { return ""; }
+  }
+  const EXT_TYPE = { pdf: "application/pdf", mp3: "audio/mpeg", mp4: "video/mp4", xlsx: "application/vnd.ms-excel", docx: "application/msword", zip: "application/zip" };
+  function demoFile(name, hue, seed) {
+    const m = name.match(/\.(\w+)$/);
+    if (m) return { name, type: EXT_TYPE[m[1]] || "", size: 180000 + name.length * 23000, url: "", demo: true };
+    return { name: name + ".jpg", cap: name, type: "image/jpeg", size: 240000, url: samplePic(hue, name, seed) };
+  }
+  const samplePicFile = (hue, label) => ({ name: label + ".jpg", type: "image/jpeg", size: 260000, url: samplePic(hue, label) });
+
+  // ---------- uploads and the big-picture viewer ----------
+  const isImg = f => /^image\//.test(f.type) && f.url;
+  const isVid = f => /^video\//.test(f.type) && f.url;
+  const isAud = f => /^audio\//.test(f.type) && f.url;
+  const extOf = f => ((f.name.match(/\.(\w+)$/) || [, "檔案"])[1]).toUpperCase().slice(0, 4);
+  const sizeText = n => !n ? "" : n >= 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB";
+  // pictures are shrunk and kept as data so they survive a reload; video, sound and documents stay for this visit only
+  function shrink(file, max) {
+    return new Promise((ok, bad) => {
+      const url = URL.createObjectURL(file), img = new Image();
+      img.onload = () => {
+        const k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement("canvas");
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url); ok(c.toDataURL("image/jpeg", 0.82));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); bad(); };
+      img.src = url;
+    });
+  }
+  async function readFiles(list, max) {
+    const out = [];
+    for (const f of list) {
+      if (/^image\/(jpeg|png|webp|heic|heif|bmp)/.test(f.type)) {
+        try { out.push({ name: f.name, type: "image/jpeg", size: f.size, url: await shrink(f, max) }); continue; } catch (e) {}
+      }
+      out.push({ name: f.name, type: f.type || "", size: f.size, url: URL.createObjectURL(f), temp: true });
+    }
+    return out;
+  }
+  // every gallery drawn registers its files so a thumbnail can open the viewer on the right one
+  const GAL = [];
+  function thumbBtn(f, key, cap) {
+    const inner = isImg(f) ? `<img src="${f.url}" alt="" loading="lazy">`
+      : isVid(f) ? `<video src="${f.url}#t=0.1" muted playsinline preload="metadata"></video><span class="play">▶</span>`
+      : `<span class="doc"><b>${esc(extOf(f))}</b><span>${esc(f.name)}</span><span class="muted">${sizeText(f.size)}</span></span>`;
+    return `<button type="button" class="thumb" ${key ? `data-lb="${key}"` : ""} aria-label="睇大：${esc(f.cap || f.name)}">${inner}${cap && f.cap ? `<span class="cap">${esc(f.cap)}</span>` : ""}</button>`;
+  }
+  function gallery(files, o = {}) {
+    if (!files || !files.length) return o.empty || "";
+    const g = GAL.push(files) - 1, shown = o.limit ? files.slice(0, o.limit) : files;
+    return `<div class="gal ${o.cls || ""}">${shown.map((f, i) => thumbBtn(f, g + ":" + i, o.cap)).join("")}${o.limit && files.length > o.limit ? `<button type="button" class="gal-more" data-lb="${g}:${o.limit}">+${files.length - o.limit}</button>` : ""}</div>`;
+  }
+  const filesSec = (label, files, o) => files && files.length ? `<div class="files-sec"><span class="small muted">${label}</span>${gallery(files, o)}</div>` : "";
+  const firstPic = files => (files || []).find(isImg);
+  const miniThumbs = files => { const pics = (files || []).filter(isImg).slice(0, 3); return pics.length ? `<div class="mini">${pics.map(f => `<img src="${f.url}" alt="">`).join("")}</div>` : ""; };
+  const jobThumb = j => { const f = firstPic(j.refs); return f ? `<img class="job-thumb" src="${f.url}" alt="">` : `<span class="job-thumb cat-tile">${CAT_SHORT[j.cat] || ""}</span>`; };
+  const worksOf = t => t.works || [];
+
+  // an upload box: drop zone, previews with a remove button and (optionally) a caption each
+  const UPL = {};
+  function uploader(id, list, o = {}) {
+    UPL[id] = { list, o };
+    return `<div class="upl" id="${id}">
+      <label class="drop"><b>${o.label || "上載檔案"}</b><span class="small muted">${o.hint || "相、影片、聲音、PDF 或者文件，可以揀幾個，亦可以拖入嚟"}</span><input type="file" ${o.single ? "" : "multiple"} accept="${o.accept || "image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.zip"}"></label>
+      <div class="upl-list">${uplItems(id)}</div></div>`;
+  }
+  function uplItems(id) {
+    const { list, o } = UPL[id], g = GAL.push(list) - 1;
+    return list.map((f, i) => `<div class="upl-item">${thumbBtn(f, g + ":" + i)}<button type="button" class="upl-x" data-unrm="${i}" aria-label="刪走 ${esc(f.name)}">×</button>${o.caption ? `<input type="text" class="upl-cap" data-ucap="${i}" value="${esc(f.cap || "")}" placeholder="一句說明" maxlength="24">` : ""}</div>`).join("");
+  }
+  function bindUploaders() {
+    document.querySelectorAll(".upl").forEach(el => {
+      const u = UPL[el.id]; if (!u || el.dataset.bound) return;
+      el.dataset.bound = "1";
+      const redraw = () => { el.querySelector(".upl-list").innerHTML = uplItems(el.id); if (u.o.onChange) u.o.onChange(u.list); };
+      const add = async files => {
+        if (!files.length) return;
+        const room = (u.o.limit || 20) - u.list.length;
+        if (!u.o.single && room <= 0) return toast(`最多 ${u.o.limit || 20} 個檔案`);
+        const got = await readFiles(u.o.single ? files.slice(0, 1) : files.slice(0, room), u.o.max || 1280);
+        if (u.o.single) u.list.splice(0, u.list.length, ...got); else u.list.push(...got);
+        redraw();
+      };
+      el.querySelector("input[type=file]").addEventListener("change", e => { add([...e.target.files]); e.target.value = ""; });
+      el.addEventListener("dragover", e => { e.preventDefault(); el.classList.add("over"); });
+      el.addEventListener("dragleave", () => el.classList.remove("over"));
+      el.addEventListener("drop", e => { e.preventDefault(); el.classList.remove("over"); add([...e.dataTransfer.files]); });
+      el.addEventListener("click", e => { const x = e.target.closest("[data-unrm]"); if (x) { e.stopPropagation(); u.list.splice(+x.dataset.unrm, 1); redraw(); } });
+      el.addEventListener("input", e => { const c = e.target.closest("[data-ucap]"); if (c) u.list[+c.dataset.ucap].cap = c.value.trim(); });
+    });
+  }
+
+  // the viewer: one file at a time, arrows or swipe for the next one
+  let LB = null;
+  function openLB(key) {
+    const [g, i] = key.split(":").map(Number);
+    if (!GAL[g] || !GAL[g][i]) return;
+    LB = { files: GAL[g], i, back: document.activeElement };
+    drawLB();
+  }
+  function drawLB() {
+    let el = $("#lb");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "lb"; el.className = "lb"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "睇大");
+      document.body.appendChild(el);
+      el.addEventListener("click", e => { if (e.target === el || e.target.classList.contains("lb-stage")) closeLB(); });
+      let x0 = null;
+      el.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive: true });
+      el.addEventListener("touchend", e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 50) stepLB(dx < 0 ? 1 : -1); });
+    }
+    const f = LB.files[LB.i], n = LB.files.length;
+    const media = isImg(f) ? `<img src="${f.url}" alt="${esc(f.cap || f.name)}">`
+      : isVid(f) ? `<video src="${f.url}" controls autoplay playsinline></video>`
+      : `<div class="lb-doc"><b>${esc(extOf(f))}</b><span>${esc(f.name)}</span><span class="small muted">${sizeText(f.size)}</span>
+          ${isAud(f) ? `<audio src="${f.url}" controls autoplay></audio>` : ""}
+          ${f.url ? `<a class="btn btn-primary" href="${f.url}" download="${esc(f.name)}">下載</a>` : `<span class="small muted">（模擬）示範檔案，冇真內容</span>`}</div>`;
+    el.innerHTML = `<button type="button" class="lb-x" data-lbclose aria-label="關閉">×</button>
+      ${n > 1 ? `<button type="button" class="lb-nav prev" data-lbgo="-1" aria-label="上一個">‹</button><button type="button" class="lb-nav next" data-lbgo="1" aria-label="下一個">›</button>` : ""}
+      <figure class="lb-stage">${media}<figcaption>${esc(f.cap || f.name)}${n > 1 ? ` · ${LB.i + 1} / ${n}` : ""}</figcaption></figure>`;
+    el.hidden = false;
+    document.body.style.overflow = "hidden";
+    el.querySelector(".lb-x").focus();
+  }
+  function stepLB(k) { if (!LB) return; LB.i = (LB.i + k + LB.files.length) % LB.files.length; drawLB(); }
+  function closeLB() {
+    const el = $("#lb"); if (!el || !LB) return;
+    el.hidden = true; el.innerHTML = "";
+    if ($("#drawer").hidden) document.body.style.overflow = "";
+    const back = LB.back; LB = null;
+    if (back && back.isConnected) back.focus();
+  }
+
+  // ---------- routing ----------
+  const NAV = {
+    boss:   [["post", "搵人幫手"], ["needs", "我發嘅工作"], ["hired", "進行中"]],
+    worker: [["find", "搵工"], ["sent", "我嘅報價"], ["work", "進行中"]],
+  };
+  const roleOf = view => view === "login" ? roleOf(state.loginNext || "post") : NAV.worker.some(([v]) => v === view) ? "worker" : "boss";
+  const VIEWS = NAV.boss.concat(NAV.worker).map(([v]) => v).concat("login");
+  // 我發嘅工作 / 進行中 / 我嘅報價 belong to someone: without a login they open the login page first
+  const PRIVATE = ["needs", "hired", "sent", "work"];
+  const RENDER = {};
+
+  function navCount(view) {
+    if (!signedUp()) return 0;
+    if (view === "needs") return myNeeds().length;
+    if (view === "hired") return myOrders("boss").filter(o => o.status < 6).length;
+    if (view === "sent") return myQuotes().length + mySubs().length;
+    if (view === "work") return myOrders("worker").filter(o => o.status < 6).length;
+    return 0;
+  }
+  function renderNav() {
+    const role = roleOf(state.view);
+    document.body.dataset.side = role;
+    document.querySelectorAll(".role [data-role]").forEach(b => b.setAttribute("aria-pressed", b.dataset.role === role));
+    $("#nav").innerHTML = NAV[role].map(([v, n]) => {
+      const c = navCount(v);
+      return `<button type="button" data-go="${v}" ${state.view === v || (state.view === "login" && state.loginNext === v) ? 'aria-current="page"' : ""}>${n}${c ? ` <span class="count">${c}</span>` : ""}</button>`;
+    }).join("");
+  }
+  function go(view, opts) {
+    if (!VIEWS.includes(view)) view = "post";
+    if (PRIVATE.includes(view) && !signedUp()) { if (state.view !== "login") state.loginFrom = state.view; state.loginNext = view; state.loginWhy = view; state.afterLogin = null; view = "login"; }
+    if (roleOf(view) !== roleOf(state.view)) closeDrawer();
+    if (view !== state.view) { state.filter = "all"; state.tier = "all"; }
+    state.view = view;
+    VIEWS.forEach(v => { $("#v-" + v).hidden = v !== view; });
+    try { if (location.hash.slice(1) !== view) history.replaceState(null, "", "#" + view); } catch (e) {}
+    renderNav();
+    RENDER[view](opts || {});
+    window.scrollTo(0, 0);
+  }
+  // re-render the current page after something arrives in the background, unless a dialog is open
+  function refresh(...views) {
+    renderNav();
+    if (views.includes(state.view) && $("#drawer").hidden) RENDER[state.view]({});
+  }
+
+  // =================== 老闆：發工作 ===================
+  RENDER.post = function () {
+    $("#v-post").innerHTML = `
+      <div class="split">
+        <div class="side">
+          <form class="box" id="ask-form">
+            <h1 class="h-side">AI 嘢識都唔想自己做？搵人幫你做。</h1>
+            <p class="muted small">AI 影片、相片、分身配音、自動化、網店上架。講一句需求，AI 幫你整理，你揀直接聯絡定先試工。落實之後交換 WhatsApp，金額你哋自己傾，平台唔收費。</p>
+            <div class="step"><span>1</span>講你嘅需求</div>
+            <textarea id="ask-q" rows="4" placeholder="例如：${esc(HIRE_EG[0])}">${esc(state.draft ? state.draft.raw : "")}</textarea>
+            <div class="chips">${HIRE_EG.map(e => `<button type="button" class="chip" data-fill="ask-q" data-text="${esc(e)}">${esc(e.slice(0, 12))}…</button>`).join("")}</div>
+            <button class="btn ${state.draft ? "btn-ghost" : "btn-primary"}" type="submit">${state.draft ? "重新整理" : "AI 幫我整理"}</button>
+          </form>
+          <div id="draft"></div>
+        </div>
+        <div class="main">
+          <div class="ask-row"><h2>平台上嘅人才</h2><span class="small muted">分三類，搵人幫手時 AI 會建議你搵邊類</span></div>
+          <div class="tiers">${Object.entries(TIERS).map(([k, v]) => `<button type="button" class="tier-card" data-tier="${k}" aria-pressed="${state.tier === k}">
+            <span>${tierBadge(k)}</span><span class="small">${v.desc}</span>
+            <span class="meta"><span class="num">${v.price}</span><span>${TALENT.filter(t => t.tier === k).length} 個人</span></span></button>`).join("")}</div>
+          ${catChips()}
+          <div class="rows">${TALENT.filter(inFilters).map(t => talentRow(t)).join("") || `<div class="row muted">呢個組合暫時未有人才。</div>`}</div>
+        </div>
+      </div>`;
+    $("#ask-form").addEventListener("submit", e => { e.preventDefault(); runDraft(); });
+    if (state.draft) renderDraft(false);
+  };
+
+  function talentRow(t, m, action) {
+    return `<div class="row">
+      <button type="button" class="row-main" data-talent="${t.id}">${avatar(t)}<div>
+        <h3>${esc(t.name)} ${tierBadge(t.tier)} <span class="muted small" style="font-weight:400">${esc(t.head)}</span></h3>
+        <div class="meta"><span>${ratingText(t)}</span><span class="num">${hk(t.rate[0])} 起</span><span>${m ? esc(m.why) : AVAIL[t.avail]}</span></div>
+        <p class="snip">${esc(t.bio)}</p>${miniThumbs(worksOf(t))}
+      </div></button>
+      <div class="row-side">${m ? scoreBadge(m) : ""}${action || `<button type="button" class="btn btn-ghost btn-sm" data-talent="${t.id}">睇資料</button>`}</div>
+    </div>`;
+  }
+
+  async function runDraft() {
+    const raw = $("#ask-q").value.trim();
+    if (!raw) { toast("請先講一句你想搵人做咩"); $("#ask-q").focus(); return; }
+    $("#draft").innerHTML = `<div class="box thinking">AI 睇緊你嘅需求…</div>`;
+    await wait(800);
+    const cat = detectCat(raw), budget = parseBudget(raw), days = parseDays(raw);
+    const tier = suggestJobTier(raw, cat, budget || cat.median);
+    state.draft = {
+      raw, title: titleFrom(raw, cat), cat: cat.id, tier, suggested: tier,
+      skills: [...new Set(skillsIn(raw).concat(cat.skills.slice(0, 3)))].slice(0, 4),
+      budget: budget || cat.median, budgetGuess: !budget, days: days || 14, daysGuess: !days,
+      mode: state.draft ? state.draft.mode : "direct", refs: state.draft ? state.draft.refs : [],
+      trial: { brief: TRIAL_EG[cat.id], max: 5, days: 3, files: state.draft ? state.draft.trial.files : [] },
+    };
+    RENDER.post();
+    renderDraft(true);
+  }
+
+  // keep what was typed before re-drawing the draft
+  function readDraft() {
+    const d = state.draft; if (!d || !$("#d-title")) return;
+    d.title = $("#d-title").value.trim() || d.title;
+    d.budget = Math.max(100, parseInt($("#d-budget").value, 10) || d.budget);
+    d.days = Math.max(1, parseInt($("#d-days").value, 10) || d.days);
+    if ($("#t-brief")) {
+      d.trial.brief = $("#t-brief").value.trim() || d.trial.brief;
+      d.trial.max = Math.max(1, parseInt($("#t-max").value, 10) || d.trial.max);
+      d.trial.days = Math.max(1, parseInt($("#t-days").value, 10) || d.trial.days);
+    }
+  }
+
+  function renderDraft(fresh) {
+    const d = state.draft, cat = catById(d.cat);
+    const guess = [d.budgetGuess && "預算", d.daysGuess && "期限"].filter(Boolean);
+    const top = ranked(d, TALENT.filter(t => t.avail !== "off")).slice(0, 3).map(x => x.t.name);
+    $("#draft").innerHTML = `
+      <form class="box ${fresh ? "reveal" : ""}" id="draft-form">
+        <div class="step"><span>2</span>確認需求 <span class="ai">AI 整理咗，可以改</span></div>
+        <div class="fields">
+          <label>工作<input type="text" id="d-title" value="${esc(d.title)}"></label>
+          <label>預算（HK$）<input type="number" id="d-budget" min="100" step="100" value="${d.budget}"></label>
+          <label>幾多日內交<input type="number" id="d-days" min="1" value="${d.days}"></label>
+        </div>
+        ${guess.length ? `<div class="note">你未講${guess.join("同")}，AI 按${cat.name}市價先填咗。</div>` : ""}
+        <div class="group"><span class="small muted">類別</span>${chipRow("類別", "dcat", CATS.map(c => [c.id, c.name]), d.cat)}</div>
+        <div class="group"><span class="small muted">搵邊類人（AI 建議：${TIERS[d.suggested].name}）</span>${chipRow("級別", "dtier", Object.entries(TIERS).map(([k, v]) => [k, v.name]), d.tier)}
+          <span class="small muted">${TIERS[d.tier].desc}，一般 ${TIERS[d.tier].price}</span></div>
+        <div><b class="small">呢類工作花時間喺邊</b><ul class="hard">${cat.hard.map(h => `<li>${esc(h)}</li>`).join("")}</ul></div>
+        ${uploader("d-refs", d.refs, { label: "參考檔案（可選）", hint: "產品相、舊片、logo、規格表、想要嘅風格例子。工作者報價前會睇到，可以拖入嚟。", limit: 12 })}
+
+        <div class="step"><span>3</span>點樣揀人</div>
+        <div class="modes" role="radiogroup" aria-label="點樣揀人">${Object.entries(MODES).map(([k, v]) => `
+          <label><input type="radio" name="d-mode" value="${k}" ${d.mode === k ? "checked" : ""}><span><b>${v.name}</b><span class="small muted">${v.desc}</span></span></label>`).join("")}
+        </div>
+        ${d.mode === "trial" ? `
+          <label class="field-label" for="t-brief">試工內容</label>
+          <textarea id="t-brief" rows="3">${esc(d.trial.brief)}</textarea>
+          <div class="fields pair">
+            <label>最多收幾份<input type="number" id="t-max" min="1" max="20" value="${d.trial.max}"></label>
+            <label>幾多日交<input type="number" id="t-days" min="1" value="${d.trial.days}"></label>
+          </div>
+          ${uploader("t-files", d.trial.files, { label: "試工素材", hint: "試工要用嘅相、片或者檔案，例如「用我提供嘅產品相」就喺度上載。", limit: 10 })}
+          <p class="small muted">試工內容要細，工作者大約一兩個鐘做到。試工作品版權屬工作者，揀中落實先轉畀你。</p>`
+        : `<p class="small muted">發佈後 AI 會即刻通知配對分最高嘅 3 個人：${top.map(esc).join("、")}。</p>`}
+        <button class="btn btn-primary" type="submit">發佈工作</button>
+      </form>`;
+    document.querySelectorAll('input[name="d-mode"]').forEach(r => r.addEventListener("change", () => { readDraft(); d.mode = r.value; renderDraft(false); }));
+    $("#draft-form").addEventListener("submit", e => { e.preventDefault(); readDraft(); requireLogin(publishNeed, "publish"); });
+    bindUploaders();
+  }
+
+  function publishNeed() {
+    const d = state.draft, cat = catById(d.cat);
+    const need = {
+      id: "n" + Date.now(), title: d.title, cat: d.cat, tier: d.tier, skills: d.skills, budget: d.budget, days: d.days,
+      desc: d.raw, hard: cat.hard, mode: d.mode, trial: d.mode === "trial" ? { ...d.trial } : null, refs: d.refs,
+      posted: "啱啱", status: "open", invited: [], offers: [], subs: [],
+      owner: me(), client: state.user.company ? `${state.user.district} · ${state.user.company}` : state.user.name,
+    };
+    state.needs.unshift(need);
+    state.draft = null;
+    state.selNeed = need.id;
+    state.needTab = "replies";
+    invite(need, ranked(need, TALENT.filter(t => t.avail !== "off")).slice(0, 3).map(x => x.t.id));
+    toast(need.mode === "trial" ? "工作發佈咗，試工任務已經通知工作者" : "工作發佈咗，AI 已經通知 3 個最啱嘅人");
+    go("needs");
+  }
+
+  // invite workers: they reply with a quote (direct) or a sample (trial) a moment later
+  const QUOTE_LINES = ["睇咗你嘅需求，呢類我做開，可以先畀你睇一個方向稿。", "我呢個星期有空，可以即刻開工，價錢包兩次修改。", "我建議分兩期交，第一期先確認風格，第二期出成品。"];
+  const SAMPLE_LINES = ["跟足你嘅要求做咗，另外試多一個色調版本畀你比較。", "用咗我慣用嘅流程，正式做會再精細啲。", "時間有限做咗簡單版，睇吓方向啱唔啱。"];
+  function invite(need, ids) {
+    ids.forEach((id, i) => {
+      if (need.invited.includes(id)) return;
+      need.invited.push(id);
+      later(1600 * (i + 1), () => {
+        if (need.status !== "open") return;
+        const t = talentById(id), k = need.invited.indexOf(id) % 3;
+        if (need.mode === "trial") {
+          if (need.subs.length >= need.trial.max) return;
+          need.subs.push({ id: "s" + Date.now() + i, talentId: id, note: SAMPLE_LINES[k], status: "new",
+            files: [samplePicFile(t.hue, t.name + " 嘅樣板")] });
+          toast(`${t.name} 交咗試工樣板（模擬）`);
+          notify(need.owner, `${t.name} 交咗試工樣板：${need.title}`, "needs");
+        } else {
+          need.offers.push({ id: "f" + Date.now() + i, talentId: id, price: quoteFor(need, t), days: Math.max(2, Math.round(need.days * (0.6 + k * 0.15))), msg: QUOTE_LINES[k], status: "new", files: worksOf(t).slice(0, 2) });
+          toast(`${t.name} 報咗價（模擬）`);
+          notify(need.owner, `${t.name} 報咗價 ${hk(need.offers[need.offers.length - 1].price)}：${need.title}`, "needs");
+        }
+        refresh("needs");
+      });
+    });
+  }
+
+  // =================== 老闆：我發嘅工作 ===================
+  function needStatus(n) {
+    if (n.status === "hired") return ["已請人", "accepted"];
+    if (n.mode === "trial") return [n.subs.length ? `收到 ${n.subs.length} 份樣板` : "等緊樣板", "waiting"];
+    return [n.offers.length ? `收到 ${n.offers.length} 個報價` : "等緊報價", "waiting"];
+  }
+
+  RENDER.needs = function () {
+    const needs = myNeeds();
+    if (!needs.length) {
+      $("#v-needs").innerHTML = `<div class="box empty"><h2>你未發過工作</h2><p class="muted">講一句需求，AI 幫你整理同搵人。</p><div><button class="btn btn-primary" type="button" data-go="post">搵人幫手</button></div></div>`;
+      return;
+    }
+    const n = needs.find(x => x.id === state.selNeed) || needs[0];
+    state.selNeed = n.id;
+    const replies = n.mode === "trial" ? n.subs.length : n.offers.length;
+    $("#v-needs").innerHTML = `
+      <div class="split">
+        <div class="side">
+          <div class="ask-row"><h2>我發嘅工作</h2><button class="btn btn-ghost btn-sm" type="button" data-go="post">發新工作</button></div>
+          <div class="rows">${needs.map(x => { const [s, c] = needStatus(x); return `
+            <button type="button" class="row need-item" data-need="${x.id}" aria-current="${x.id === n.id}">
+              <div style="min-width:0"><h3>${esc(x.title)}</h3><div class="meta"><span>${MODES[x.mode].name}</span><span class="num">${hk(x.budget)}</span></div></div>
+              <span class="pill ${c}">${s}</span></button>`; }).join("")}</div>
+        </div>
+        <div class="main">
+          <div class="box">
+            <div class="ask-row"><h2>${esc(n.title)} ${tierBadge(n.tier)}</h2><span class="pill ${needStatus(n)[1]}">${needStatus(n)[0]}</span></div>
+            <div class="meta"><span>預算 <span class="num">${hk(n.budget)}</span></span><span>${n.days} 日內交</span><span>${catById(n.cat).name}</span><span>${MODES[n.mode].name}</span><span>${n.posted}發佈</span></div>
+            <p class="small">${esc(n.desc)}</p>
+            ${filesSec("你上載嘅參考檔案", n.refs)}
+            ${n.trial ? `<div class="note"><b>試工任務</b>（最多 ${n.trial.max} 份 · ${n.trial.days} 日內）<br>${esc(n.trial.brief)}${filesSec("試工素材", n.trial.files)}</div>` : ""}
+            ${n.status === "hired" ? `<div class="note">已經請咗 ${esc(talentById(n.hiredWith).name)}，去「進行中」跟進交貨。 <button class="link" type="button" data-go="hired">去進行中</button></div>` : ""}
+          </div>
+          ${tabs("ntab", [["replies", (n.mode === "trial" ? "試工樣板" : "收到嘅報價") + (replies ? "（" + replies + "）" : "")], ["more", "邀請更多人"]], state.needTab)}
+          ${state.needTab === "more" ? moreHtml(n) : n.mode === "trial" ? subsHtml(n) : offersHtml(n)}
+        </div>
+      </div>`;
+  };
+
+  function offersHtml(n) {
+    if (!n.offers.length) return `<div class="box thinking">已通知 ${n.invited.map(id => esc(talentById(id).name)).join("、")}，等緊佢哋報價…</div>`;
+    return `<div class="rows">${n.offers.map(o => {
+      const t = talentById(o.talentId);
+      const act = o.status === "accepted" ? `<span class="pill accepted">已接受</span>` : o.status === "declined" ? `<span class="pill declined">冇揀</span>`
+        : n.status === "hired" ? "" : `<button type="button" class="btn btn-ghost btn-sm" data-offerchat="${o.id}">傾吓</button><button type="button" class="btn btn-primary btn-sm" data-accept="${o.id}">接受</button>`;
+      return `<div class="row">
+        <button type="button" class="row-main" data-talent="${t.id}">${avatar(t)}<div>
+          <h3>${esc(t.name)} ${tierBadge(t.tier)} <span class="muted small" style="font-weight:400">${esc(t.head)}</span></h3>
+          <div class="meta"><span>${ratingText(t)}</span><span>${o.days} 日交</span></div>
+          <p class="small">「${esc(o.msg)}」</p>
+        </div></button>
+        <div class="row-side"><span class="price">${hk(o.price)}</span>${act}</div>
+        ${o.files && o.files.length ? `<div class="span-all">${filesSec("附上嘅作品", o.files, { limit: 4, cap: true })}</div>` : ""}
+      </div>`; }).join("")}</div>`;
+  }
+
+  function subsHtml(n) {
+    if (!n.subs.length) return `<div class="box thinking">已通知 ${n.invited.map(id => esc(talentById(id).name)).join("、")} 試工，等緊佢哋交樣板…</div>`;
+    return `<div class="subs">${n.subs.map(s => {
+      const w = talentById(s.talentId);
+      const act = s.status === "passed" ? `<span class="small muted">已略過</span>` : s.status === "picked" ? `<span class="pill accepted">已揀</span>`
+        : n.status === "hired" ? "" : `<button type="button" class="btn btn-primary btn-sm" data-pick="${s.id}">揀佢，落實</button><button type="button" class="btn btn-ghost btn-sm" data-pass="${s.id}">唔啱</button>`;
+      return `<article class="sub ${s.status}">
+        ${gallery(s.files)}
+        <div class="sub-body">
+          <div class="person">${avatar(w)}<div><h3>${esc(w.name)} ${tierBadge(w.tier)}</h3><div class="muted small">${ratingText(w)} · 報價約 ${hk(quoteFor(n, w))}</div></div></div>
+          <p class="small">${esc(s.note)}</p>
+          <div class="btns">${act}</div>
+        </div>
+      </article>`; }).join("")}</div>`;
+  }
+
+  function moreHtml(n) {
+    const list = ranked(n, TALENT.filter(t => !n.invited.includes(t.id)));
+    const label = n.mode === "trial" ? "邀請試工" : "邀請報價";
+    return `<p class="small muted">AI 已經通知咗配對分最高嘅人。想多啲選擇，可以再邀請以下人才。</p>
+      <div class="rows">${list.map(({ t, m }) => talentRow(t, m, n.status === "hired" ? "" : `<button type="button" class="btn btn-ghost btn-sm" data-invite="${t.id}">${label}</button>`)).join("") || `<div class="row muted">全部人都邀請咗。</div>`}</div>`;
+  }
+
+  // accept a quote or a sample: chat opens on the payment step
+  function hireFrom(need, t, price, note) {
+    openChat(need, t, price);
+    pushMsg("sys", note);
+    showConfirm();
+  }
+
+  // =================== 老闆：進行中 ===================
+  RENDER.hired = function () {
+    const list = myOrders("boss").reverse(), br = received("boss");
+    $("#v-hired").innerHTML = `
+      <div class="ask-row"><div><h2>進行中</h2><p class="muted small">工作者交貨上載成品，你睇完確認完成或者要求修改。金額同付款你哋自己處理。完成後雙方互相評分。</p></div>
+        <div class="row-side"><span class="small">${br.length ? `你作為老闆嘅評分 <b>★ ${avgOf(br).toFixed(1)}</b>（${br.length} 個評價）` : "完成第一單之後，工作者都會評你"}</span><button class="btn btn-ghost btn-sm" type="button" data-go="needs">我發嘅工作</button></div></div>
+      ${list.length ? `<div class="rows">${list.map(orderRow).join("")}</div>` : `<div class="box empty"><p class="muted">未請過人。喺「我發嘅工作」接受報價或者揀試工樣板之後，工作會喺度出現。</p></div>`}`;
+  };
+
+  // a new worker has no score yet: say so instead of showing the starting value
+  const ratingText = t => t.done ? `★ ${t.rating.toFixed(1)}（${t.done} 單）` : "新人，未有評價";
+  const starText = n => `<span class="stars-text" aria-label="${n} 粒星">${"★".repeat(n)}<span class="off">${"★".repeat(5 - n)}</span></span>`;
+  const reviewHtml = (label, r) => `<div class="review"><span class="small muted">${label}</span>${starText(r.stars)}
+    ${r.tags.length ? `<div class="chips">${r.tags.map(t => `<span class="chip">${esc(t)}</span>`).join("")}</div>` : ""}${r.text ? `<p class="small">「${esc(r.text)}」</p>` : ""}</div>`;
+
+  // reviews other people gave you, from finished orders on one side (boss = as a client, worker = as a worker)
+  // example orders never count towards your own rating; they only show what a review looks like
+  const reviewsOn = (side, example) => myOrders(side).filter(o => !o.example === !example && o.status >= 6 && o.reviews && o.reviews.theirs)
+    .map(o => ({ ...o.reviews.theirs, from: o.partner, title: o.title }));
+  const received = side => reviewsOn(side, false);
+  const avgOf = list => list.reduce((a, r) => a + r.stars, 0) / list.length;
+  function syncMyRating() {
+    const p = state.profile, r = received("worker");
+    if (!p) return;
+    p.done = r.length;
+    if (r.length) p.rating = avgOf(r);
+  }
+  function ratingBlock(list, empty, limit, side) {
+    if (!list.length) {
+      const eg = side ? reviewsOn(side, true)[0] : null;
+      return `<p class="small muted">${empty}</p>${eg ? reviewHtml(`<span class="chip">例子</span> ${esc(eg.from)} · ${esc(eg.title)}`, eg) : ""}`;
+    }
+    const avg = avgOf(list), tags = {};
+    list.forEach(r => r.tags.forEach(t => { tags[t] = (tags[t] || 0) + 1; }));
+    const top = Object.entries(tags).sort((a, b) => b[1] - a[1]).slice(0, 4);
+    const shown = limit ? list.slice(-limit).reverse() : list.slice().reverse();
+    return `<div class="rating-sum"><b class="num">${avg.toFixed(1)}</b><div>${starText(Math.round(avg))}<div class="small muted">${list.length} 個評價</div></div></div>
+      ${top.length ? `<div class="chips">${top.map(([t, n]) => `<span class="chip">${esc(t)} × ${n}</span>`).join("")}</div>` : ""}
+      <div class="review-list">${shown.map(r => reviewHtml(esc(r.from) + (r.title ? " · " + esc(r.title) : ""), r)).join("")}</div>`;
+  }
+
+  function orderRow(o) {
+    const boss = o.side === "boss";
+    // who acts at each status; for a made-up partner the other side is simulated
+    const btn = (label, act, ghost) => `<button class="btn ${ghost ? "btn-ghost" : "btn-primary"} btn-sm" type="button" data-order="${o.id}" data-act="${act}">${label}</button>`;
+    const r = o.reviews || {};
+    const status = ORDER_TEXT[o.status] || "";
+    let side = "";
+    if (o.status === 2) side = !boss ? btn(o.revisions ? "重新交貨" : "交貨", "deliver") : o.link ? `<span class="pill waiting">等工作者交貨</span>` : btn("（模擬）對方交貨", "deliver");
+    if (o.status === 3) side = boss ? btn("要求修改", "revise", true) + btn("確認完成", "confirm") : o.link ? `<span class="pill waiting">等客戶確認</span>` : btn("（模擬）客戶確認", "confirm");
+    if (o.status === 5) side = r.mine ? `<span class="pill waiting">等${esc(o.partner)}評分</span>`
+      : `<span class="small muted">${r.theirs ? esc(o.partner) + " 已經評咗你，你評完就會公開" : "雙方都評完先會公開"}</span><button class="btn btn-primary btn-sm" type="button" data-review="${o.id}">評分${boss ? "工作者" : "客戶"}</button>`;
+    return `<div class="row" style="grid-template-columns:minmax(0,1fr)">
+      <div class="ask-row">
+        <div style="min-width:0"><h3>${esc(o.title)}${o.example ? ' <span class="chip">例子</span>' : ""}</h3>
+          <div class="meta"><span>${boss ? "工作者：" : "客戶："}${esc(o.partner)}</span><span>協定 <span class="num">${hk(o.amount)}</span></span><span>而家：${status}</span>${o.contact ? `<span>WhatsApp <span class="num">${esc(o.contact)}</span></span>` : ""}</div></div>
+        <div class="row-side">${side}</div>
+      </div>
+      <div class="progress" aria-hidden="true">${STEPS.map((s, i) => `<i class="${i < STEP_AT[o.status] ? "done" : i === STEP_AT[o.status] ? "now" : ""}" title="${s}"></i>`).join("")}</div>
+      ${o.status === 2 && o.revNote ? `<div class="note"><b>客戶要求修改（第 ${o.revisions} 次）</b><br>${esc(o.revNote)}${filesSec("客戶附圖", o.revFiles)}</div>` : ""}
+      ${o.files && o.files.length && o.status >= 3 ? `<div class="deliv"><span class="small muted">${boss ? "工作者交嘅成品" : "你交嘅成品"}${o.revisions ? `（改咗 ${o.revisions} 次）` : ""}</span>${gallery(o.files, { cap: true })}${o.note ? `<p class="small">${esc(o.note)}</p>` : ""}
+        ${!boss && o.status >= 5 && !o.example ? (o.inWorks ? `<span class="small muted">已加入你嘅作品集</span>` : `<div class="btns">${btn("加入作品集", "towork", true)}<span class="small muted">公開之前記得問准客戶</span></div>`) : ""}</div>` : ""}
+      ${o.status >= 6 ? `<div class="reviews">${reviewHtml("你畀 " + esc(o.partner), r.mine)}${reviewHtml(esc(o.partner) + " 畀你", r.theirs)}</div>` : ""}
+    </div>`;
+  }
+
+  function openReview(id) {
+    const o = state.orders.find(x => x.id === id), boss = o.side === "boss";
+    const pick = { stars: 0, tags: [] };
+    const drawStars = () => $("#rv-stars").innerHTML = [1, 2, 3, 4, 5].map(n => `<button type="button" class="${n <= pick.stars ? "on" : ""}" data-star="${n}" aria-label="${n} 粒星">★</button>`).join("");
+    openDrawer(`${head(`評分${boss ? "工作者" : "客戶"}：${esc(o.partner)}`, esc(o.title))}
+      <form class="drawer-body" id="rv-form">
+        <p class="small muted">雙方都評完先會公開，所以可以照直講。評分會影響${boss ? "佢日後接工嘅排名" : "其他工作者願唔願意接呢個老闆嘅工"}。</p>
+        <div class="group"><span class="small muted">整體</span><div class="stars big" id="rv-stars"></div></div>
+        <div class="group"><span class="small muted">邊方面做得好（可以揀幾個）</span>
+          <div class="chips">${REVIEW_TAGS[o.side].map(t => `<button type="button" class="chip" data-rtag="${esc(t)}" aria-pressed="false">${esc(t)}</button>`).join("")}</div></div>
+        <label class="field-label" for="rv-text">評語（會公開）</label>
+        <textarea id="rv-text" rows="3" placeholder="${boss ? "例如：交得準時，改稿好快" : "例如：需求講得清楚，付款準時"}"></textarea>
+      </form>
+      <div class="drawer-foot"><button class="btn btn-primary" type="submit" form="rv-form" id="rv-go" disabled>送出評分</button></div>`);
+    drawStars();
+    $("#rv-form").addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.star) { pick.stars = +b.dataset.star; drawStars(); $("#rv-go").disabled = false; }
+      if (b.dataset.rtag) {
+        const t = b.dataset.rtag, on = pick.tags.includes(t);
+        pick.tags = on ? pick.tags.filter(x => x !== t) : pick.tags.concat(t);
+        b.setAttribute("aria-pressed", !on);
+      }
+    });
+    $("#rv-form").addEventListener("submit", e => {
+      e.preventDefault();
+      if (!pick.stars) return;
+      o.reviews = o.reviews || {};
+      o.reviews.mine = { stars: pick.stars, tags: pick.tags, text: $("#rv-text").value.trim() };
+      const lk = o.link && state.orders.find(x => x.id === o.link);
+      if (lk) {
+        lk.reviews = lk.reviews || {}; lk.reviews.theirs = o.reviews.mine; if (lk.reviews.mine) lk.status = 6;
+        notify(lk.owner, `${state.user.name} 評咗你：${o.title}`, lk.side === "boss" ? "hired" : "work");
+      }
+      closeDrawer();
+      if (o.reviews.theirs) finishReviews(o);
+      else { toast("已評分，等對方評完就會公開"); refresh("hired", "work"); }
+    });
+  }
+
+  // both reviews are in: publish them and update both sides' ratings
+  function finishReviews(o) {
+    o.status = 6;
+    if (o.side === "boss") {
+      const t = TALENT.find(x => x.name === o.partner);
+      if (t) { t.rating = (t.rating * t.done + o.reviews.mine.stars) / (t.done + 1); t.done++; }
+    } else if (state.profile) {
+      const p = state.profile;
+      p.reviews = (p.reviews || []).concat(o.reviews.theirs.stars);
+      p.done = p.reviews.length;
+      p.rating = p.reviews.reduce((a, x) => a + x, 0) / p.reviews.length;
+    }
+    toast("雙方都評完，評價已經公開");
+    refresh("hired", "work", "find");
+  }
+
+  // =================== 工作者：搵工 ===================
+  RENDER.find = function (opts) {
+    const p = state.profile;
+    const list = openJobs().filter(inFilters).map(j => ({ j, m: p ? match(j, p) : null }));
+    if (p) list.sort((a, b) => b.m.total - a.m.total);
+    $("#v-find").innerHTML = `
+      <div class="split">
+        <div class="side" id="find-side"></div>
+        <div class="main">
+          <div class="ask-row"><h2>${p ? "推薦畀你嘅需求" : "全部需求"}</h2><span class="small muted">${p ? "按你嘅技能、級別、收費同檔期排" : "建立檔案之後會按配對分排"}</span></div>
+          ${p && p.avail === "off" ? `<div class="note">你暫停咗接單，客戶唔會自動通知你。改返檔期就得。</div>` : ""}
+          ${tierChips()}${catChips()}
+          <div class="legend small muted"><span><b class="tag-direct">報價</b> 老闆揀咗直接聯絡，報價就得</span><span><b class="trial-tag">交試工</b> 老闆要先睇樣板</span></div>
+          <div class="rows">${list.map(({ j, m }) => jobRow(j, m)).join("") || `<div class="row muted">呢個組合暫時未有需求。</div>`}</div>
+        </div>
+      </div>`;
+    renderProfile(opts);
+  };
+
+  function jobRow(j, m) {
+    const quoted = myQuotes().find(q => q.jobId === j.id), sent = mySubs().find(s => s.jobId === j.id);
+    const act = j.mode === "trial"
+      ? (sent ? `<button type="button" class="btn btn-ghost btn-sm" disabled>已交試工</button>` : `<button type="button" class="btn btn-primary btn-sm" data-trial="${j.id}">交試工</button>`)
+      : (quoted ? `<button type="button" class="btn btn-ghost btn-sm" disabled>已報價</button>` : `<button type="button" class="btn btn-primary btn-sm" data-quote="${j.id}">報價</button>`);
+    return `<div class="row">
+      <button type="button" class="row-main" data-job="${j.id}">${jobThumb(j)}<div>
+        <h3>${esc(j.title)} ${tierBadge(j.tier)}</h3>
+        <div class="meta"><span>${esc(j.client)}</span><span>${j.days} 日內交</span>${j.mode === "trial" ? `<span class="trial-tag">試工</span>` : `<span class="tag-direct">直接報價</span>`}${j.owner ? `<span class="pill accepted">新需求</span>` : ""}<span>${m ? esc(m.why) : esc(j.posted)}</span></div>
+        <p class="snip">${esc(j.desc)}</p>
+      </div></button>
+      <div class="row-side">${m ? scoreBadge(m) : ""}<span class="price">${hk(j.budget)}</span>${act}</div>
+    </div>`;
+  }
+
+  function renderProfile(opts) {
+    const p = state.profile, side = $("#find-side");
+    if (!p || (opts && opts.edit)) {
+      side.innerHTML = `
+        <form class="box" id="work-form">
+          <h1 class="h-side">用你嘅 AI 技能接工賺錢</h1>
+          <div class="sum small">${Object.entries(TIERS).map(([k, v]) => `<div><span>${tierBadge(k)} <span class="muted">${v.desc}</span></span></div>`).join("")}</div>
+          <label class="field-label" for="work-q">講吓你識咩、做過啲咩，AI 幫你整理檔案、建議級別同收費</label>
+          <textarea id="work-q" rows="4" placeholder="例如：${esc(WORK_EG[0])}">${esc(p ? p.raw : "")}</textarea>
+          <div class="chips">${WORK_EG.map(e => `<button type="button" class="chip" data-fill="work-q" data-text="${esc(e)}">${esc(e.slice(0, 12))}…</button>`).join("")}</div>
+          <button class="btn btn-primary" type="submit">${p ? "更新我嘅檔案" : "建立我嘅檔案"}</button>
+          <p class="small muted">平台只做配對：落實之後同客戶交換 WhatsApp，金額自己收，平台唔抽佣。</p>
+        </form>`;
+      $("#work-form").addEventListener("submit", e => { e.preventDefault(); requireLogin(runProfile, "profile"); });
+      return;
+    }
+    syncMyRating();
+    const cat = catById(p.cat);
+    side.innerHTML = `
+      <div class="box">
+        <div class="ask-row">
+          <div class="person">${avatar(p)}<div><h3>你嘅檔案 ${tierBadge(p.tier)}</h3><div class="muted small">${esc(cat.name)} · ${p.done ? "★ " + p.rating.toFixed(1) + "（" + p.done + " 個評價）" : "新人，未有評價"}</div></div></div>
+          <button class="link" type="button" data-editprofile="1">改</button>
+        </div>
+        <p class="small">${esc(p.bio)}</p>
+        <div class="group"><div class="ask-row"><span class="small muted">作品集（${worksOf(p).length}）</span><button class="link" type="button" data-works="1">${worksOf(p).length ? "管理作品" : "加作品"}</button></div>
+          ${gallery(worksOf(p), { limit: 6, cap: true, empty: `<p class="small muted">未有作品。上載 3–6 件過往作品，客戶揀人時最睇呢樣。</p>` })}</div>
+        <div class="group"><span class="small muted">客戶評價</span>${ratingBlock(received("worker"), "未有客戶評價，完成第一單之後會好似下面咁顯示。", 2, "worker")}</div>
+        <div class="chips">${p.skills.map(s => `<span class="chip">${esc(s)}</span>`).join("")}</div>
+        <div class="group"><span class="small muted">級別（AI 建議，可以改）</span>${chipRow("級別", "ptier", Object.entries(TIERS).map(([k, v]) => [k, v.name]), p.tier)}</div>
+        <div class="fields pair">
+          <label>每單最低（HK$）<input type="number" id="p-min" min="100" step="100" value="${p.rate[0]}"></label>
+          <label>最高（HK$）<input type="number" id="p-max" min="100" step="100" value="${p.rate[1]}"></label>
+        </div>
+        <div class="group"><span class="small muted">檔期</span>${chipRow("檔期", "avail", Object.entries(AVAIL), p.avail)}</div>
+      </div>`;
+    ["#p-min", "#p-max"].forEach((sel, i) => $(sel).addEventListener("change", e => {
+      p.rate[i] = Math.max(100, parseInt(e.target.value, 10) || p.rate[i]);
+      p.rate.sort((a, b) => a - b);
+      RENDER.find({});
+    }));
+  }
+
+  async function runProfile() {
+    const raw = $("#work-q").value.trim();
+    if (!raw) { toast("請先講吓你識做咩"); $("#work-q").focus(); return; }
+    $("#find-side").insertAdjacentHTML("beforeend", `<div class="box thinking">AI 整理緊你嘅檔案…</div>`);
+    await wait(800);
+    const cat = detectCat(raw), tier = suggestWorkerTier(raw);
+    const skills = [...new Set(skillsIn(raw).concat(cat.skills.slice(0, 3)))].slice(0, 5);
+    const exp = raw.match(/(\d+|[一兩二三四五六七八九十])\s*(年|間|單|個)/);
+    const expText = exp ? ({ "年": `有 ${exp[1]} 年經驗`, "間": `幫過 ${exp[1]} 間公司同小店`, "單": `做過 ${exp[1]} 單` }[exp[2]] || `做過 ${exp[1]} 個客戶`) : "";
+    const old = state.profile;
+    state.profile = {
+      id: "u:" + me(), raw, name: state.user ? state.user.name : "你", head: cat.name, cat: cat.id, tier, skills, rate: rateFor(tier, cat),
+      rating: 4.5, done: 0, avail: old ? old.avail : "now", hue: state.user ? state.user.hue : "#17694F",
+      photo: state.user ? state.user.photo : "", works: old ? worksOf(old) : [],
+      bio: `專做${cat.name}，熟用 ${skills.slice(0, 3).join("、")}${expText ? "，" + expText : ""}。按時交貨，開工前先畀樣板睇方向。`,
+    };
+    saveMe();
+    RENDER.find({});
+    toast(old ? "已更新你嘅檔案" : "檔案建立咗，需求已按配對分排好");
+    const pend = state.pending; state.pending = null;
+    if (pend) (pend.type === "quote" ? openQuote : openSubmit)(pend.id);
+  }
+
+  function needProfile(type, id) {
+    if (state.profile) return false;
+    state.pending = { type, id };
+    closeDrawer();
+    if (state.view !== "find") go("find");
+    toast(type === "quote" ? "先用一句講你識咩，建立檔案之後就可以報價" : "先用一句講你識咩，建立檔案之後就可以交試工");
+    $("#work-q").focus();
+    return true;
+  }
+
+  function openQuote(jobId) {
+    const job = jobById(jobId), p = state.profile, cat = catById(job.cat);
+    const price = quoteFor(job, p), days = Math.max(2, Math.round(job.days * 0.8));
+    const works = worksOf(p), picked = new Set(works.slice(0, 2).map((w, i) => i)), extra = [];
+    openDrawer(`${head("報價：" + esc(job.title), esc(job.client) + " · 預算 " + hk(job.budget) + " · " + job.days + " 日內要")}
+      <form class="drawer-body" id="quote-form">
+        <p class="small">${esc(job.desc)}</p>
+        ${filesSec("客戶畀嘅參考檔案", job.refs)}
+        <div class="fields pair">
+          <label>你嘅報價（HK$）<input type="number" id="q-price" min="100" step="100" value="${price}"></label>
+          <label>幾多日交<input type="number" id="q-days" min="1" value="${days}"></label>
+        </div>
+        <p class="small muted">金額由你同客戶自行收取，平台唔抽佣。</p>
+        ${tierWarn(job, p)}
+        <label class="field-label" for="q-msg">留言畀客戶</label>
+        <textarea id="q-msg" rows="6" placeholder="講吓你會點做、做過咩類似嘅嘢"></textarea>
+        <div><button type="button" class="btn btn-ghost btn-sm" id="q-ai">AI 幫我寫</button></div>
+        <div class="files-sec"><span class="small muted">附上作品（揀最似呢份工嘅 1–3 件，客戶會見到）</span>
+          ${works.length ? `<div class="gal" id="q-works">${works.map((w, i) => thumbBtn(w, "", true).replace('class="thumb"', `class="thumb" data-pickw="${i}" aria-pressed="${picked.has(i)}"`)).join("")}</div>` : `<p class="small muted">你未有作品集，可以喺下面上載，或者喺「你嘅檔案」加作品。</p>`}</div>
+        ${uploader("q-up", extra, { label: "上載其他作品", hint: "例如做過嘅類似作品，最多 3 個。", limit: 3 })}
+      </form>
+      <div class="drawer-foot"><button class="btn btn-primary" type="submit" form="quote-form">送出報價</button></div>`);
+    if ($("#q-works")) $("#q-works").addEventListener("click", e => {
+      const b = e.target.closest("[data-pickw]"); if (!b) return;
+      const i = +b.dataset.pickw;
+      if (picked.has(i)) picked.delete(i); else if (picked.size >= 3) return toast("最多揀 3 件"); else picked.add(i);
+      b.setAttribute("aria-pressed", picked.has(i));
+    });
+    $("#q-ai").addEventListener("click", () => {
+      const v = parseInt($("#q-price").value, 10) || price, d = parseInt($("#q-days").value, 10) || days;
+      $("#q-msg").value = `你好！睇咗你「${job.title}」嘅需求，我專做${cat.name}，熟用 ${p.skills.slice(0, 3).join("、")}。\n\n呢類工作我會特別處理：\n${(job.hard || cat.hard).map(h => "· " + h).join("\n")}\n\n報價 ${hk(v)}，${d} 日交，包括${cat.deliver.join("、")}。開工前會先畀一個樣板你睇方向。`;
+    });
+    $("#quote-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const files = works.filter((w, i) => picked.has(i)).concat(extra);
+      const q = { id: "q" + Date.now(), owner: me(), jobId, price: Math.max(100, parseInt($("#q-price").value, 10) || price), days: Math.max(1, parseInt($("#q-days").value, 10) || days), status: "waiting", files };
+      state.quotes.push(q);
+      closeDrawer();
+      refresh("find", "sent");
+      if (job.owner) {
+        job.offers.push({ id: "f" + Date.now(), talentId: p.id, quoteId: q.id, price: q.price, days: q.days, msg: $("#q-msg").value.trim() || `我可以 ${q.days} 日內交，報價 ${hk(q.price)}。`, status: "new", files });
+        notify(job.owner, `${state.user.name} 報咗價 ${hk(q.price)}：${job.title}`, "needs");
+        return toast(`已送出報價，${job.client} 會喺「我發嘅工作」見到`);
+      }
+      toast("已送出報價，等客戶回覆");
+      later(2500, () => {
+        q.status = "accepted";
+        state.orders.push({ id: "o" + Date.now(), owner: q.owner, side: "worker", title: job.title, partner: job.client, amount: q.price, status: 2, rating: 0 });
+        toast("客戶接受咗你嘅報價，可以開工（模擬）");
+        notify(q.owner, `${job.client} 接受咗你嘅報價：${job.title}`, "work");
+        refresh("find", "sent", "work");
+      });
+    });
+  }
+
+  function openSubmit(jobId) {
+    const job = jobById(jobId), t = job.trial;
+    const files = [];
+    openDrawer(`${head("交試工：" + esc(job.title), esc(job.client))}
+      <form class="drawer-body" id="sub-form">
+        <div class="note"><b>試工內容</b><br>${esc(t.brief)}${filesSec("客戶畀嘅試工素材（撳嚟睇大或者下載）", t.files)}</div>
+        ${filesSec("工作參考檔案", job.refs)}
+        ${tierWarn(job, state.profile)}
+        <div class="sum small">
+          <div><span class="muted">期限</span><span>${t.days} 日內</span></div>
+          <div><span class="muted">已交</span><span>${(t.others || 0) + (job.subs ? job.subs.length : 0)} / ${t.max} 份</span></div>
+        </div>
+        ${uploader("sub-up", files, { label: "上載你嘅樣板", limit: 6 })}
+        <label class="field-label" for="sub-note">講吓你點做</label>
+        <textarea id="sub-note" rows="3" placeholder="例如：用咗 Kling 出畫面，CapCut 加字幕，正式版會再加配音"></textarea>
+        <p class="small muted">樣板版權屬你，客戶揀中落實之後先轉畀佢。</p>
+      </form>
+      <div class="drawer-foot"><button class="btn btn-primary" type="submit" form="sub-form">交試工</button></div>`);
+    $("#sub-form").addEventListener("submit", e => {
+      e.preventDefault();
+      if (!files.length) { toast("請上載最少一個樣板檔案"); return; }
+      const sub = { id: "m" + Date.now(), owner: me(), jobId, files, note: $("#sub-note").value.trim(), status: "waiting" };
+      state.subs.push(sub);
+      if (t.others !== undefined) t.others++;
+      closeDrawer();
+      refresh("find", "sent");
+      if (job.owner) {
+        job.subs.push({ id: "s" + Date.now(), talentId: state.profile.id, subId: sub.id, note: sub.note || "跟足試工要求做咗。", files, status: "new" });
+        notify(job.owner, `${state.user.name} 交咗試工樣板：${job.title}`, "needs");
+        return toast(`已交試工，${job.client} 會喺「我發嘅工作」見到`);
+      }
+      toast("已交試工，等客戶睇");
+      later(3000, () => {
+        sub.status = "picked";
+        state.orders.push({ id: "o" + Date.now(), owner: sub.owner, side: "worker", title: job.title, partner: job.client, amount: quoteFor(job, state.profile), status: 2, rating: 0 });
+        toast("客戶揀咗你嘅樣板，可以開工（模擬）");
+        notify(sub.owner, `${job.client} 揀咗你嘅樣板：${job.title}`, "work");
+        refresh("find", "sent", "work");
+      });
+    });
+  }
+
+  // =================== 工作者：我嘅報價 ===================
+  RENDER.sent = function () {
+    const label = { waiting: "等客戶回覆", accepted: "客戶接受 · 開工", picked: "客戶揀咗你 · 開工", declined: "客戶揀咗其他人" };
+    const qs = myQuotes().reverse(), ss = mySubs().reverse();
+    $("#v-sent").innerHTML = `
+      <div class="ask-row"><div><h2>我嘅報價同試工</h2><p class="muted small">客戶接受或者揀中你嘅樣板，工作就會轉去「進行中」，同埋交換 WhatsApp。</p></div><button class="btn btn-ghost btn-sm" type="button" data-go="find">搵更多工</button></div>
+      ${!qs.length && !ss.length ? `<div class="box empty"><p class="muted">未報過價或者交過試工。去「搵工」揀一個需求。</p><div><button class="btn btn-primary" type="button" data-go="find">去搵工</button></div></div>` : ""}
+      ${qs.length ? `<h3>報價（${qs.length}）</h3><div class="rows">${qs.map(q => { const j = jobById(q.jobId); return `<div class="row">
+          <button type="button" class="row-main" data-job="${j.id}"><div><h3>${esc(j.title)}</h3>
+            <div class="meta"><span>${esc(j.client)}</span><span>你報 <span class="num">${hk(q.price)}</span> · ${q.days} 日</span></div></div></button>
+          <div class="row-side"><span class="pill ${q.status}">${label[q.status]}</span>${q.status === "accepted" ? `<button type="button" class="btn btn-ghost btn-sm" data-go="work">睇工作</button>` : ""}</div>
+          ${q.files && q.files.length ? `<div class="span-all">${filesSec("你附上嘅作品", q.files, { limit: 4, cap: true })}</div>` : ""}
+        </div>`; }).join("")}</div>` : ""}
+      ${ss.length ? `<h3>試工（${ss.length}）</h3><div class="subs">${ss.map(s => { const j = jobById(s.jobId); return `<article class="sub">
+          ${gallery(s.files)}
+          <div class="sub-body"><h3>${esc(j.title)}</h3>
+            <div class="meta"><span>${esc(j.client)}</span>${j.trial ? `<span>${j.trial.days} 日內</span>` : ""}</div>
+            ${s.note ? `<p class="small">${esc(s.note)}</p>` : ""}
+            <div class="btns"><span class="pill ${s.status === "picked" ? "accepted" : s.status === "declined" ? "declined" : "waiting"}">${s.status === "picked" ? label.picked : s.status === "declined" ? label.declined : "等客戶睇"}</span>${s.status === "picked" ? `<button type="button" class="btn btn-ghost btn-sm" data-go="work">睇工作</button>` : ""}</div>
+          </div></article>`; }).join("")}</div>` : ""}`;
+  };
+
+  // =================== 工作者：進行中 + 收入 ===================
+  RENDER.work = function () {
+    const mine = myOrders("worker"), real = mine.filter(o => !o.example);
+    const going = real.filter(o => o.status < 5), done = real.filter(o => o.status >= 5);
+    const sum = list => list.reduce((a, o) => a + o.amount, 0);
+    $("#v-work").innerHTML = `
+      <div class="ask-row"><div><h2>進行中</h2><p class="muted small">做好就上載成品交貨，客戶確認完成或者要求修改。金額你同客戶自己收。完成後雙方互相評分。</p></div></div>
+      <div class="stats">
+        <div class="box"><span class="muted small">進行中</span><b class="num">${going.length} 單</b><span class="small muted">協定金額 ${hk(sum(going))}</span></div>
+        <div class="box"><span class="muted small">已完成</span><b class="num">${done.length} 單</b><span class="small muted">協定金額 ${hk(sum(done))}（自己收）</span></div>
+        ${(syncMyRating(), "")}<div class="box"><span class="muted small">你嘅評分</span><b class="num">${state.profile && state.profile.done ? "★ " + state.profile.rating.toFixed(1) : "—"}</b><span class="small muted">${state.profile && state.profile.done ? state.profile.done + " 個客戶評價" : "完成第一單之後出現"}</span></div>
+      </div>
+      ${mine.length ? `<div class="rows">${mine.slice().reverse().map(orderRow).join("")}</div>` : `<div class="box empty"><p class="muted">未有進行中嘅工作。客戶接受你嘅報價或者揀中你嘅樣板之後，就會喺度出現。</p><div><button class="btn btn-primary" type="button" data-go="find">去搵工</button></div></div>`}`;
+  };
+
+  function orderAction(id, act) {
+    const o = state.orders.find(x => x.id === id); if (!o) return;
+    const lk = o.link && state.orders.find(x => x.id === o.link);
+    if (act === "deliver" && o.side === "worker") return openDeliver(o, lk);
+    if (act === "revise") return openRevise(o, lk);
+    if (act === "deliver") {
+      // simulated worker hands in a finished piece
+      Object.assign(o, { status: 3, files: [samplePicFile("#0874AB", o.partner + " 嘅成品")], note: "成品交咗，請睇吓，有要改話我知。" });
+      toast(`${o.partner} 交咗貨（模擬）`);
+      return refresh("hired", "work");
+    }
+    if (act === "towork") {
+      const p = state.profile; if (!p) return toast("先建立工作者檔案");
+      p.works = worksOf(p).concat(o.files.map(f => ({ ...f, cap: f.cap || o.title }))).slice(-20);
+      o.inWorks = true;
+      saveMe();
+      toast("已加入作品集，客戶揀人時會見到");
+      return refresh("work", "find");
+    }
+    if (act === "confirm") {
+      o.status = 5;
+      if (lk) { lk.status = 5; notify(lk.owner, `${state.user.name} 確認完成：${o.title}，可以互相評分`, "work"); }
+      else later(1500, () => {
+        o.reviews = o.reviews || {};
+        o.reviews.theirs = { ...THEIR_REVIEW[o.side] };
+        if (o.reviews.mine) finishReviews(o);
+        else { toast(`${o.partner} 評咗你，你評完就會公開（模擬）`); notify(me(), `${o.partner} 評咗你：${o.title}`, o.side === "boss" ? "hired" : "work"); refresh("hired", "work"); }
+      });
+      toast("已確認完成，可以互相評分");
+      return refresh("hired", "work");
+    }
+  }
+  // worker: upload the finished work
+  function openDeliver(o, lk) {
+    const files = [];
+    openDrawer(`${head(o.revisions ? "重新交貨" : "交貨", esc(o.title))}
+      <form class="drawer-body" id="dl-form">
+        ${o.revNote ? `<div class="note"><b>客戶要求修改</b><br>${esc(o.revNote)}${filesSec("客戶附圖", o.revFiles)}</div>` : ""}
+        ${uploader("dl-up", files, { label: "上載成品", limit: 12 })}
+        <label class="field-label" for="dl-note">畀客戶嘅說明</label>
+        <textarea id="dl-note" rows="3" placeholder="例如：3 條片都喺度，直度同橫度各一，字幕已經校對"></textarea>
+      </form>
+      <div class="drawer-foot"><button class="btn btn-primary" type="submit" form="dl-form">交貨</button></div>`);
+    $("#dl-form").addEventListener("submit", e => {
+      e.preventDefault();
+      if (!files.length) { toast("請上載最少一個成品檔案"); return; }
+      const upd = { status: 3, files: files.slice(), note: $("#dl-note").value.trim(), revNote: "", revFiles: [] };
+      Object.assign(o, upd);
+      if (lk) { Object.assign(lk, upd); notify(lk.owner, `${state.user.name} 交咗貨：${o.title}`, "hired"); }
+      closeDrawer();
+      toast(lk ? "已交貨，等客戶確認" : "已交貨");
+      refresh("hired", "work");
+    });
+  }
+  // client: ask for changes, which sends the order back to 等交貨
+  function openRevise(o, lk) {
+    const revFiles = [];
+    openDrawer(`${head("要求修改", esc(o.title))}
+      <form class="drawer-body" id="rv2-form">
+        <p class="small muted">講清楚要改邊度，工作者改好會重新交貨。修改次數同範圍以報價時講好嘅為準。</p>
+        <label class="field-label" for="rv2-text">要改咩</label>
+        <textarea id="rv2-text" rows="4" placeholder="例如：第 2 條片字幕太細，結尾想加店舖地址"></textarea>
+        ${uploader("rv2-up", revFiles, { label: "附圖（可選）", hint: "截圖圈住要改嘅位，工作者一睇就明。", limit: 6, accept: "image/*,.pdf" })}
+      </form>
+      <div class="drawer-foot"><button class="btn btn-primary" type="submit" form="rv2-form">送出修改要求</button></div>`);
+    $("#rv2-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const text = $("#rv2-text").value.trim();
+      if (!text) { toast("請講吓要改咩"); $("#rv2-text").focus(); return; }
+      const upd = { status: 2, revNote: text, revFiles: revFiles.slice(), revisions: (o.revisions || 0) + 1 };
+      Object.assign(o, upd);
+      if (lk) { Object.assign(lk, upd); notify(lk.owner, `客戶要求修改：${o.title}`, "work"); }
+      else later(2500, () => {
+        Object.assign(o, { status: 3, revNote: "", revFiles: [], files: [samplePicFile("#0874AB", o.partner + " 改好嘅成品")], note: "跟你嘅意見改好咗，請再睇吓。" });
+        toast(`${o.partner} 改好重新交貨（模擬）`);
+        notify(me(), `${o.partner} 改好重新交貨：${o.title}`, "hired");
+        refresh("hired");
+      });
+      closeDrawer();
+      toast("已送出修改要求");
+      refresh("hired", "work");
+    });
+  }
+
+  // ---------- 登入（Google）----------
+  // demo: the real site sends people to Google's own sign-in page and only receives name, email and photo;
+  // here a list of made-up accounts stands in for that page, and the login is kept in this browser only
+  const DEMO_ACCOUNTS = [
+    { name: "陳大文", email: "taiman.chan@gmail.com", hue: "#B4532E" },
+    { name: "李嘉欣", email: "kayan.lee@gmail.com", hue: "#3E6FA8" },
+  ];
+  // actions that act in your name; looking around works without logging in
+  const LOGIN_ACTIONS = ["quote", "trial", "accept", "offerchat", "pick", "pass", "invite", "act", "review"];
+  const LOGIN_WHY = {
+    publish: "登入之後就可以發佈工作，工作者嘅報價會通知你。", profile: "登入之後就可以建立你嘅工作者檔案。",
+    quote: "登入之後就可以報價。", trial: "登入之後就可以交試工。", accept: "登入之後就可以落實同交換聯絡。",
+    offerchat: "登入之後就可以同工作者傾。", pick: "登入之後就可以揀試工作品。", pass: "登入之後就可以處理試工作品。",
+    invite: "登入之後就可以邀請工作者。", act: "登入之後就可以處理訂單。", review: "登入之後就可以評分。",
+    needs: "登入之後就可以睇你嘅需求同收到嘅報價。", hired: "登入之後就可以睇你進行中嘅單。",
+    sent: "登入之後就可以睇你嘅報價同試工。", work: "登入之後就可以睇你進行中嘅工作。",
+  };
+  const G_LOGO = `<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>`;
+
+  // notifications go to an account by email and wait there until that account opens them
+  function notify(to, text, view) {
+    if (!to) return;
+    state.notes.push({ id: "z" + Date.now() + Math.random(), to, text, view, read: false });
+    renderAccount();
+  }
+  const myNotes = () => state.notes.filter(n => n.to === me());
+  function openNotes() {
+    const list = myNotes().slice().reverse();
+    openDrawer(`${head("通知")}
+      <div class="drawer-body">${list.length ? `<div class="rows">${list.map(n => `<button type="button" class="row note-item ${n.read ? "" : "unread"}" data-notego="${n.view}"><span>${esc(n.text)}</span><span class="small muted">睇 →</span></button>`).join("")}</div>`
+        : `<p class="muted">未有通知。有人報價、交貨、要求修改或者評你，會喺度話你知。</p>`}</div>`);
+    list.forEach(n => { n.read = true; });
+    renderAccount();
+  }
+  const BELL = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`;
+  function renderAccount() {
+    const u = signedUp() ? state.user : null, unread = u ? myNotes().filter(n => !n.read).length : 0;
+    $("#account").innerHTML = u
+      ? `<button type="button" class="bell" data-notes aria-label="通知${unread ? "，" + unread + " 個未睇" : ""}">${BELL}${unread ? `<span class="count">${unread}</span>` : ""}</button><button type="button" class="me-btn" data-me aria-label="你嘅帳戶：${esc(u.name)}">${avatar(u)}<span class="long">${esc(u.name)}</span></button>`
+      : "";
+  }
+  const signedUp = () => !!(state.user && state.user.onboarded);
+  function requireLogin(fn, why) {
+    if (signedUp()) return fn();
+    state.afterLogin = fn;
+    state.loginWhy = why;
+    if (state.view !== "login") state.loginNext = state.loginFrom = state.view;
+    closeDrawer();
+    go("login");
+  }
+  // the login page: shown instead of a personal page, or before an action, when nobody is logged in
+  RENDER.login = function () {
+    if (state.user && !state.user.onboarded) return renderSetup();
+    $("#v-login").innerHTML = `
+      <div class="login-page">
+        <div class="login-wrap">
+        <button class="x login-x" type="button" data-loginclose aria-label="關閉，返回上一頁">×</button>
+        <div class="box login-card">
+          <h1>登入 AI拍檔</h1>
+          <p>${esc(LOGIN_WHY[state.loginWhy] || "登入之後就可以搵人幫手、報價同交試工，你嘅需求、訂單同評分都會跟住你個帳戶。")}</p>
+          <button type="button" class="gbtn big" id="g-start">${G_LOGO}<span>用 Google 登入</span></button>
+          <div id="g-pick" hidden>
+            <p class="small muted">（模擬）真網站呢一步會跳去 Google 嘅頁面揀帳戶，呢度用虛構帳戶代替：</p>
+            <div class="acc-list">${DEMO_ACCOUNTS.map((a, i) => `<button type="button" class="acc" data-gacc="${i}">${avatar(a)}<span><b>${esc(a.name)}</b><br><span class="small muted">${esc(a.email)}</span></span></button>`).join("")}</div>
+          </div>
+          <p class="small muted">我哋只會由 Google 攞你嘅名、電郵同頭像，唔會見到你嘅密碼。第一次登入會自動開帳戶。繼續即表示你同意服務條款同私隱政策。</p>
+          <button type="button" class="link" data-loginclose>暫時唔登入，返回上一頁</button>
+        </div>
+        </div>
+      </div>`;
+    bindLoginClose();
+    $("#g-start").addEventListener("click", () => { $("#g-start").hidden = true; $("#g-pick").hidden = false; $(".acc").focus(); });
+  };
+  function closeLogin() {
+    let view = state.loginFrom || (roleOf("login") === "worker" ? "find" : "post");
+    if (view === "login" || (PRIVATE.includes(view) && !signedUp())) view = roleOf("login") === "worker" ? "find" : "post";
+    state.afterLogin = null; state.loginNext = null; state.loginWhy = null; state.loginFrom = null;
+    go(view);
+  }
+  function bindLoginClose() {
+    const page = $("#v-login .login-page");
+    page.addEventListener("click", e => { if (e.target === page) closeLogin(); });
+  }
+  // accounts that finished the setup, by email: logging in again skips the form
+  let known = {};
+  try { known = JSON.parse(localStorage.getItem("aipd-known") || "{}") || {}; } catch (e) {}
+  // video and documents are kept for this visit only, so they are left out of what is saved
+  const keepable = (k, v) => Array.isArray(v) ? v.filter(x => !(x && x.temp)) : v;
+  const saveKnown = () => {
+    try { localStorage.setItem("aipd-known", JSON.stringify(known, keepable)); }
+    catch (e) { if (e && /quota/i.test(e.name)) toast("呢個瀏覽器嘅儲存空間唔夠，新上載嘅相重新整理之後會唔見"); }
+  };
+  function saveMe() {
+    if (!signedUp()) return;
+    if (state.profile) state.profile.photo = state.user.photo || "";
+    known[me()] = { user: state.user, profile: state.profile };
+    saveKnown();
+    try { localStorage.setItem("aipd-user", JSON.stringify(state.user)); } catch (e) {}
+  }
+  function signIn(acc) {
+    const back = known[acc.email];
+    state.user = back ? { ...back.user } : { ...acc };
+    state.profile = back && back.profile ? back.profile : null;
+    if (state.profile && !String(state.profile.id).startsWith("u:")) state.profile.id = "u:" + acc.email;
+    try { localStorage.setItem("aipd-user", JSON.stringify(state.user)); } catch (e) {}
+    renderAccount();
+    if (!state.user.onboarded) { toast("已經用 Google 登入，填埋基本資料就得"); return go("login"); }
+    toast(`歡迎返嚟，${acc.name}`);
+    finishLogin();
+  }
+  function finishLogin() {
+    const next = state.afterLogin, view = state.loginNext || "post";
+    state.afterLogin = null; state.loginNext = null; state.loginWhy = null;
+    go(view);
+    if (next) next();
+  }
+  // ---------- 第一次登入：基本資料 ----------
+  const DISTRICTS = ["中西區", "灣仔", "東區", "南區", "油尖旺", "深水埗", "九龍城", "黃大仙", "觀塘", "荃灣", "屯門", "元朗", "北區", "大埔", "沙田", "西貢", "葵青", "離島", "線上 / 唔限"];
+  const KINDS = { boss: "搵人（我係老闆）", worker: "搵工（我係工作者）", both: "兩樣都有" };
+  function renderSetup() {
+    const u = state.user;
+    const f = state.setup || (state.setup = { kind: roleOf(state.loginNext || "post"), tier: "", cats: [], name: u.name, intro: "", company: "", district: "", phone: "", agree: false, photo: [], works: [] });
+    const work = f.kind !== "boss", boss = f.kind !== "worker";
+    const err = state.setupErr || {};
+    const e = k => err[k] ? `<span class="err">${err[k]}</span>` : "";
+    const req = `<span class="req" aria-hidden="true">*</span>`;
+    $("#v-login").innerHTML = `
+      <div class="login-page">
+        <div class="login-wrap wide">
+        <button class="x login-x" type="button" data-loginclose aria-label="關閉，返回上一頁">×</button>
+        <form class="box login-card setup-card" id="setup-form" novalidate>
+          <div class="person">${avatar(u)}<div><h1>基本資料</h1><div class="muted small">${esc(u.email)} · Google 登入 ✓</div></div></div>
+          <div class="note">最後一步：填好基本資料就完成登記。<b>只需填一次</b>，之後用呢個 Google 帳戶登入會直接入去。有 <span class="req">*</span> 嘅必須填。</div>
+          <div class="group">
+            <span class="field-title">你嚟做乜${req}</span>
+            ${chipRow("你嚟做乜", "sukind", Object.entries(KINDS), f.kind)}
+          </div>
+          <label class="group"><span class="field-title">顯示名稱${req}</span><input type="text" id="su-name" value="${esc(f.name)}" maxlength="20">${e("name")}</label>
+          <div class="group"><span class="field-title">頭像<span class="small muted">（唔上載就用 Google 頭像）</span></span>
+            <div class="avatar-row">${avatar({ ...u, photo: f.photo[0] ? f.photo[0].url : u.photo }, true)}${uploader("su-photo", f.photo, { label: "換相", hint: "正面清楚嘅相，客戶同工作者更放心。", single: true, accept: "image/*", max: 400, onChange: () => { read(); renderSetup(); } })}</div></div>
+          ${work ? `
+          <div class="group">
+            <span class="field-title">你係邊個級別${req}</span>
+            <div class="tiers">${Object.entries(TIERS).map(([k, v]) => `<button type="button" class="tier-card" data-sutier="${k}" aria-pressed="${f.tier === k}">${tierBadge(k)}<span class="small">${v.desc}</span><span class="small num">${v.price}</span></button>`).join("")}</div>
+            <span class="small muted">唔肯定可以揀「AI 熟手」，接咗幾單之後平台會按評分建議你升級。</span>${e("tier")}
+          </div>
+          <div class="group">
+            <span class="field-title">你做邊類工作${req}<span class="small muted">（可以揀幾樣）</span></span>
+            <div class="chips" role="group" aria-label="工作類別">${CATS.map(c => `<button type="button" class="chip" data-sucat="${c.id}" aria-pressed="${f.cats.includes(c.id)}">${c.name}</button>`).join("")}</div>${e("cats")}
+          </div>
+          <label class="group"><span class="field-title">一句介紹自己${req}</span><input type="text" id="su-intro" value="${esc(f.intro)}" placeholder="例如：${esc(WORK_EG[0])}" maxlength="80">${e("intro")}</label>
+          <div class="group"><span class="field-title">過往作品<span class="small muted">（可選，之後喺「你嘅檔案」都可以加）</span></span>
+            ${uploader("su-works", f.works, { label: "上載作品", hint: "3–6 件最好，每件寫一句說明。客戶揀人時最睇呢樣。", caption: true, limit: 12 })}</div>` : ""}
+          ${boss ? `
+          <div class="fields pair">
+            <label class="group"><span class="field-title">公司或店舖名稱${req}</span><input type="text" id="su-company" value="${esc(f.company)}" placeholder="例如：旺角甜品店" maxlength="30">${e("company")}</label>
+            <label class="group"><span class="field-title">地區${req}</span><select id="su-district"><option value="">請揀</option>${DISTRICTS.map(d => `<option ${f.district === d ? "selected" : ""}>${d}</option>`).join("")}</select>${e("district")}</label>
+          </div>` : ""}
+          <label class="group"><span class="field-title">WhatsApp 電話${req}</span><input type="tel" id="su-phone" value="${esc(f.phone)}" placeholder="8 位數字" inputmode="numeric" maxlength="9"><span class="small muted">只會喺落實之後畀對方，用嚟聯絡交收。</span>${e("phone")}</label>
+          <label class="check"><input type="checkbox" id="su-agree" ${f.agree ? "checked" : ""}><span>我同意服務條款同私隱政策${req}</span></label>${e("agree")}
+          <button class="btn btn-primary" type="submit">完成，開始使用</button>
+          <p class="small muted">（模擬）資料只留喺呢個瀏覽器。</p>
+        </form>
+        </div>
+      </div>`;
+    bindLoginClose();
+    const form = $("#setup-form");
+    // keep what was typed when a chip re-draws the form
+    const read = () => {
+      f.name = $("#su-name").value.trim();
+      if ($("#su-intro")) f.intro = $("#su-intro").value.trim();
+      if ($("#su-company")) { f.company = $("#su-company").value.trim(); f.district = $("#su-district").value; }
+      f.phone = $("#su-phone").value.replace(/\s/g, ""); f.agree = $("#su-agree").checked;
+    };
+    form.addEventListener("click", ev => {
+      const b = ev.target.closest("button[type=button]"); if (!b || b.dataset.lb || b.closest(".upl")) return;
+      ev.stopPropagation();
+      read();
+      const d = b.dataset;
+      if (d.sukind) f.kind = d.sukind;
+      if (d.sutier) f.tier = d.sutier;
+      if (d.sucat) f.cats = f.cats.includes(d.sucat) ? f.cats.filter(c => c !== d.sucat) : f.cats.concat(d.sucat);
+      renderSetup();
+    });
+    form.addEventListener("submit", ev => { ev.preventDefault(); read(); submitSetup(); });
+    bindUploaders();
+    const first = form.querySelector(".err");
+    if (first) {
+      const box = first.closest(".group") || first.parentElement, inp = box.querySelector("input, select, button");
+      if (inp) inp.focus({ preventScroll: true });
+      box.scrollIntoView({ block: "center" });
+    }
+  }
+  function submitSetup() {
+    const f = state.setup, work = f.kind !== "boss", boss = f.kind !== "worker", err = {};
+    if (!f.name) err.name = "請填顯示名稱";
+    if (work && !f.tier) err.tier = "請揀一個級別";
+    if (work && !f.cats.length) err.cats = "請揀最少一類工作";
+    if (work && f.intro.length < 6) err.intro = "請用一句講吓你識做咩（最少 6 個字）";
+    if (boss && !f.company) err.company = "請填公司或店舖名稱";
+    if (boss && !f.district) err.district = "請揀地區";
+    if (!/^[2-9]\d{7}$/.test(f.phone)) err.phone = "請填 8 位數字嘅香港電話";
+    if (!f.agree) err.agree = "要同意條款先可以用";
+    state.setupErr = err;
+    if (Object.keys(err).length) return renderSetup();
+    const u = state.user;
+    Object.assign(u, { name: f.name, kind: f.kind, phone: f.phone, company: boss ? f.company : "", district: boss ? f.district : "", onboarded: true });
+    if (f.photo[0]) u.photo = f.photo[0].url;
+    if (work) {
+      const cats = f.cats.map(catById), cat = cats[0];
+      state.profile = {
+        id: "u:" + u.email, raw: f.intro, name: u.name, head: cats.map(c => c.name).join(" · "), cat: cat.id, tier: f.tier,
+        skills: [...new Set(cats.flatMap(c => c.skills.slice(0, 2)))].slice(0, 5), rate: rateFor(f.tier, cat),
+        rating: 4.5, done: 0, avail: "now", hue: u.hue, bio: f.intro, photo: u.photo || "", works: f.works.slice(),
+      };
+    }
+    saveMe();
+    state.setup = null; state.setupErr = null;
+    renderAccount();
+    toast(`歡迎，${u.name}，資料已經儲好`);
+    finishLogin();
+  }
+
+  function openAccount() {
+    const u = state.user;
+    syncMyRating();
+    const asWorker = u.kind !== "boss" || state.profile, asBoss = u.kind !== "worker";
+    const ph = [];
+    openDrawer(`${head("我嘅資料")}
+      <div class="drawer-body">
+        <div class="avatar-row">${avatar(u, true)}<div style="min-width:0;flex:1"><h3>${esc(u.name)}</h3><div class="muted small">${esc(u.email)}</div>
+          ${uploader("acc-photo", ph, { label: "換頭像", hint: "揀一張相", single: true, accept: "image/*", max: 400, onChange: list => { u.photo = list[0] ? list[0].url : u.photo; saveMe(); renderAccount(); RENDER[state.view]({}); openAccount(); toast("頭像已更新"); } })}
+          ${u.photo ? `<button type="button" class="link" data-unphoto>用返 Google 頭像</button>` : ""}</div></div>
+        <div class="sum small">
+          <div><span class="muted">登入方式</span><span>Google</span></div>
+          <div><span class="muted">身份</span><span>${esc(KINDS[u.kind] || "")}</span></div>
+          ${u.company ? `<div><span class="muted">公司 / 店舖</span><span>${esc(u.company)} · ${esc(u.district)}</span></div>` : ""}
+          ${state.profile ? `<div><span class="muted">級別</span><span>${tierBadge(state.profile.tier)}</span></div>` : ""}
+          <div><span class="muted">WhatsApp</span><span class="num">${esc(u.phone || "")}</span></div>
+          <div><span class="muted">發過嘅工作</span><span>${myNeeds().filter(n => !n.example).length} 個</span></div>
+        </div>
+        ${state.profile ? `<section class="rating-sec"><div class="ask-row"><h3>作品集（${worksOf(state.profile).length}）</h3><button type="button" class="link" data-works="1">${worksOf(state.profile).length ? "管理作品" : "加作品"}</button></div>${gallery(worksOf(state.profile), { cls: "big", cap: true, empty: `<p class="small muted">未有作品。上載 3–6 件過往作品，客戶揀人時最睇呢樣。</p>` })}</section>` : ""}
+        ${asWorker ? `<section class="rating-sec"><h3>作為工作者 · 客戶評價</h3>${ratingBlock(received("worker"), "未有客戶評價。完成第一單、客戶評分之後就會好似下面咁顯示。", 0, "worker")}</section>` : ""}
+        ${asBoss ? `<section class="rating-sec"><h3>作為老闆 · 工作者評價</h3>${ratingBlock(received("boss"), "未有評價。完成第一單之後，工作者都會好似下面咁評你。", 0, "boss")}</section>` : ""}
+      </div>
+      <div class="drawer-foot"><button type="button" class="btn btn-ghost" data-logout>登出</button></div>`);
+  }
+  function signOut() {
+    if (state.user && state.user.onboarded) { known[state.user.email] = { user: state.user, profile: state.profile }; saveKnown(); }
+    state.user = null; state.profile = null; state.setup = null; state.setupErr = null;
+    try { localStorage.removeItem("aipd-user"); } catch (e) {}
+    closeDrawer();
+    renderAccount();
+    toast("已經登出");
+    go(PRIVATE.includes(state.view) ? (roleOf(state.view) === "worker" ? "find" : "post") : state.view);
+  }
+
+  // ---------- dialogs ----------
+  function openDrawer(html) {
+    const d = $("#drawer");
+    d.innerHTML = html; d.hidden = false; $("#scrim").hidden = false;
+    bindUploaders();
+    document.body.style.overflow = "hidden";
+    const x = d.querySelector(".x"); if (x) x.focus();
+  }
+  function closeDrawer() {
+    $("#drawer").hidden = true; $("#scrim").hidden = true; document.body.style.overflow = "";
+    state.chat = null;
+  }
+  const head = (title, sub) => `<div class="drawer-head"><div style="min-width:0"><h3 id="drawer-title">${title}</h3>${sub ? `<div class="muted small">${sub}</div>` : ""}</div><button class="x" type="button" data-close aria-label="關閉">×</button></div>`;
+
+  function showJob(id) {
+    const j = jobById(id);
+    const done = j.mode === "trial" ? mySubs().find(s => s.jobId === id) : myQuotes().find(q => q.jobId === id);
+    openDrawer(`${head(esc(j.title), esc(j.client) + " · " + esc(j.posted))}
+      <div class="drawer-body">
+        <div class="sum"><div><span class="muted">預算</span><span class="num">${hk(j.budget)}</span></div><div><span class="muted">期限</span><span>${j.days} 日內交</span></div><div><span class="muted">要搵</span><span>${tierBadge(j.tier)}</span></div><div><span class="muted">揀人方式</span><span>${MODES[j.mode].name}</span></div></div>
+        <p>${esc(j.desc)}</p>
+        ${filesSec("客戶畀嘅參考檔案", j.refs)}
+        ${j.hard ? `<div><b class="small">點解要搵人做</b><ul class="hard">${j.hard.map(h => `<li>${esc(h)}</li>`).join("")}</ul></div>` : ""}
+        ${j.trial ? `<div class="note"><b>試工任務</b>（${j.trial.days} 日內 · 已交 ${(j.trial.others || 0) + (j.subs ? j.subs.length : 0)} / ${j.trial.max} 份）<br>${esc(j.trial.brief)}${filesSec("試工素材", j.trial.files)}</div>` : ""}
+      </div>
+      <div class="drawer-foot">${done ? `<button class="btn btn-ghost" type="button" data-go="sent">${j.mode === "trial" ? "已交試工" : "已報價"} · 睇狀態</button>`
+        : j.mode === "trial" ? `<button class="btn btn-primary" type="button" data-trial="${j.id}">交試工</button>` : `<button class="btn btn-primary" type="button" data-quote="${j.id}">報價</button>`}</div>`);
+  }
+
+  // demo: a few made-up client reviews for each listed worker, summed up with their real rating and job count
+  const SAMPLE_REVIEWS = [
+    { from: "觀塘 · 護膚品牌", stars: 5, tags: ["準時交貨", "質素好"], text: "產品鏡頭前後一致，比我預期好。" },
+    { from: "銅鑼灣 · 美甲店", stars: 5, tags: ["溝通清楚", "肯改"], text: "改咗兩次都好有耐性，下個月再搵。" },
+    { from: "荃灣 · 五金批發", stars: 4, tags: ["準時交貨"], text: "交得準時，第一稿有少少唔啱，改完 OK。" },
+    { from: "九龍城 · 泰菜館", stars: 5, tags: ["超出預期", "質素好"], text: "客人都以為係真影，正。" },
+    { from: "灣仔 · 物理治療中心", stars: 5, tags: ["溝通清楚", "準時交貨"], text: "解釋得好清楚，交完仲教埋點用。" },
+    { from: "線上 · 旅遊 YouTuber", stars: 4, tags: ["肯改"], text: "風格要磨合一下，之後越做越順。" },
+  ];
+  function talentReviewsHtml(t) {
+    if (t.id.startsWith("u:")) return ratingBlock(received("worker"), "未有客戶評價。");
+    const i = TALENT.indexOf(t), picks = [SAMPLE_REVIEWS[i % 6], SAMPLE_REVIEWS[(i + 2) % 6], SAMPLE_REVIEWS[(i + 4) % 6]];
+    return `<div class="rating-sum"><b class="num">${t.rating.toFixed(1)}</b><div>${starText(Math.round(t.rating))}<div class="small muted">${t.done} 個評價 · 顯示最近 3 個</div></div></div>
+      <div class="review-list">${picks.map(r => reviewHtml(esc(r.from), r)).join("")}</div>`;
+  }
+
+  function showTalent(id) {
+    const t = talentById(id);
+    const n = state.view === "needs" ? needById(state.selNeed) : null;
+    const canInvite = n && n.status === "open" && !n.invited.includes(t.id);
+    openDrawer(`${head(esc(t.name) + " " + tierBadge(t.tier), esc(t.head))}
+      <div class="drawer-body">
+        <div class="avatar-row">${avatar(t, true)}<div><h3>${ratingText(t)}</h3><div class="muted small">${AVAIL[t.avail]} · <span class="num">${hk(t.rate[0])} 起</span></div></div></div>
+        <section class="files-sec"><span class="small muted">作品集（${worksOf(t).length}）· 撳嚟睇大</span>${gallery(worksOf(t), { cls: "big", cap: true, empty: `<p class="small muted">佢未上載作品。</p>` })}</section>
+        <div class="sum"><div><span class="muted">評分</span><span>${ratingText(t)}</span></div><div><span class="muted">收費</span><span class="num">${hk(t.rate[0])} – ${hk(t.rate[1])}</span></div><div><span class="muted">檔期</span><span>${AVAIL[t.avail]}</span></div></div>
+        <p>${esc(t.bio)}</p>
+        <div class="chips">${t.skills.map(s => `<span class="chip">${esc(s)}</span>`).join("")}</div>
+        <section class="rating-sec"><h3>客戶評價</h3>${talentReviewsHtml(t)}</section>
+      </div>
+      <div class="drawer-foot">${canInvite ? `<button class="btn btn-primary" type="button" data-invite="${t.id}">${n.mode === "trial" ? "邀請佢試工" : "邀請佢報價"}</button>`
+        : n ? `<p class="small muted">已經邀請咗佢。</p>` : `<button class="btn btn-primary" type="button" data-go="post">搵人幫手，再邀請佢</button>`}</div>`);
+  }
+
+  // worker: add, caption and remove portfolio pieces
+  function openWorks() {
+    const p = state.profile; if (!p) return;
+    const list = worksOf(p).map(w => ({ ...w }));
+    openDrawer(`${head("我嘅作品集", "客戶揀人時最先睇呢度")}
+      <form class="drawer-body" id="works-form">
+        <p class="small muted">上載 3–6 件最似你想接嘅工作，每件寫一句說明（例如「護膚品 15 秒廣告」）。相片會縮細儲存；影片同文件只保留到重新整理（網站模型限制）。</p>
+        ${uploader("works-up", list, { label: "加作品", caption: true, limit: 20 })}
+      </form>
+      <div class="drawer-foot"><button class="btn btn-primary" type="submit" form="works-form">儲存作品集</button></div>`);
+    $("#works-form").addEventListener("submit", e => {
+      e.preventDefault();
+      p.works = list;
+      saveMe();
+      closeDrawer();
+      toast(`作品集已儲存（${list.length} 件）`);
+      refresh("find", "work");
+    });
+  }
+
+  // client-side chat about one need with one worker
+  function openChat(need, t, price) {
+    const days = Math.max(2, Math.round(need.days * 0.8));
+    state.chat = { need, t, quote: price, days };
+    openDrawer(`${head("同 " + esc(t.name) + " 傾", esc(need.title))}
+      <div class="drawer-body" id="chat-log" aria-live="polite"></div>
+      <div class="drawer-foot" id="chat-foot">
+        <form class="compose" id="chat-form"><input type="text" id="chat-in" placeholder="打字…" autocomplete="off"><button class="btn btn-ghost btn-sm" type="submit">傳送</button></form>
+        <div class="btns">
+          <button class="btn btn-primary" type="button" id="chat-agree">落實 ${hk(price)}</button>
+          <button class="btn btn-ghost" type="button" id="chat-sum">AI 總結</button>
+        </div>
+      </div>`);
+    pushMsg("sys", "對話有記錄，有爭議時用嚟處理。唔好喺度交換銀行戶口。");
+    pushMsg("them", `你好！「${need.title}」我可以 ${days} 日內交，報價 ${hk(price)}，包括${catById(need.cat).deliver.join("、")}。`);
+    $("#chat-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const v = $("#chat-in").value.trim(); if (!v) return;
+      pushMsg("me", v); $("#chat-in").value = "";
+      const c = state.chat;
+      later(800, () => { if (state.chat === c) pushMsg("them", "冇問題，可以加埋，價錢唔變。"); });
+    });
+    $("#chat-sum").addEventListener("click", () => pushMsg("ai", `AI 總結\n工作：${need.title}\n報價：${hk(price)}（預算 ${hk(need.budget)}）\n期限：${days} 日\n未傾清楚：修改次數、版權歸邊個`));
+    $("#chat-agree").addEventListener("click", showConfirm);
+  }
+  function pushMsg(kind, text) {
+    if (!state.chat) return;
+    const el = document.createElement("div");
+    el.className = "msg " + kind + " reveal";
+    el.textContent = text;
+    $("#chat-log").appendChild(el);
+    el.scrollIntoView({ block: "end" });
+  }
+  // 落實: agree on the amount and swap contacts; the money itself is between the two of them
+  function showConfirm() {
+    const c = state.chat;
+    $("#chat-foot").innerHTML = `
+      <div class="sum">
+        <div><span class="muted">協定金額</span><span class="num">${hk(c.quote)}</span></div>
+        <div><span class="muted">交貨</span><span>${c.days} 日內</span></div>
+      </div>
+      <p class="small muted">金額同付款方法由你同 ${esc(c.t.name)} 自行傾，平台唔經手、唔收費。落實之後雙方會見到對方 WhatsApp。</p>
+      <button class="btn btn-primary" type="button" id="pay-go">落實，交換聯絡</button>`;
+    $("#pay-go").addEventListener("click", () => {
+      const { need, t, quote } = state.chat;
+      need.status = "hired"; need.hiredWith = t.id;
+      const o = need.offers.find(x => x.talentId === t.id); if (o) o.status = "accepted";
+      const s = need.subs.find(x => x.talentId === t.id); if (s) s.status = "picked";
+      // everyone else who replied hears they were not picked
+      need.offers.filter(x => x !== o && x.status === "new").forEach(x => {
+        x.status = "declined";
+        const q = state.quotes.find(y => y.id === x.quoteId);
+        if (q) { q.status = "declined"; notify(q.owner, `${need.client} 揀咗其他人：${need.title}`, "sent"); }
+      });
+      need.subs.filter(x => x !== s && x.status === "new").forEach(x => {
+        x.status = "passed";
+        const ms = state.subs.find(y => y.id === x.subId);
+        if (ms) { ms.status = "declined"; notify(ms.owner, `${need.client} 揀咗其他人：${need.title}`, "sent"); }
+      });
+      const bo = { id: "o" + Date.now(), owner: me(), side: "boss", title: need.title, partner: t.name, amount: quote, status: 2, rating: 0 };
+      state.orders.push(bo);
+      if (t.id.startsWith("u:")) {
+        const wEmail = t.id.slice(2), w = known[wEmail] ? known[wEmail].user : {};
+        const wo = { id: "o" + (Date.now() + 1), owner: wEmail, side: "worker", title: need.title, partner: need.client, amount: quote, status: 2, rating: 0, link: bo.id, contact: state.user.phone };
+        bo.link = wo.id; bo.contact = w.phone;
+        state.orders.push(wo);
+        const q = o && state.quotes.find(x => x.id === o.quoteId); if (q) q.status = "accepted";
+        const ms = s && state.subs.find(x => x.id === s.subId); if (ms) ms.status = "picked";
+        notify(wEmail, `${need.client} 揀咗你：${need.title}，可以開工`, "work");
+      }
+      closeDrawer();
+      toast(`已落實，${t.name} 可以開工，WhatsApp 已經交換`);
+      go("hired");
+    });
+  }
+
+  // ---------- events ----------
+  document.addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if (b) handle(b, { ...b.dataset });
+  });
+  function handle(b, d) {
+    if (d.lb) return openLB(d.lb);
+    if (d.lbclose !== undefined) return closeLB();
+    if (d.lbgo) return stepLB(+d.lbgo);
+    if (d.close !== undefined) return closeDrawer();
+    if (d.loginclose !== undefined) return closeLogin();
+    if (d.gacc) return signIn(DEMO_ACCOUNTS[+d.gacc]);
+    if (d.me !== undefined) return openAccount();
+    if (d.notes !== undefined) return openNotes();
+    if (d.notego) { closeDrawer(); return go(d.notego); }
+    if (d.logout !== undefined) return signOut();
+    if (LOGIN_ACTIONS.some(k => d[k] !== undefined) && !signedUp()) {
+      return requireLogin(() => handle(b, d), LOGIN_ACTIONS.find(k => d[k] !== undefined));
+    }
+    if (d.role) { const v = d.role === "boss" ? (signedUp() && myNeeds().some(n => !n.example) ? "needs" : "post") : "find"; return go(v); }
+    if (d.go) { closeDrawer(); return go(d.go); }
+    if (d.job) return showJob(d.job);
+    if (d.talent) return showTalent(d.talent);
+    if (d.fill) { const q = document.getElementById(d.fill); q.value = d.text; q.focus(); return; }
+    if (d.tier) { state.tier = state.tier === d.tier && b.classList.contains("tier-card") ? "all" : d.tier; return RENDER[state.view]({}); }
+    if (d.filter) { state.filter = d.filter; return RENDER[state.view]({}); }
+    // 發工作 draft
+    if (d.dcat) { readDraft(); const dr = state.draft, c = catById(d.dcat); dr.cat = c.id; dr.skills = c.skills.slice(0, 3); dr.trial.brief = TRIAL_EG[c.id]; return renderDraft(false); }
+    if (d.dtier) { readDraft(); state.draft.tier = d.dtier; return renderDraft(false); }
+    // 我發嘅工作
+    if (d.need) { state.selNeed = d.need; state.needTab = "replies"; return RENDER.needs(); }
+    if (d.ntab) { state.needTab = d.ntab; return RENDER.needs(); }
+    if (d.invite) {
+      const n = needById(state.selNeed); invite(n, [d.invite]); closeDrawer();
+      toast(`已邀請 ${talentById(d.invite).name}${n.mode === "trial" ? "試工" : "報價"}`); return RENDER.needs();
+    }
+    if (d.accept || d.offerchat) {
+      const n = needById(state.selNeed), o = n.offers.find(x => x.id === (d.accept || d.offerchat)), t = talentById(o.talentId);
+      if (d.offerchat) return openChat(n, t, o.price);
+      return hireFrom(n, t, o.price, `你接受咗 ${t.name} 嘅報價 ${hk(o.price)}，落實之後交換 WhatsApp 就可以開工。`);
+    }
+    if (d.pick) {
+      const n = needById(state.selNeed), s = n.subs.find(x => x.id === d.pick), t = talentById(s.talentId);
+      return hireFrom(n, t, quoteFor(n, t), `你揀咗 ${t.name} 嘅試工樣板，確認報價就可以落實。`);
+    }
+    if (d.pass) { needById(state.selNeed).subs.find(x => x.id === d.pass).status = "passed"; return RENDER.needs(); }
+    // 搵工
+    if (d.quote) { if (!needProfile("quote", d.quote)) openQuote(d.quote); return; }
+    if (d.trial) { if (!needProfile("trial", d.trial)) openSubmit(d.trial); return; }
+    if (d.editprofile) return renderProfile({ edit: true });
+    if (d.works) return openWorks();
+    if (d.unphoto !== undefined) { state.user.photo = ""; saveMe(); renderAccount(); RENDER[state.view]({}); toast("用返 Google 頭像"); return openAccount(); }
+    if (d.ptier) { const p = state.profile; p.tier = d.ptier; p.rate = rateFor(p.tier, catById(p.cat)); return RENDER.find({}); }
+    if (d.avail) { state.profile.avail = d.avail; return RENDER.find({}); }
+    // 進行中
+    if (d.order && d.act) return orderAction(d.order, d.act);
+    if (d.review) return openReview(d.review);
+  }
+  $("#scrim").addEventListener("click", closeDrawer);
+  document.addEventListener("keydown", e => {
+    if (LB) {
+      if (e.key === "Escape") closeLB();
+      if (e.key === "ArrowLeft") stepLB(-1);
+      if (e.key === "ArrowRight") stepLB(1);
+      return;
+    }
+    if (e.key !== "Escape") return;
+    if (!$("#drawer").hidden) closeDrawer();
+    else if (state.view === "login") closeLogin();
+  });
+  $("#logo").addEventListener("click", () => { closeDrawer(); go("post"); });
+  window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (v && v !== state.view) go(v); });
+
+  // ---------- examples so each page has something to show ----------
+  (function seed() {
+    TALENT.forEach((t, i) => { t.works = WORK_CAPS[t.cat].map((cap, k) => ({ ...demoFile(cap, k % 2 ? CAT_HUE[t.cat] : t.hue, i * 7 + k) })); });
+    JOBS.forEach((j, i) => {
+      j.refs = REF_EG[j.cat].map((n, k) => demoFile(n, CAT_HUE[j.cat], i * 5 + k));
+      if (j.trial) j.trial.files = (j.trial.refs || []).map((n, k) => demoFile(n, CAT_HUE[j.cat], i * 3 + k + 50));
+    });
+    const n = {
+      id: "n0", example: true, title: "新店開張 30 秒 AI 宣傳片", cat: "video", tier: "master", skills: ["AI 影片生成", "剪接", "腳本"],
+      budget: 5000, days: 14, desc: "旺角新開嘅甜品店，想用 AI 整條 30 秒開張宣傳片，有店舖、甜品同粵語旁白，出 IG 同小紅書。",
+      hard: catById("video").hard, mode: "direct", trial: null, posted: "今日", status: "open", invited: ["t2", "t1", "t3"], subs: [],
+      refs: [demoFile("甜品相", "#D7424E", 3), demoFile("店舖門面", "#0874AB", 4), demoFile("餐牌.pdf")],
+      offers: [
+        { id: "f01", talentId: "t2", price: 5000, days: 8, msg: QUOTE_LINES[0], status: "new", files: worksOf(TALENT[1]).slice(0, 2) },
+        { id: "f02", talentId: "t1", price: 4800, days: 10, msg: QUOTE_LINES[1], status: "new", files: worksOf(TALENT[0]).slice(0, 3) },
+      ],
+    };
+    state.needs.push(n);
+    state.selNeed = n.id;
+    state.orders.push({ id: "o9", side: "boss", example: true, title: "20 條 AI 短片粵語字幕校對", partner: "Kiki", amount: 1500, status: 6, files: [demoFile("字幕校對前後", "#8A3F5C", 9), demoFile("字幕.srt")],
+      reviews: { mine: { stars: 5, tags: ["準時交貨", "質素好"], text: "錯字執得好乾淨，仲幫我標咗幾個斷句問題。" }, theirs: { stars: 5, tags: ["需求清楚", "準時確認"], text: "片段整理得好清楚，交咗即日確認。" } } });
+    state.orders.push({ id: "o8", side: "worker", example: true, title: "每月 8 條 AI 短片（小紅書 + IG）", partner: "銅鑼灣 · 美甲店", amount: 8000, status: 6,
+      reviews: { mine: { stars: 5, tags: ["需求清楚", "準時確認"], text: "相片同要求一次過畀齊，好易合作。" }, theirs: { stars: 5, tags: ["準時交貨", "質素好", "肯改"], text: "每星期準時交，條條都有人問邊度整。" } } });
+    state.orders.push({ id: "o0", side: "boss", example: true, title: "老闆 AI 分身講解產品 10 條", partner: "Sam", amount: 12000, status: 2, rating: 0 });
+  })();
+
+  try { const u = JSON.parse(localStorage.getItem("aipd-user") || "null"); if (u && u.name) { state.user = u; if (known[u.email]) { state.profile = known[u.email].profile; if (state.profile) state.profile.id = "u:" + u.email; } } } catch (e) {}
+  renderAccount();
+  go(location.hash.slice(1) || "post");
+})();
+</script>
