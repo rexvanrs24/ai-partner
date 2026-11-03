@@ -80,6 +80,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .gbtn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 14px 6px 10px; font-weight: 700; font-size: 14.5px; cursor: pointer; white-space: nowrap; }
 .gbtn:hover { border-color: var(--muted); }
 .gbtn svg { width: 18px; height: 18px; flex: none; }
+.g-btn { min-height: 44px; display: flex; justify-content: center; }
 .gbtn.big { width: 100%; justify-content: center; padding: 11px 16px; font-size: 16px; border-radius: 10px; }
 .me-btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--top-line); background: transparent; color: var(--top-ink); border-radius: 999px; padding: 3px 12px 3px 3px; cursor: pointer; font-weight: 700; font-size: 14.5px; white-space: nowrap; }
 .me-btn .avatar { width: 30px; height: 30px; font-size: 14px; }
@@ -898,8 +899,18 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     const out = [];
     for (const f of list) {
       if (/^image\/(jpeg|png|webp|heic|heif|bmp)/.test(f.type)) {
-        try { out.push({ name: f.name, type: "image/jpeg", size: f.size, url: await shrink(f, max) }); continue; } catch (e) {}
+        try {
+          const data = await shrink(f, max);
+          let url = data;
+          if (canUpload()) { try { url = await uploadBlob(await (await fetch(data)).blob(), f.name); } catch (e) { toast("上載唔到後台，呢張相暫時存喺呢部機"); } }
+          out.push({ name: f.name, type: "image/jpeg", size: f.size, url });
+          continue;
+        } catch (e) {}
       }
+      if (canUpload() && f.size <= 25 * 1048576) {
+        try { out.push({ name: f.name, type: f.type || "", size: f.size, url: await uploadBlob(f, f.name) }); continue; }
+        catch (e) { toast("上載唔到後台：" + f.name); }
+      } else if (canUpload()) toast(`${f.name} 太大，每個檔案最多 25 MB`);
       out.push({ name: f.name, type: f.type || "", size: f.size, url: URL.createObjectURL(f), temp: true });
     }
     return out;
@@ -1794,9 +1805,10 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
         <div class="box login-card">
           <h1>登入 AI拍檔</h1>
           <p>${esc(LOGIN_WHY[state.loginWhy] || "登入之後就可以搵人幫手、報價同交試工，你嘅需求、訂單同評分都會跟住你個帳戶。")}</p>
-          <button type="button" class="gbtn big" id="g-start">${G_LOGO}<span>用 Google 登入</span></button>
+          ${realLogin() ? `<div id="g-btn" class="g-btn"></div>` : ""}
+          ${!realLogin() || CFG.demo ? `<button type="button" class="gbtn big" id="g-start">${G_LOGO}<span>${realLogin() ? "（測試）用示範帳戶登入" : "用 Google 登入"}</span></button>` : ""}
           <div id="g-pick" hidden>
-            <p class="small muted">（模擬）真網站呢一步會跳去 Google 嘅頁面揀帳戶，呢度用虛構帳戶代替：</p>
+            <p class="small muted">${realLogin() ? "（測試）只喺本機測試用：" : "（模擬）真網站呢一步會跳去 Google 嘅頁面揀帳戶，呢度用虛構帳戶代替："}</p>
             <div class="acc-list">${DEMO_ACCOUNTS.map((a, i) => `<button type="button" class="acc" data-gacc="${i}">${avatar(a)}<span><b>${esc(a.name)}</b><br><span class="small muted">${esc(a.email)}</span></span></button>`).join("")}</div>
           </div>
           <p class="small muted">我哋只會由 Google 攞你嘅名、電郵同頭像，唔會見到你嘅密碼。第一次登入會自動開帳戶。繼續即表示你同意服務條款同私隱政策。</p>
@@ -1805,7 +1817,8 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
         </div>
       </div>`;
     bindLoginClose();
-    $("#g-start").addEventListener("click", () => { $("#g-start").hidden = true; $("#g-pick").hidden = false; $(".acc").focus(); });
+    if ($("#g-start")) $("#g-start").addEventListener("click", () => { $("#g-start").hidden = true; $("#g-pick").hidden = false; $(".acc").focus(); });
+    if (realLogin()) mountGoogle();
   };
   function closeLogin() {
     let view = state.loginFrom || (roleOf("login") === "worker" ? "find" : "post");
@@ -1845,6 +1858,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     finishLogin();
   }
   function finishLogin() {
+    if (API) resync();
     const next = state.afterLogin, view = state.loginNext || "post";
     state.afterLogin = null; state.loginNext = null; state.loginWhy = null;
     go(view);
@@ -1966,7 +1980,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       <div class="drawer-body">
         <div class="avatar-row">${avatar(u, true)}<div style="min-width:0;flex:1"><h3>${esc(u.name)}</h3><div class="muted small">${esc(u.email)}</div>
           ${uploader("acc-photo", ph, { label: "換頭像", hint: "揀一張相", single: true, accept: "image/*", max: 400, onChange: list => { u.photo = list[0] ? list[0].url : u.photo; saveMe(); renderAccount(); RENDER[state.view]({}); openAccount(); toast("頭像已更新"); } })}
-          ${u.photo ? `<button type="button" class="link" data-unphoto>用返 Google 頭像</button>` : ""}</div></div>
+          ${u.photo && u.photo !== u.gphoto ? `<button type="button" class="link" data-unphoto>用返 Google 頭像</button>` : ""}</div></div>
         <div class="sum small">
           <div><span class="muted">登入方式</span><span>Google</span></div>
           <div><span class="muted">身份</span><span>${esc(KINDS[u.kind] || "")}</span></div>
@@ -1981,13 +1995,17 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       </div>
       <div class="drawer-foot"><button type="button" class="btn btn-ghost" data-logout>登出</button></div>`);
   }
-  function signOut() {
+  function signOut(expired) {
     if (state.user && state.user.onboarded) { known[state.user.email] = { user: state.user, profile: state.profile }; saveKnown(); }
+    if (session && expired !== true) { fetch(API + "/api/logout", { method: "POST", headers: authHeaders() }).catch(() => {}); }
+    session = null;
+    try { localStorage.removeItem("aipd-session"); } catch (e) {}
     state.user = null; state.profile = null; state.setup = null; state.setupErr = null;
+    if (API) resync();
     try { localStorage.removeItem("aipd-user"); } catch (e) {}
     closeDrawer();
     renderAccount();
-    toast("已經登出");
+    if (expired !== true) toast("已經登出");
     go(PRIVATE.includes(state.view) ? (roleOf(state.view) === "worker" ? "find" : "post") : state.view);
   }
 
@@ -2200,7 +2218,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     if (d.trial) { if (!needProfile("trial", d.trial)) openSubmit(d.trial); return; }
     if (d.editprofile) return renderProfile({ edit: true });
     if (d.works) return openWorks();
-    if (d.unphoto !== undefined) { state.user.photo = ""; saveMe(); renderAccount(); RENDER[state.view]({}); toast("用返 Google 頭像"); return openAccount(); }
+    if (d.unphoto !== undefined) { state.user.photo = state.user.gphoto || ""; saveMe(); renderAccount(); RENDER[state.view]({}); toast("用返 Google 頭像"); return openAccount(); }
     if (d.ptier) { const p = state.profile; p.tier = d.ptier; p.rate = rateFor(p.tier, catById(p.cat)); return RENDER.find({}); }
     if (d.avail) { state.profile.avail = d.avail; return RENDER.find({}); }
     // 進行中
@@ -2221,6 +2239,170 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
   });
   $("#logo").addEventListener("click", () => { closeDrawer(); go("post"); });
   window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (v && v !== state.view) go(v); });
+
+  // ---------- back end: records and files are kept on the Mac when the page can reach it ----------
+  // served from the Mac itself (local test) it talks to the same address; on GitHub Pages it uses the tunnel address
+  const BACKEND_URL = "https://rexmb.tail2f3ae7.ts.net";
+  const API = (() => {
+    const h = location.hostname;
+    if (/^https?:$/.test(location.protocol) && (h === "localhost" || h === "127.0.0.1")) return location.origin;
+    if (h === "rexvanrs24.github.io") return BACKEND_URL;
+    return "";
+  })();
+  const canUpload = () => !!(API && me());
+  // Google login: the server checks Google's token and gives back a session kept in this browser
+  const CFG = { google: "", demo: !API };
+  let session = null;
+  try { session = JSON.parse(localStorage.getItem("aipd-session") || "null"); } catch (e) {}
+  const realLogin = () => !!(API && CFG.google);
+  const authHeaders = () => session && session.token ? { Authorization: "Bearer " + session.token } : (CFG.demo && me() ? { "X-User": me() } : {});
+  const HUES = ["#B4532E", "#3E6FA8", "#2E7D5B", "#8A5A12", "#6A4E8C", "#8A3F5C", "#2E6B7A"];
+  const hueFor = email => HUES[[...email].reduce((a, c) => a + c.charCodeAt(0), 0) % HUES.length];
+  function loadGoogle() {
+    if (window.google && google.accounts) return Promise.resolve();
+    return new Promise((ok, bad) => {
+      const sc = document.createElement("script");
+      sc.src = "https://accounts.google.com/gsi/client?hl=zh-TW"; sc.async = true; sc.onload = ok; sc.onerror = bad;
+      document.head.appendChild(sc);
+    });
+  }
+  async function mountGoogle() {
+    const box = $("#g-btn"); if (!box) return;
+    try {
+      await loadGoogle();
+      google.accounts.id.initialize({ client_id: CFG.google, callback: onGoogle, ux_mode: "popup" });
+      google.accounts.id.renderButton(box, { theme: "filled_black", size: "large", shape: "pill", text: "signin_with", locale: "zh-TW", width: Math.min(360, box.clientWidth || 320) });
+    } catch (e) { box.innerHTML = `<p class="err">連唔到 Google 登入，請檢查網絡再重新整理。</p>`; }
+  }
+  async function onGoogle(resp) {
+    try {
+      const r = await fetch(API + "/api/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ credential: resp.credential }) });
+      if (!r.ok) throw new Error("login " + r.status);
+      const j = await r.json();
+      session = { token: j.token, email: j.email };
+      try { localStorage.setItem("aipd-session", JSON.stringify(session)); } catch (e) {}
+      // read this account's saved details first, so a returning person skips the setup form
+      since = 0;
+      try { await pull(); } catch (e) {}
+      signIn({ name: j.name, email: j.email, hue: hueFor(j.email), photo: j.picture || "", gphoto: j.picture || "" });
+    } catch (e) { toast("Google 登入未成功，請再試一次"); }
+  }
+  // the server no longer accepts this login (expired or signed out elsewhere)
+  function loginExpired() {
+    session = null;
+    try { localStorage.removeItem("aipd-session"); } catch (e) {}
+    if (state.user) { toast("登入已經過期，請再登入"); signOut(true); }
+  }
+  async function uploadBlob(blob, name) {
+    const r = await fetch(API + "/api/files", { method: "POST", body: blob,
+      headers: { "Content-Type": blob.type || "application/octet-stream", ...authHeaders(), "X-Filename": encodeURIComponent(name) } });
+    if (!r.ok) throw new Error("upload " + r.status);
+    return API + (await r.json()).url;
+  }
+  const SYNCED = { needs: () => state.needs, quotes: () => state.quotes, subs: () => state.subs, orders: () => state.orders, notes: () => state.notes };
+  const sent = {};       // "coll:id" -> the record as last saved or received
+  let since = 0, online = null, syncing = false;
+  // file links are stored with the address they were uploaded to; point them at the current one
+  const fixUrls = text => text.replace(/https?:\/\/[^"\\\s]*?\/files\/(?=[0-9a-f]{32}\.)/g, API + "/files/");
+  function setOnline(ok) {
+    if (online === ok) return;
+    if (online !== null) toast(ok ? "已經連返後台" : "連唔到後台，新資料暫時只存喺呢部機");
+    online = ok;
+  }
+  async function push() {
+    if (!signedUp()) return;
+    const jobs = [];
+    for (const [coll, get] of Object.entries(SYNCED)) for (const x of get()) {
+      if (x.example || !(x.owner || x.to)) continue;
+      const text = JSON.stringify(x), key = coll + ":" + x.id;
+      if (sent[key] !== text) jobs.push([coll, x.id, text, key]);
+    }
+    const mine = JSON.stringify({ id: me(), user: state.user, profile: state.profile });
+    if (sent["users:" + me()] !== mine) jobs.push(["users", me(), mine, "users:" + me()]);
+    for (const [coll, id, text, key] of jobs) {
+      const r = await fetch(`${API}/api/rec/${coll}/${encodeURIComponent(id)}`, { method: "PUT", body: text, headers: { "Content-Type": "application/json", ...authHeaders() } });
+      if (r.ok) sent[key] = text;
+      else if (r.status === 401 && session) return loginExpired();
+    }
+  }
+  async function pull() {
+    const r = await fetch(`${API}/api/state?since=${since}`, { headers: authHeaders(), cache: "no-store" });
+    if (r.status === 401 && session) { loginExpired(); return; }
+    if (!r.ok) throw new Error("state " + r.status);
+    const j = JSON.parse(fixUrls(await r.text()));
+    let changed = false;
+    for (const { coll, data } of j.recs) {
+      const key = coll + ":" + data.id;
+      if (coll === "users") {
+        const email = String(data.id).toLowerCase();
+        if (email === me()) {
+          // your own account: take the saved copy unless you changed something here that is not saved yet
+          if (sent[key] !== undefined && JSON.stringify({ id: me(), user: state.user, profile: state.profile }) !== sent[key]) continue;
+          if (data.user) Object.assign(state.user, data.user);
+          if (data.profile) state.profile = state.profile ? Object.assign(state.profile, data.profile) : data.profile;
+          sent[key] = JSON.stringify({ id: me(), user: state.user, profile: state.profile });
+        }
+        const before = JSON.stringify(known[email] || null);
+        known[email] = { user: data.user, profile: data.profile };
+        if (before !== JSON.stringify(known[email])) changed = true;
+        continue;
+      }
+      const list = SYNCED[coll] && SYNCED[coll](); if (!list) continue;
+      const local = list.find(x => x.id === data.id);
+      if (local) {
+        const now = JSON.stringify(local);
+        if (sent[key] !== undefined && now !== sent[key]) continue;   // changed here, not saved yet: keep ours
+        if (now !== JSON.stringify(data)) { Object.assign(local, data); changed = true; }
+        sent[key] = JSON.stringify(local);
+      } else {
+        if (coll === "needs") list.unshift(data); else list.push(data);
+        sent[key] = JSON.stringify(data);
+        changed = true;
+      }
+    }
+    since = j.now;
+    if (fillContacts()) changed = true;
+    if (changed) {
+      saveKnown();
+      renderNav(); renderAccount();
+      const a = document.activeElement, typing = a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName);
+      if ($("#drawer").hidden && !typing && state.view !== "login" && !LB) RENDER[state.view]({});
+    }
+  }
+  // the client's copy of a job gets the worker's WhatsApp once the server lets it through
+  function fillContacts() {
+    let any = false;
+    state.orders.filter(o => ownedBy(o) && o.link && !o.contact).forEach(o => {
+      const lk = state.orders.find(x => x.id === o.link), k = lk && known[String(lk.owner || "").toLowerCase()];
+      if (k && k.user && k.user.phone) { o.contact = k.user.phone; any = true; }
+    });
+    return any;
+  }
+  async function syncNow() {
+    if (!API || syncing) return;
+    syncing = true;
+    try { await push(); await pull(); setOnline(true); }
+    catch (e) { setOnline(false); }
+    finally { syncing = false; }
+  }
+  // a different person logged in: start again from everything they are allowed to see
+  function resync() {
+    since = 0;
+    syncNow();
+  }
+  async function startSync() {
+    if (!API) return;
+    try {
+      const c = await (await fetch(API + "/api/config", { cache: "no-store" })).json();
+      CFG.google = c.google_client_id || ""; CFG.demo = !!c.demo;
+    } catch (e) {}
+    // on the real site a saved login without its server session is not a login
+    if (realLogin() && state.user && !session && !CFG.demo) { state.user = null; state.profile = null; renderAccount(); }
+    if (state.view === "login") RENDER.login({});
+    syncNow();
+    setInterval(syncNow, 3000);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) syncNow(); });
+  }
 
   // ---------- examples so each page has something to show ----------
   (function seed() {
@@ -2251,5 +2433,6 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
   try { const u = JSON.parse(localStorage.getItem("aipd-user") || "null"); if (u && u.name) { state.user = u; if (known[u.email]) { state.profile = known[u.email].profile; if (state.profile) state.profile.id = "u:" + u.email; } } } catch (e) {}
   renderAccount();
   go(location.hash.slice(1) || "post");
+  startSync();
 })();
 </script>
