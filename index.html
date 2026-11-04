@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800&family=Noto+Sans+HK:wght@400;500;700;900&display=swap">
 <style>
-/* Layout: Uber-style look — black bar, white page, flat grey tiles instead of shadowed cards, black pill and square buttons; the two side colours stay only on 我要搵人 / 我要搵工 */
+/* Layout: Uber-style look — black bar, white page, flat grey tiles instead of shadowed cards; each side keeps its own colour (搵人 coral, 搵工 cerulean) on the bar, buttons, selections and progress so you always know which side you are on */
 :root {
   --bg: #FFFFFF;
   --surface: #FFFFFF;
@@ -22,10 +22,11 @@
   --signal: #8A5A00;
   --signal-soft: #FFF3D6;
   --star: #000000;
-  --boss: #000000; --boss-ink: #FFFFFF; --boss-soft: #F3F3F3; --boss-top: #FF7B86;
-  --worker: #000000; --worker-ink: #FFFFFF; --worker-soft: #F3F3F3; --worker-top: #5CB8EA;
+  --boss: #D7424E; --boss-ink: #FFFFFF; --boss-soft: #FCE7E9; --boss-top: #FF7B86;
+  --worker: #0874AB; --worker-ink: #FFFFFF; --worker-soft: #E1F0F8; --worker-top: #5CB8EA;
   --top-bg: #000000; --top-ink: #FFFFFF; --top-muted: #CBCBCB; --top-line: #333333; --top-tile: #1F1F1F;
   --danger: #D1302A;
+  --need: #0F766E; --need-ink: #FFFFFF; --need-soft: #E3F4F1;
   --f-body: "Noto Sans HK", "Figtree", "PingFang HK", "Microsoft JhengHei", system-ui, sans-serif;
   --f-display: "Figtree", "Noto Sans HK", "PingFang HK", system-ui, sans-serif;
   --f-num: "Figtree", "Noto Sans HK", system-ui, sans-serif;
@@ -35,9 +36,10 @@
     --bg: #000000; --surface: #000000; --tile: #1F1F1F; --tile-2: #2B2B2B; --ink: #FFFFFF; --muted: #AFAFAF; --line: #2E2E2E;
     --accent: #FFFFFF; --accent-ink: #000000; --accent-soft: #1F1F1F;
     --signal: #F0BC52; --signal-soft: #2D2513; --star: #FFFFFF;
-    --boss: #FFFFFF; --boss-ink: #000000; --boss-soft: #1F1F1F;
-    --worker: #FFFFFF; --worker-ink: #000000; --worker-soft: #1F1F1F;
+    --boss: #FF7B86; --boss-ink: #2A070B; --boss-soft: #3A1A20;
+    --worker: #5CB8EA; --worker-ink: #04192A; --worker-soft: #12293A;
     --top-bg: #000000; --top-line: #333333; --top-tile: #1F1F1F; --danger: #FF7A6E;
+  --need: #5EC2B0; --need-ink: #04201C; --need-soft: #0E2A27;
     color-scheme: dark;
   }
 }
@@ -45,9 +47,10 @@
   --bg: #000000; --surface: #000000; --tile: #1F1F1F; --tile-2: #2B2B2B; --ink: #FFFFFF; --muted: #AFAFAF; --line: #2E2E2E;
   --accent: #FFFFFF; --accent-ink: #000000; --accent-soft: #1F1F1F;
   --signal: #F0BC52; --signal-soft: #2D2513; --star: #FFFFFF;
-  --boss: #FFFFFF; --boss-ink: #000000; --boss-soft: #1F1F1F;
-  --worker: #FFFFFF; --worker-ink: #000000; --worker-soft: #1F1F1F;
+  --boss: #FF7B86; --boss-ink: #2A070B; --boss-soft: #3A1A20;
+  --worker: #5CB8EA; --worker-ink: #04192A; --worker-soft: #12293A;
   --top-bg: #000000; --top-line: #333333; --top-tile: #1F1F1F; --danger: #FF7A6E;
+  --need: #5EC2B0; --need-ink: #04201C; --need-soft: #0E2A27;
   color-scheme: dark;
 }
 body[data-side="boss"] { --accent: var(--boss); --accent-ink: var(--boss-ink); --accent-soft: var(--boss-soft); --side: var(--boss-top); }
@@ -376,12 +379,15 @@ h2 { font-size: 22px; font-weight: 800; }
 .role button { border: 0; background: none; color: var(--top-muted); padding: 8px 18px; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; box-shadow: none; }
 .role button::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
 .role button:hover { background: rgba(255, 255, 255, .08); color: var(--top-ink); }
-.role button[aria-pressed="true"] { background: #FFFFFF; color: #000000; box-shadow: none; }
+.role button[aria-pressed="true"] { background: var(--c); color: #000000; box-shadow: none; }
+.role button[aria-pressed="true"]::before { background: #000000; }
+.top { box-shadow: inset 0 -3px 0 var(--side); }
 .nav button { font-weight: 600; color: var(--top-ink); padding: 8px 12px; }
 .nav button:hover { background: var(--top-tile); }
 .nav button[aria-current="page"] { background: #FFFFFF; color: #000000; }
 .nav .count { background: var(--top-tile); color: var(--top-ink); }
-.nav button[aria-current="page"] .count, body[data-side="boss"] .nav button[aria-current="page"] .count, body[data-side="worker"] .nav button[aria-current="page"] .count { background: #000000; color: #FFFFFF; }
+.nav button[aria-current="page"] { box-shadow: inset 0 -3px 0 var(--side); }
+.nav button[aria-current="page"] .count, body[data-side="boss"] .nav button[aria-current="page"] .count, body[data-side="worker"] .nav button[aria-current="page"] .count { background: var(--accent); color: var(--accent-ink); }
 .bell { border: 0; background: var(--top-tile); }
 .bell .count { background: #FFFFFF; color: #000000; }
 .me-btn { border: 0; background: var(--top-tile); }
@@ -402,11 +408,11 @@ h2 { font-size: 22px; font-weight: 800; }
 /* chips and pills: grey, selected = black */
 .chip { background: var(--tile); border: 0; color: var(--ink); font-weight: 600; padding: 5px 12px; font-size: 13.5px; }
 button.chip:hover { background: var(--tile-2); color: var(--ink); }
-button.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+button.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
 .tabs .chip { padding: 8px 16px; font-size: 14.5px; }
 .pill { border: 0; background: var(--tile); color: var(--ink); font-weight: 700; padding: 3px 10px; border-radius: 4px; }
 .pill.waiting { background: var(--signal-soft); color: var(--signal); }
-.pill.accepted { background: var(--ink); color: var(--bg); }
+.pill.accepted { background: var(--accent); color: var(--accent-ink); }
 .pill.declined { background: var(--tile); color: var(--muted); }
 .tier { border-radius: 999px; padding: 1px 8px; font-weight: 700; }
 .tier.master { background: var(--ink); color: var(--bg); }
@@ -426,16 +432,16 @@ button.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
 .row:hover { background: transparent; }
 .row-main:hover h3 { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
 button.row { border-bottom: 1px solid var(--line); }
-.need-item[aria-current="true"] { background: var(--tile); border-radius: 8px; }
+.need-item[aria-current="true"] { background: var(--accent-soft); border-radius: 8px; }
 .need-item:hover h3 { color: var(--ink); }
 .tier-card { border: 0; background: var(--tile); box-shadow: none; border-radius: 12px; padding: 16px; }
 .tier-card:hover { background: var(--tile-2); border-color: transparent; }
-.tier-card[aria-pressed="true"] { background: var(--ink); color: var(--bg); box-shadow: none; }
-.tier-card[aria-pressed="true"] .small, .tier-card[aria-pressed="true"] .meta, .tier-card[aria-pressed="true"] .num { color: var(--bg); }
+.tier-card[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); box-shadow: none; }
+.tier-card[aria-pressed="true"] .small, .tier-card[aria-pressed="true"] .meta, .tier-card[aria-pressed="true"] .num { color: var(--accent-ink); }
 .tier-card[aria-pressed="true"] .tier { background: var(--bg); color: var(--ink); border: 0; }
 .modes label { border: 2px solid transparent; background: var(--tile); border-radius: 8px; }
-.modes label:has(input:checked) { border-color: var(--ink); background: var(--bg); }
-.modes input, .check input { accent-color: var(--ink); }
+.modes label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.modes input, .check input { accent-color: var(--accent); }
 .sub { border: 0; box-shadow: none; border-radius: 12px; background: var(--tile); }
 .sub > .gal { background: transparent; padding: 0; }
 .sub > .gal .thumb { border-radius: 12px 12px 0 0; border: 0; }
@@ -446,16 +452,16 @@ button.row { border-bottom: 1px solid var(--line); }
 .note { background: var(--tile); border-radius: 8px; padding: 10px 12px; }
 .deliv { background: var(--tile); border-radius: 8px; }
 .progress i { height: 4px; border-radius: 0; background: var(--line); }
-.progress i.done { background: var(--ink); }
+.progress i.done { background: var(--accent); }
 .progress i.now { background: var(--muted); }
-.step > span:first-child { background: var(--ink); color: var(--bg); font-family: var(--f-num); font-weight: 700; border-radius: 4px; }
+.step > span:first-child { background: var(--accent); color: var(--accent-ink); font-family: var(--f-num); font-weight: 700; border-radius: 4px; }
 .price { font-family: var(--f-num); font-weight: 800; font-size: 17px; }
 .num { font-family: var(--f-num); font-weight: 600; }
 .hard li::marker { color: var(--ink); }
 
 /* form fields: grey fill, black ring when typing */
 textarea, input[type="text"], input[type="number"], input[type="tel"], select { border: 2px solid transparent; background: var(--tile); border-radius: 8px; padding: 12px 14px; font-weight: 500; }
-textarea:focus, input:focus, select:focus { border-color: var(--ink); background: var(--bg); box-shadow: none; outline: none; }
+textarea:focus, input:focus, select:focus { border-color: var(--accent); background: var(--bg); box-shadow: none; outline: none; }
 .fields label, .field-label { color: var(--muted); font-weight: 600; }
 .drop { border: 2px dashed var(--line); background: var(--tile); border-radius: 12px; }
 .drop:hover, .upl.over .drop { border-color: var(--ink); }
@@ -464,8 +470,8 @@ textarea:focus, input:focus, select:focus { border-color: var(--ink); background
 .thumb { border: 0; border-radius: 8px; background: var(--tile); }
 .thumb:hover { border-color: transparent; opacity: .9; }
 .thumb .doc b { color: var(--ink); }
-.thumb[aria-pressed="true"] { outline-color: var(--ink); }
-.thumb[aria-pressed="true"]::after { background: var(--ink); color: var(--bg); }
+.thumb[aria-pressed="true"] { outline-color: var(--accent); }
+.thumb[aria-pressed="true"]::after { background: var(--accent); color: var(--accent-ink); }
 .gal-more { border: 0; background: var(--tile); border-radius: 8px; }
 .job-thumb { border: 0; border-radius: 8px; width: 72px; height: 72px; }
 .cat-tile { background: var(--tile); color: var(--ink); }
@@ -483,7 +489,7 @@ textarea:focus, input:focus, select:focus { border-color: var(--ink); background
 .drawer-foot .btn { padding-block: 14px; }
 .x { width: 36px; height: 36px; border-radius: 50%; background: var(--tile); color: var(--ink); font-size: 20px; padding: 0; display: grid; place-items: center; }
 .msg { border: 0; background: var(--tile); border-radius: 12px; }
-.msg.me { background: var(--ink); color: var(--bg); }
+.msg.me { background: var(--accent); color: var(--accent-ink); }
 .msg.ai { background: var(--signal-soft); }
 .login-card { border: 0; background: var(--bg); }
 .login-x { background: var(--tile); }
@@ -491,6 +497,19 @@ textarea:focus, input:focus, select:focus { border-color: var(--ink); background
 .acc:hover { background: var(--tile-2); }
 .toast { background: var(--ink); color: var(--bg); border-radius: 8px; font-weight: 600; }
 footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
+/* a note under the bar; once closed it stays closed until the text changes */
+.memo { background: var(--signal-soft); border-bottom: 1px solid color-mix(in srgb, var(--signal) 35%, transparent); }
+.memo-in { display: flex; align-items: flex-start; gap: 12px; padding-block: 12px; }
+.memo-tag { flex: none; font-size: 12.5px; font-weight: 700; background: var(--signal); color: var(--signal-soft); padding: 2px 8px; border-radius: 4px; margin-top: 2px; }
+.memo p { flex: 1; min-width: 0; font-size: 15px; line-height: 1.6; }
+.memo-x { flex: none; width: 32px; height: 32px; border: 0; border-radius: 50%; background: color-mix(in srgb, var(--signal) 14%, transparent); color: var(--ink); font-size: 20px; line-height: 1; cursor: pointer; }
+.memo-x:hover { background: color-mix(in srgb, var(--signal) 26%, transparent); }
+.memo.need { background: var(--need-soft); border-bottom-color: color-mix(in srgb, var(--need) 35%, transparent); }
+.memo.need .memo-tag { background: var(--need); color: var(--need-ink); }
+.memo.need .memo-x { background: color-mix(in srgb, var(--need) 14%, transparent); }
+.memo.need .memo-x:hover { background: color-mix(in srgb, var(--need) 26%, transparent); }
+.memo .memo-go { flex: none; align-self: center; border: 0; border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: 14px; cursor: pointer; background: var(--need); color: var(--need-ink); white-space: nowrap; }
+@media (max-width: 560px) { .memo-in { flex-wrap: wrap; } .memo p { flex-basis: calc(100% - 100px); } .memo .memo-go { margin-left: 52px; } }
 :focus-visible { outline-color: var(--ink); }
 .top :focus-visible { outline-color: #FFFFFF; }
 </style>
@@ -509,6 +528,8 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
   </div>
 </header>
 
+<div id="memos"></div>
+
 <main class="wrap">
   <section class="view" id="v-post"></section>
   <section class="view" id="v-login" hidden></section>
@@ -519,7 +540,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
   <section class="view" id="v-work" hidden></section>
 </main>
 
-<footer><div class="wrap">網站模型：AI 回應、工作者報價、試工作品同客戶回覆都係模擬，工作、人才同訂單都係虛構例子，唔會真係收錢。平台只做配對：金額同付款由雙方自行處理，平台唔經手、唔收費、唔抽佣。</div></footer>
+<footer><div class="wrap">網站模型：AI 回應、工作者報價、試工作品同客戶回覆都係模擬，job、人才同訂單都係虛構例子，唔會真係收錢。平台只做配對：金額同付款方式由雙方自行處理，平台唔經手、唔收費、唔抽佣。</div></footer>
 
 <div class="scrim" id="scrim" hidden></div>
 <aside class="drawer" id="drawer" hidden aria-modal="true" role="dialog" aria-labelledby="drawer-title"></aside>
@@ -556,23 +577,27 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       skills: ["音頻剪接", "AI 降噪", "字幕", "短片精華"],
       deliver: ["剪好嘅一集", "字幕檔", "精華短片"],
       hard: ["一小時錄音要剪成精華", "雜音同口頭禪要清", "要揀到最吸引嘅片段"] },
-    { id: "leads", name: "搵客", kw: ["搵客", "客源", "潛在客", "名單", "lead", "落廣告", "廣告投放", "ads", "開發客", "多啲客", "生意", "推廣", "seo", "冷郵", "cold"], median: 5000,
+    { id: "leads", name: "搵客", kw: ["搵客", "公司客", "新客", "客源", "潛在客", "名單", "lead", "落廣告", "廣告投放", "ads", "開發客", "多啲客", "生意", "推廣", "seo", "冷郵", "cold"], median: 5000,
       skills: ["廣告投放", "客戶名單", "AI 外展訊息", "SEO"],
       deliver: ["客戶名單或者廣告設定", "訊息範本", "效果報告"],
       hard: ["要搵啱目標客，唔係亂撒", "AI 寫嘅訊息要似真人，唔可以似 spam", "要計清楚每個查詢用幾多錢"] },
+    { id: "teach", name: "教學", kw: ["教", "上堂", "課程", "培訓", "workshop", "工作坊", "導師", "一對一", "學識"], median: 3000,
+      skills: ["AI 工具教學", "ChatGPT", "課程設計", "一對一指導"],
+      deliver: ["上堂（實體或者網上）", "教材同指令範本", "一個月問答跟進"],
+      hard: ["要用學員自己嘅例子", "學員程度唔同，要調節", "教完要即刻用得"] },
     { id: "other", name: "其他", kw: [], median: 3000,
-      skills: ["ChatGPT", "AI 工具教學"],
+      skills: ["ChatGPT", "AI 工具"],
       deliver: ["按需求講好嘅成品"],
       hard: ["要先講清楚想要咩", "未必有現成做法，要邊試邊做"] },
   ];
   const catById = id => CATS.find(c => c.id === id);
-  const CAT_SHORT = { video: "影片", photo: "相片", avatar: "分身", auto: "自動化", bulk: "代做", audio: "音頻", leads: "搵客", other: "其他" };
-  const CAT_HUE = { video: "#0874AB", photo: "#C2410C", avatar: "#6D28D9", auto: "#047857", bulk: "#B45309", audio: "#BE185D", leads: "#0F766E", other: "#475569" };
+  const CAT_SHORT = { video: "影片", photo: "相片", avatar: "分身", auto: "自動化", bulk: "代做", audio: "音頻", leads: "搵客", teach: "教學", other: "其他" };
+  const CAT_HUE = { video: "#0874AB", photo: "#C2410C", avatar: "#6D28D9", auto: "#047857", bulk: "#B45309", audio: "#BE185D", leads: "#0F766E", teach: "#6A4E8C", other: "#475569" };
   // demo files: names without an extension become stand-in pictures, the rest are file cards
   const REF_EG = {
     video: ["產品相", "品牌 logo", "想要嘅風格"], photo: ["而家嘅相", "舊菜單.pdf"], avatar: ["本人正面相", "聲音樣本.mp3"],
     auto: ["WhatsApp 查詢截圖", "價錢表.xlsx"], bulk: ["產品相", "規格表.xlsx"], audio: ["Podcast 封面", "錄音.mp3"],
-    leads: ["現有客戶名單.xlsx", "公司簡介.pdf"], other: ["報價單範本.pdf", "電郵例子.docx"],
+    leads: ["現有客戶名單.xlsx", "公司簡介.pdf"], teach: ["想學嘅內容.pdf", "學員名單.xlsx"], other: ["報價單範本.pdf", "電郵例子.docx"],
   };
   const WORK_CAPS = {
     video: ["護膚品 15 秒廣告", "餐廳開張 Reels", "樓盤介紹短片", "手機開箱短片"],
@@ -582,7 +607,8 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     bulk: ["Shopify 上架 300 件", "中英產品描述", "小紅書 30 篇文案", "產品換白色背景"],
     audio: ["Podcast 一集剪接", "訪問精華短片", "降噪前後比較", "字幕檔"],
     leads: ["B2B 名單 200 間", "Facebook 廣告設定", "外展訊息範本", "查詢數字報告"],
-    other: ["ChatGPT 公司堂", "指令範本", "AI 工具比較", "內部流程教學"],
+    teach: ["ChatGPT 公司堂", "AI 影片入門班", "Midjourney 一對一", "指令範本教材"],
+    other: ["AI 工具比較", "活動 AI 小遊戲", "內部流程整理", "AI 簡報設計"],
   };
   const ALL_SKILLS = [...new Set(CATS.flatMap(c => c.skills).concat(["Runway", "Kling", "Midjourney", "CapCut", "HeyGen", "ElevenLabs"]))];
 
@@ -626,7 +652,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     { id: "j13", tier: "mid", mode: "trial", trial: { brief: "搵 20 間有可能用我哋服務嘅公司，附聯絡人同 AI 寫嘅開場 WhatsApp。", max: 5, days: 3, refs: ["目標地區地圖", "服務價目表.pdf"], others: 1, subs: [] }, title: "AI 搵 200 個公司客 + 外展訊息", client: "上環 · 辦公室清潔公司", cat: "leads", skills: ["客戶名單", "AI 外展訊息"], budget: 5000, days: 14, posted: "4 小時前",
       desc: "想搵多啲寫字樓客。用 AI 幫我整理上環、中環 200 間公司嘅負責人，寫好一對一嘅開場訊息，我自己發。",
       hard: ["名單要真、唔可以亂作", "訊息要逐間改，唔似群發", "要避開已經係我哋客嘅公司"] },
-    { id: "j14", tier: "mid", mode: "direct", title: "教我班員工用 ChatGPT 寫報價同電郵", client: "葵涌 · 物流公司", cat: "other", skills: ["ChatGPT", "AI 工具教學"], budget: 3500, days: 7, posted: "2 日前",
+    { id: "j14", tier: "mid", mode: "direct", title: "教我班員工用 ChatGPT 寫報價同電郵", client: "葵涌 · 物流公司", cat: "teach", skills: ["ChatGPT", "AI 工具教學"], budget: 3500, days: 7, posted: "2 日前",
       desc: "8 個文職同事，想上一堂 2 小時嘅實用堂，用我哋自己嘅報價單同電郵做例子，教完要有一份指令範本。",
       hard: ["要用公司真實例子", "同事唔熟電腦，要講得淺", "指令範本要即刻用得"] },
   ];
@@ -656,8 +682,8 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       bio: "中文系畢業，專校粵語字幕同檢查 AI 影片穿崩畫面。" },
     { id: "t12", tier: "mid", name: "Fiona", head: "AI 搵客 · 廣告投放", cat: "leads", skills: ["廣告投放", "客戶名單", "AI 外展訊息", "SEO"], rate: [3000, 12000], rating: 4.8, done: 31, avail: "now", hue: "#2E6B7A",
       bio: "幫小店同 B2B 公司搵客，AI 整理名單再逐個寫訊息，平均每月多 30 個查詢。" },
-    { id: "t13", tier: "mid", name: "阿Ken", head: "AI 工具教學 · 雜項", cat: "other", skills: ["ChatGPT", "AI 工具教學"], rate: [1500, 6000], rating: 4.7, done: 19, avail: "week", hue: "#6A4E8C",
-      bio: "幫公司上 AI 實用堂，亦接唔知點分類嘅 AI 雜項。" },
+    { id: "t13", tier: "mid", name: "阿Ken", head: "AI 工具教學 · 一對一", cat: "teach", skills: ["ChatGPT", "AI 工具教學", "一對一指導"], rate: [1500, 6000], rating: 4.7, done: 19, avail: "week", hue: "#6A4E8C",
+      bio: "幫公司同個人上 AI 實用堂，小班或者一對一都得，教完有指令範本即刻用到。" },
   ];
 
   const AVAIL = { now: "即時可接", week: "本星期有空", later: "下星期先有空", off: "暫停接單" };
@@ -695,6 +721,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     bulk: "幫我寫 3 件產品嘅描述同上架樣板。",
     audio: "剪附件嗰段 5 分鐘錄音，出一條 30 秒精華。",
     leads: "搵 20 個合適嘅潛在客，附聯絡方法，再用 AI 寫一段開場訊息。",
+    teach: "錄一段 3 分鐘示範，教一樣你會教嘅 AI 技巧。",
     other: "用半頁紙講你會點做，同埋第一步做咩。",
   };
   const HIRE_EG = ["想用 AI 整條 60 秒產品宣傳片，要粵語配音，預算 $6000，兩星期", "每月幫我出 8 條小紅書短片，我畀相，$8000", "我有 80 張 AI 相要人手執手指，$800，3 日"];
@@ -706,7 +733,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     view: "post",
     filter: "all",
     tier: "all",
-    draft: null,          // the need being written on 發工作
+    draft: null,          // the need being written on 發 job
     needs: [],            // needs you posted as a client
     selNeed: null,
     needTab: "replies",
@@ -794,7 +821,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       .map(s => s.replace(/^.{0,8}?(?:我想|我要|需要|想|要|幫我|請人)\s*(?:用|搵人)?\s*/, "").replace(/^(用|搵人)\s*/, "").trim()).filter(Boolean);
     // pick the clause that says what the work is: a quantity, the category's words, AI
     const score = c => (/\d+\s*(條|張|款|件|集|頁|個|人|篇|秒|分鐘)/.test(c) ? 3 : 0) + (cat.kw.some(k => c.toLowerCase().includes(k)) ? 3 : 0) + (/AI/i.test(c) ? 2 : 0) + Math.min(c.length, 20) / 20;
-    title = title.slice().sort((a, b) => score(b) - score(a))[0] || cat.name + "工作";
+    title = title.slice().sort((a, b) => score(b) - score(a))[0] || cat.name + " job";
     return title.length > 26 ? title.slice(0, 26) + "…" : title;
   }
   const FIX_WORDS = /執|校對|核對|檢查|修正|覆核|人手/;
@@ -1011,12 +1038,12 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
 
   // ---------- routing ----------
   const NAV = {
-    boss:   [["post", "搵人幫手"], ["needs", "我發嘅工作"], ["hired", "進行中"]],
+    boss:   [["post", "搵人幫手"], ["needs", "我發嘅 job"], ["hired", "進行中"]],
     worker: [["find", "搵工"], ["sent", "我嘅報價"], ["work", "進行中"]],
   };
   const roleOf = view => view === "login" ? roleOf(state.loginNext || "post") : NAV.worker.some(([v]) => v === view) ? "worker" : "boss";
   const VIEWS = NAV.boss.concat(NAV.worker).map(([v]) => v).concat("login");
-  // 我發嘅工作 / 進行中 / 我嘅報價 belong to someone: without a login they open the login page first
+  // 我發嘅 job / 進行中 / 我嘅報價 belong to someone: without a login they open the login page first
   const PRIVATE = ["needs", "hired", "sent", "work"];
   const RENDER = {};
 
@@ -1055,11 +1082,12 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     if (views.includes(state.view) && $("#drawer").hidden) RENDER[state.view]({});
   }
 
-  // =================== 老闆：發工作 ===================
+  // =================== 老闆：發 job ===================
   RENDER.post = function () {
     $("#v-post").innerHTML = `
       <div class="split">
         <div class="side">
+          ${signedUp() ? `
           <form class="box" id="ask-form">
             <h1 class="h-side">AI 嘢識都唔想自己做？搵人幫你做。</h1>
             <p class="muted small">AI 影片、相片、分身配音、自動化、網店上架。講一句需求，AI 幫你整理，你揀直接聯絡定先試工。落實之後交換 WhatsApp，金額你哋自己傾，平台唔收費。</p>
@@ -1067,7 +1095,14 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
             <textarea id="ask-q" rows="4" placeholder="例如：${esc(HIRE_EG[0])}">${esc(state.draft ? state.draft.raw : "")}</textarea>
             <div class="chips">${HIRE_EG.map(e => `<button type="button" class="chip" data-fill="ask-q" data-text="${esc(e)}">${esc(e.slice(0, 12))}…</button>`).join("")}</div>
             <button class="btn ${state.draft ? "btn-ghost" : "btn-primary"}" type="submit">${state.draft ? "重新整理" : "AI 幫我整理"}</button>
-          </form>
+          </form>` : `
+          <div class="box">
+            <h1 class="h-side">AI 嘢識都唔想自己做？搵人幫你做。</h1>
+            <p class="muted small">AI 影片、相片、分身配音、自動化、網店上架。講一句需求，AI 幫你整理，再通知最啱嘅人報價或者試工。</p>
+            <p>用 Google 登入，填一次基本資料，就可以發 job、收報價同揀人。</p>
+            <button class="btn btn-primary" type="button" data-joinhire>登入，開始搵人</button>
+            <p class="small muted">平台只做配對：落實之後交換 WhatsApp，金額同付款方式由雙方自己傾，平台唔收費。</p>
+          </div>`}
           <div id="draft"></div>
         </div>
         <div class="main">
@@ -1079,6 +1114,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
           <div class="rows">${TALENT.filter(inFilters).map(t => talentRow(t)).join("") || `<div class="row muted">呢個組合暫時未有人才。</div>`}</div>
         </div>
       </div>`;
+    if (!signedUp()) return;
     $("#ask-form").addEventListener("submit", e => { e.preventDefault(); runDraft(); });
     if (state.draft) renderDraft(false);
   };
@@ -1133,7 +1169,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       <form class="box ${fresh ? "reveal" : ""}" id="draft-form">
         <div class="step"><span>2</span>確認需求 <span class="ai">AI 整理咗，可以改</span></div>
         <div class="fields">
-          <label>工作<input type="text" id="d-title" value="${esc(d.title)}"></label>
+          <label>job<input type="text" id="d-title" value="${esc(d.title)}"></label>
           <label>預算（HK$）<input type="number" id="d-budget" min="100" step="100" value="${d.budget}"></label>
           <label>幾多日內交<input type="number" id="d-days" min="1" value="${d.days}"></label>
         </div>
@@ -1141,7 +1177,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
         <div class="group"><span class="small muted">類別</span>${chipRow("類別", "dcat", CATS.map(c => [c.id, c.name]), d.cat)}</div>
         <div class="group"><span class="small muted">搵邊類人（AI 建議：${TIERS[d.suggested].name}）</span>${chipRow("級別", "dtier", Object.entries(TIERS).map(([k, v]) => [k, v.name]), d.tier)}
           <span class="small muted">${TIERS[d.tier].desc}，一般 ${TIERS[d.tier].price}</span></div>
-        <div><b class="small">呢類工作花時間喺邊</b><ul class="hard">${cat.hard.map(h => `<li>${esc(h)}</li>`).join("")}</ul></div>
+        <div><b class="small">呢類 job 花時間喺邊</b><ul class="hard">${cat.hard.map(h => `<li>${esc(h)}</li>`).join("")}</ul></div>
         ${uploader("d-refs", d.refs, { label: "參考檔案（可選）", hint: "產品相、舊片、logo、規格表、想要嘅風格例子。工作者報價前會睇到，可以拖入嚟。", limit: 12 })}
 
         <div class="step"><span>3</span>點樣揀人</div>
@@ -1158,7 +1194,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
           ${uploader("t-files", d.trial.files, { label: "試工素材", hint: "試工要用嘅相、片或者檔案，例如「用我提供嘅產品相」就喺度上載。", limit: 10 })}
           <p class="small muted">試工內容要細，工作者大約一兩個鐘做到。試工作品版權屬工作者，揀中落實先轉畀你。</p>`
         : `<p class="small muted">發佈後 AI 會即刻通知配對分最高嘅 3 個人：${top.map(esc).join("、")}。</p>`}
-        <button class="btn btn-primary" type="submit">發佈工作</button>
+        <button class="btn btn-primary" type="submit">發佈 job</button>
       </form>`;
     document.querySelectorAll('input[name="d-mode"]').forEach(r => r.addEventListener("change", () => { readDraft(); d.mode = r.value; renderDraft(false); }));
     $("#draft-form").addEventListener("submit", e => { e.preventDefault(); readDraft(); requireLogin(publishNeed, "publish"); });
@@ -1178,7 +1214,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     state.selNeed = need.id;
     state.needTab = "replies";
     invite(need, ranked(need, TALENT.filter(t => t.avail !== "off")).slice(0, 3).map(x => x.t.id));
-    toast(need.mode === "trial" ? "工作發佈咗，試工任務已經通知工作者" : "工作發佈咗，AI 已經通知 3 個最啱嘅人");
+    toast(need.mode === "trial" ? "job 發佈咗，試工任務已經通知工作者" : "job 發佈咗，AI 已經通知 3 個最啱嘅人");
     go("needs");
   }
 
@@ -1208,7 +1244,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     });
   }
 
-  // =================== 老闆：我發嘅工作 ===================
+  // =================== 老闆：我發嘅 job ===================
   function needStatus(n) {
     if (n.status === "hired") return ["已請人", "accepted"];
     if (n.mode === "trial") return [n.subs.length ? `收到 ${n.subs.length} 份樣板` : "等緊樣板", "waiting"];
@@ -1218,7 +1254,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
   RENDER.needs = function () {
     const needs = myNeeds();
     if (!needs.length) {
-      $("#v-needs").innerHTML = `<div class="box empty"><h2>你未發過工作</h2><p class="muted">講一句需求，AI 幫你整理同搵人。</p><div><button class="btn btn-primary" type="button" data-go="post">搵人幫手</button></div></div>`;
+      $("#v-needs").innerHTML = `<div class="box empty"><h2>你未發過 job</h2><p class="muted">講一句需求，AI 幫你整理同搵人。</p><div><button class="btn btn-primary" type="button" data-go="post">搵人幫手</button></div></div>`;
       return;
     }
     const n = needs.find(x => x.id === state.selNeed) || needs[0];
@@ -1227,7 +1263,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     $("#v-needs").innerHTML = `
       <div class="split">
         <div class="side">
-          <div class="ask-row"><h2>我發嘅工作</h2><button class="btn btn-ghost btn-sm" type="button" data-go="post">發新工作</button></div>
+          <div class="ask-row"><h2>我發嘅 job</h2><button class="btn btn-ghost btn-sm" type="button" data-go="post">發新 job</button></div>
           <div class="rows">${needs.map(x => { const [s, c] = needStatus(x); return `
             <button type="button" class="row need-item" data-need="${x.id}" aria-current="${x.id === n.id}">
               <div style="min-width:0"><h3>${esc(x.title)}</h3><div class="meta"><span>${MODES[x.mode].name}</span><span class="num">${hk(x.budget)}</span></div></div>
@@ -1299,9 +1335,9 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
   RENDER.hired = function () {
     const list = myOrders("boss").reverse(), br = received("boss");
     $("#v-hired").innerHTML = `
-      <div class="ask-row"><div><h2>進行中</h2><p class="muted small">工作者交貨上載成品，你睇完確認完成或者要求修改。金額同付款你哋自己處理。完成後雙方互相評分。</p></div>
-        <div class="row-side"><span class="small">${br.length ? `你作為老闆嘅評分 <b>★ ${avgOf(br).toFixed(1)}</b>（${br.length} 個評價）` : "完成第一單之後，工作者都會評你"}</span><button class="btn btn-ghost btn-sm" type="button" data-go="needs">我發嘅工作</button></div></div>
-      ${list.length ? `<div class="rows">${list.map(orderRow).join("")}</div>` : `<div class="box empty"><p class="muted">未請過人。喺「我發嘅工作」接受報價或者揀試工樣板之後，工作會喺度出現。</p></div>`}`;
+      <div class="ask-row"><div><h2>進行中</h2><p class="muted small">工作者交貨上載成品，你睇完確認完成或者要求修改。金額同付款方式你哋自己處理。完成後雙方互相評分。</p></div>
+        <div class="row-side"><span class="small">${br.length ? `你作為老闆嘅評分 <b>★ ${avgOf(br).toFixed(1)}</b>（${br.length} 個評價）` : "完成第一單之後，工作者都會評你"}</span><button class="btn btn-ghost btn-sm" type="button" data-go="needs">我發嘅 job</button></div></div>
+      ${list.length ? `<div class="rows">${list.map(orderRow).join("")}</div>` : `<div class="box empty"><p class="muted">未請過人。喺「我發嘅 job」接受報價或者揀試工樣板之後，job 會喺度出現。</p></div>`}`;
   };
 
   // a new worker has no score yet: say so instead of showing the starting value
@@ -1323,10 +1359,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     if (r.length) p.rating = avgOf(r);
   }
   function ratingBlock(list, empty, limit, side) {
-    if (!list.length) {
-      const eg = side ? reviewsOn(side, true)[0] : null;
-      return `<p class="small muted">${empty}</p>${eg ? reviewHtml(`<span class="chip">例子</span> ${esc(eg.from)} · ${esc(eg.title)}`, eg) : ""}`;
-    }
+    if (!list.length) return `<p class="small muted">${empty}</p>`;
     const avg = avgOf(list), tags = {};
     list.forEach(r => r.tags.forEach(t => { tags[t] = (tags[t] || 0) + 1; }));
     const top = Object.entries(tags).sort((a, b) => b[1] - a[1]).slice(0, 4);
@@ -1453,7 +1486,27 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
 
   function renderProfile(opts) {
     const p = state.profile, side = $("#find-side");
-    if (!p || (opts && opts.edit)) {
+    if (!p && !signedUp()) {
+      side.innerHTML = `
+        <div class="box">
+          <h1 class="h-side">用你嘅 AI 技能接工賺錢</h1>
+          <div class="sum small">${Object.entries(TIERS).map(([k, v]) => `<div><span>${tierBadge(k)} <span class="muted">${v.desc}</span></span></div>`).join("")}</div>
+          <p>用 Google 登入，填一次基本資料（級別、做邊類 job、作品），就可以報價、交試工，客戶亦會搵到你。</p>
+          <button class="btn btn-primary" type="button" data-joinwork>登入，開始接工</button>
+          <p class="small muted">平台只做配對：落實之後同客戶交換 WhatsApp，金額自己收，平台唔抽佣。</p>
+        </div>`;
+      return;
+    }
+    if (!p && !(opts && opts.edit)) {
+      side.innerHTML = `
+        <div class="box">
+          <h1 class="h-side">補埋工作者資料</h1>
+          <p>你而家登記咗做老闆。填埋級別、做邊類 job 同作品，就可以報價同交試工。</p>
+          <button class="btn btn-primary" type="button" data-addworker>補上工作者資料</button>
+        </div>`;
+      return;
+    }
+    if (opts && opts.edit) {
       side.innerHTML = `
         <form class="box" id="work-form">
           <h1 class="h-side">用你嘅 AI 技能接工賺錢</h1>
@@ -1478,7 +1531,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
         <p class="small">${esc(p.bio)}</p>
         <div class="group"><div class="ask-row"><span class="small muted">作品集（${worksOf(p).length}）</span><button class="link" type="button" data-works="1">${worksOf(p).length ? "管理作品" : "加作品"}</button></div>
           ${gallery(worksOf(p), { limit: 6, cap: true, empty: `<p class="small muted">未有作品。上載 3–6 件過往作品，客戶揀人時最睇呢樣。</p>` })}</div>
-        <div class="group"><span class="small muted">客戶評價</span>${ratingBlock(received("worker"), "未有客戶評價，完成第一單之後會好似下面咁顯示。", 2, "worker")}</div>
+        <div class="group"><span class="small muted">客戶評價</span>${ratingBlock(received("worker"), "未有客戶評價。", 2, "worker")}</div>
         <div class="chips">${p.skills.map(s => `<span class="chip">${esc(s)}</span>`).join("")}</div>
         <div class="group"><span class="small muted">級別（AI 建議，可以改）</span>${chipRow("級別", "ptier", Object.entries(TIERS).map(([k, v]) => [k, v.name]), p.tier)}</div>
         <div class="fields pair">
@@ -1521,10 +1574,20 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     if (state.profile) return false;
     state.pending = { type, id };
     closeDrawer();
-    if (state.view !== "find") go("find");
-    toast(type === "quote" ? "先用一句講你識咩，建立檔案之後就可以報價" : "先用一句講你識咩，建立檔案之後就可以交試工");
-    $("#work-q").focus();
+    toast(type === "quote" ? "先補埋工作者資料，就可以報價" : "先補埋工作者資料，就可以交試工");
+    startAddWorker();
     return true;
+  }
+  // a client who also wants to take jobs fills in the worker part of the setup form
+  function startAddWorker() {
+    const u = state.user;
+    state.setup = { kind: u.kind === "boss" ? "both" : (u.kind || "worker"), tier: "", cats: [], name: u.name, intro: "",
+      company: u.company || "", district: u.district || "", phone: u.phone || "", agree: true, photo: [], works: [] };
+    state.setupErr = null;
+    state.forceSetup = true;
+    if (state.view !== "login") state.loginFrom = state.view;
+    state.loginNext = "find";
+    go("login");
   }
 
   function openQuote(jobId) {
@@ -1557,7 +1620,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     });
     $("#q-ai").addEventListener("click", () => {
       const v = parseInt($("#q-price").value, 10) || price, d = parseInt($("#q-days").value, 10) || days;
-      $("#q-msg").value = `你好！睇咗你「${job.title}」嘅需求，我專做${cat.name}，熟用 ${p.skills.slice(0, 3).join("、")}。\n\n呢類工作我會特別處理：\n${(job.hard || cat.hard).map(h => "· " + h).join("\n")}\n\n報價 ${hk(v)}，${d} 日交，包括${cat.deliver.join("、")}。開工前會先畀一個樣板你睇方向。`;
+      $("#q-msg").value = `你好！睇咗你「${job.title}」嘅需求，我專做${cat.name}，熟用 ${p.skills.slice(0, 3).join("、")}。\n\n呢類 job 我會特別處理：\n${(job.hard || cat.hard).map(h => "· " + h).join("\n")}\n\n報價 ${hk(v)}，${d} 日交，包括${cat.deliver.join("、")}。開工前會先畀一個樣板你睇方向。`;
     });
     $("#quote-form").addEventListener("submit", e => {
       e.preventDefault();
@@ -1569,7 +1632,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       if (job.owner) {
         job.offers.push({ id: "f" + Date.now(), talentId: p.id, quoteId: q.id, price: q.price, days: q.days, msg: $("#q-msg").value.trim() || `我可以 ${q.days} 日內交，報價 ${hk(q.price)}。`, status: "new", files });
         notify(job.owner, `${state.user.name} 報咗價 ${hk(q.price)}：${job.title}`, "needs");
-        return toast(`已送出報價，${job.client} 會喺「我發嘅工作」見到`);
+        return toast(`已送出報價，${job.client} 會喺「我發嘅 job」見到`);
       }
       toast("已送出報價，等客戶回覆");
       later(2500, () => {
@@ -1588,7 +1651,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     openDrawer(`${head("交試工：" + esc(job.title), esc(job.client))}
       <form class="drawer-body" id="sub-form">
         <div class="note"><b>試工內容</b><br>${esc(t.brief)}${filesSec("客戶畀嘅試工素材（撳嚟睇大或者下載）", t.files)}</div>
-        ${filesSec("工作參考檔案", job.refs)}
+        ${filesSec("job 參考檔案", job.refs)}
         ${tierWarn(job, state.profile)}
         <div class="sum small">
           <div><span class="muted">期限</span><span>${t.days} 日內</span></div>
@@ -1611,7 +1674,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       if (job.owner) {
         job.subs.push({ id: "s" + Date.now(), talentId: state.profile.id, subId: sub.id, note: sub.note || "跟足試工要求做咗。", files, status: "new" });
         notify(job.owner, `${state.user.name} 交咗試工樣板：${job.title}`, "needs");
-        return toast(`已交試工，${job.client} 會喺「我發嘅工作」見到`);
+        return toast(`已交試工，${job.client} 會喺「我發嘅 job」見到`);
       }
       toast("已交試工，等客戶睇");
       later(3000, () => {
@@ -1629,12 +1692,12 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     const label = { waiting: "等客戶回覆", accepted: "客戶接受 · 開工", picked: "客戶揀咗你 · 開工", declined: "客戶揀咗其他人" };
     const qs = myQuotes().reverse(), ss = mySubs().reverse();
     $("#v-sent").innerHTML = `
-      <div class="ask-row"><div><h2>我嘅報價同試工</h2><p class="muted small">客戶接受或者揀中你嘅樣板，工作就會轉去「進行中」，同埋交換 WhatsApp。</p></div><button class="btn btn-ghost btn-sm" type="button" data-go="find">搵更多工</button></div>
+      <div class="ask-row"><div><h2>我嘅報價同試工</h2><p class="muted small">客戶接受或者揀中你嘅樣板，job 就會轉去「進行中」，同埋交換 WhatsApp。</p></div><button class="btn btn-ghost btn-sm" type="button" data-go="find">搵更多工</button></div>
       ${!qs.length && !ss.length ? `<div class="box empty"><p class="muted">未報過價或者交過試工。去「搵工」揀一個需求。</p><div><button class="btn btn-primary" type="button" data-go="find">去搵工</button></div></div>` : ""}
       ${qs.length ? `<h3>報價（${qs.length}）</h3><div class="rows">${qs.map(q => { const j = jobById(q.jobId); return `<div class="row">
           <button type="button" class="row-main" data-job="${j.id}"><div><h3>${esc(j.title)}</h3>
             <div class="meta"><span>${esc(j.client)}</span><span>你報 <span class="num">${hk(q.price)}</span> · ${q.days} 日</span></div></div></button>
-          <div class="row-side"><span class="pill ${q.status}">${label[q.status]}</span>${q.status === "accepted" ? `<button type="button" class="btn btn-ghost btn-sm" data-go="work">睇工作</button>` : ""}</div>
+          <div class="row-side"><span class="pill ${q.status}">${label[q.status]}</span>${q.status === "accepted" ? `<button type="button" class="btn btn-ghost btn-sm" data-go="work">睇 job</button>` : ""}</div>
           ${q.files && q.files.length ? `<div class="span-all">${filesSec("你附上嘅作品", q.files, { limit: 4, cap: true })}</div>` : ""}
         </div>`; }).join("")}</div>` : ""}
       ${ss.length ? `<h3>試工（${ss.length}）</h3><div class="subs">${ss.map(s => { const j = jobById(s.jobId); return `<article class="sub">
@@ -1642,7 +1705,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
           <div class="sub-body"><h3>${esc(j.title)}</h3>
             <div class="meta"><span>${esc(j.client)}</span>${j.trial ? `<span>${j.trial.days} 日內</span>` : ""}</div>
             ${s.note ? `<p class="small">${esc(s.note)}</p>` : ""}
-            <div class="btns"><span class="pill ${s.status === "picked" ? "accepted" : s.status === "declined" ? "declined" : "waiting"}">${s.status === "picked" ? label.picked : s.status === "declined" ? label.declined : "等客戶睇"}</span>${s.status === "picked" ? `<button type="button" class="btn btn-ghost btn-sm" data-go="work">睇工作</button>` : ""}</div>
+            <div class="btns"><span class="pill ${s.status === "picked" ? "accepted" : s.status === "declined" ? "declined" : "waiting"}">${s.status === "picked" ? label.picked : s.status === "declined" ? label.declined : "等客戶睇"}</span>${s.status === "picked" ? `<button type="button" class="btn btn-ghost btn-sm" data-go="work">睇 job</button>` : ""}</div>
           </div></article>`; }).join("")}</div>` : ""}`;
   };
 
@@ -1658,7 +1721,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
         <div class="box"><span class="muted small">已完成</span><b class="num">${done.length} 單</b><span class="small muted">協定金額 ${hk(sum(done))}（自己收）</span></div>
         ${(syncMyRating(), "")}<div class="box"><span class="muted small">你嘅評分</span><b class="num">${state.profile && state.profile.done ? "★ " + state.profile.rating.toFixed(1) : "—"}</b><span class="small muted">${state.profile && state.profile.done ? state.profile.done + " 個客戶評價" : "完成第一單之後出現"}</span></div>
       </div>
-      ${mine.length ? `<div class="rows">${mine.slice().reverse().map(orderRow).join("")}</div>` : `<div class="box empty"><p class="muted">未有進行中嘅工作。客戶接受你嘅報價或者揀中你嘅樣板之後，就會喺度出現。</p><div><button class="btn btn-primary" type="button" data-go="find">去搵工</button></div></div>`}`;
+      ${mine.length ? `<div class="rows">${mine.slice().reverse().map(orderRow).join("")}</div>` : `<div class="box empty"><p class="muted">未有進行中嘅 job。客戶接受你嘅報價或者揀中你嘅樣板之後，就會喺度出現。</p><div><button class="btn btn-primary" type="button" data-go="find">去搵工</button></div></div>`}`;
   };
 
   function orderAction(id, act) {
@@ -1755,12 +1818,12 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
   // actions that act in your name; looking around works without logging in
   const LOGIN_ACTIONS = ["quote", "trial", "accept", "offerchat", "pick", "pass", "invite", "act", "review"];
   const LOGIN_WHY = {
-    publish: "登入之後就可以發佈工作，工作者嘅報價會通知你。", profile: "登入之後就可以建立你嘅工作者檔案。",
+    publish: "登入之後就可以發佈 job，工作者嘅報價會通知你。", profile: "登入之後就可以建立你嘅工作者檔案。",
     quote: "登入之後就可以報價。", trial: "登入之後就可以交試工。", accept: "登入之後就可以落實同交換聯絡。",
     offerchat: "登入之後就可以同工作者傾。", pick: "登入之後就可以揀試工作品。", pass: "登入之後就可以處理試工作品。",
     invite: "登入之後就可以邀請工作者。", act: "登入之後就可以處理訂單。", review: "登入之後就可以評分。",
     needs: "登入之後就可以睇你嘅需求同收到嘅報價。", hired: "登入之後就可以睇你進行中嘅單。",
-    sent: "登入之後就可以睇你嘅報價同試工。", work: "登入之後就可以睇你進行中嘅工作。",
+    sent: "登入之後就可以睇你嘅報價同試工。", work: "登入之後就可以睇你進行中嘅 job。",
   };
   const G_LOGO = `<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>`;
 
@@ -1797,7 +1860,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
   }
   // the login page: shown instead of a personal page, or before an action, when nobody is logged in
   RENDER.login = function () {
-    if (state.user && !state.user.onboarded) return renderSetup();
+    if (state.user && (!state.user.onboarded || state.forceSetup)) return renderSetup();
     $("#v-login").innerHTML = `
       <div class="login-page">
         <div class="login-wrap">
@@ -1824,6 +1887,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     let view = state.loginFrom || (roleOf("login") === "worker" ? "find" : "post");
     if (view === "login" || (PRIVATE.includes(view) && !signedUp())) view = roleOf("login") === "worker" ? "find" : "post";
     state.afterLogin = null; state.loginNext = null; state.loginWhy = null; state.loginFrom = null;
+    if (state.forceSetup) { state.forceSetup = false; state.setup = null; state.setupErr = null; state.pending = null; }
     go(view);
   }
   function bindLoginClose() {
@@ -1880,7 +1944,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
         <button class="x login-x" type="button" data-loginclose aria-label="關閉，返回上一頁">×</button>
         <form class="box login-card setup-card" id="setup-form" novalidate>
           <div class="person">${avatar(u)}<div><h1>基本資料</h1><div class="muted small">${esc(u.email)} · Google 登入 ✓</div></div></div>
-          <div class="note">最後一步：填好基本資料就完成登記。<b>只需填一次</b>，之後用呢個 Google 帳戶登入會直接入去。有 <span class="req">*</span> 嘅必須填。</div>
+          <div class="note">${state.forceSetup ? "補埋工作者資料：級別、做邊類 job 同作品。" : "最後一步：填好基本資料就完成登記。<b>只需填一次</b>"}，之後用呢個 Google 帳戶登入會直接入去。有 <span class="req">*</span> 嘅必須填。</div>
           <div class="group">
             <span class="field-title">你嚟做乜${req}</span>
             ${chipRow("你嚟做乜", "sukind", Object.entries(KINDS), f.kind)}
@@ -1895,8 +1959,8 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
             <span class="small muted">唔肯定可以揀「AI 熟手」，接咗幾單之後平台會按評分建議你升級。</span>${e("tier")}
           </div>
           <div class="group">
-            <span class="field-title">你做邊類工作${req}<span class="small muted">（可以揀幾樣）</span></span>
-            <div class="chips" role="group" aria-label="工作類別">${CATS.map(c => `<button type="button" class="chip" data-sucat="${c.id}" aria-pressed="${f.cats.includes(c.id)}">${c.name}</button>`).join("")}</div>${e("cats")}
+            <span class="field-title">你做邊類 job${req}<span class="small muted">（可以揀幾樣）</span></span>
+            <div class="chips" role="group" aria-label="job 類別">${CATS.map(c => `<button type="button" class="chip" data-sucat="${c.id}" aria-pressed="${f.cats.includes(c.id)}">${c.name}</button>`).join("")}</div>${e("cats")}
           </div>
           <label class="group"><span class="field-title">一句介紹自己${req}</span><input type="text" id="su-intro" value="${esc(f.intro)}" placeholder="例如：${esc(WORK_EG[0])}" maxlength="80">${e("intro")}</label>
           <div class="group"><span class="field-title">過往作品<span class="small muted">（可選，之後喺「你嘅檔案」都可以加）</span></span>
@@ -1945,7 +2009,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     const f = state.setup, work = f.kind !== "boss", boss = f.kind !== "worker", err = {};
     if (!f.name) err.name = "請填顯示名稱";
     if (work && !f.tier) err.tier = "請揀一個級別";
-    if (work && !f.cats.length) err.cats = "請揀最少一類工作";
+    if (work && !f.cats.length) err.cats = "請揀最少一類 job";
     if (work && f.intro.length < 6) err.intro = "請用一句講吓你識做咩（最少 6 個字）";
     if (boss && !f.company) err.company = "請填公司或店舖名稱";
     if (boss && !f.district) err.district = "請揀地區";
@@ -1965,10 +2029,14 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       };
     }
     saveMe();
-    state.setup = null; state.setupErr = null;
+    const adding = state.forceSetup;
+    state.setup = null; state.setupErr = null; state.forceSetup = false;
     renderAccount();
-    toast(`歡迎，${u.name}，資料已經儲好`);
+    toast(adding ? "工作者資料已經儲好，可以接工" : `歡迎，${u.name}，資料已經儲好`);
     finishLogin();
+    // a quote or sample that was waiting for the worker details opens now
+    const pend = state.pending; state.pending = null;
+    if (pend && state.profile) (pend.type === "quote" ? openQuote : openSubmit)(pend.id);
   }
 
   function openAccount() {
@@ -1987,11 +2055,11 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
           ${u.company ? `<div><span class="muted">公司 / 店舖</span><span>${esc(u.company)} · ${esc(u.district)}</span></div>` : ""}
           ${state.profile ? `<div><span class="muted">級別</span><span>${tierBadge(state.profile.tier)}</span></div>` : ""}
           <div><span class="muted">WhatsApp</span><span class="num">${esc(u.phone || "")}</span></div>
-          <div><span class="muted">發過嘅工作</span><span>${myNeeds().filter(n => !n.example).length} 個</span></div>
+          <div><span class="muted">發過嘅 job</span><span>${myNeeds().filter(n => !n.example).length} 個</span></div>
         </div>
         ${state.profile ? `<section class="rating-sec"><div class="ask-row"><h3>作品集（${worksOf(state.profile).length}）</h3><button type="button" class="link" data-works="1">${worksOf(state.profile).length ? "管理作品" : "加作品"}</button></div>${gallery(worksOf(state.profile), { cls: "big", cap: true, empty: `<p class="small muted">未有作品。上載 3–6 件過往作品，客戶揀人時最睇呢樣。</p>` })}</section>` : ""}
-        ${asWorker ? `<section class="rating-sec"><h3>作為工作者 · 客戶評價</h3>${ratingBlock(received("worker"), "未有客戶評價。完成第一單、客戶評分之後就會好似下面咁顯示。", 0, "worker")}</section>` : ""}
-        ${asBoss ? `<section class="rating-sec"><h3>作為老闆 · 工作者評價</h3>${ratingBlock(received("boss"), "未有評價。完成第一單之後，工作者都會好似下面咁評你。", 0, "boss")}</section>` : ""}
+        ${asWorker ? `<section class="rating-sec"><h3>作為工作者 · 客戶評價</h3>${ratingBlock(received("worker"), "未有客戶評價。", 0, "worker")}</section>` : ""}
+        ${asBoss ? `<section class="rating-sec"><h3>作為老闆 · 工作者評價</h3>${ratingBlock(received("boss"), "未有工作者評價。", 0, "boss")}</section>` : ""}
       </div>
       <div class="drawer-foot"><button type="button" class="btn btn-ghost" data-logout>登出</button></div>`);
   }
@@ -2077,7 +2145,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     const list = worksOf(p).map(w => ({ ...w }));
     openDrawer(`${head("我嘅作品集", "客戶揀人時最先睇呢度")}
       <form class="drawer-body" id="works-form">
-        <p class="small muted">上載 3–6 件最似你想接嘅工作，每件寫一句說明（例如「護膚品 15 秒廣告」）。相片會縮細儲存；影片同文件只保留到重新整理（網站模型限制）。</p>
+        <p class="small muted">上載 3–6 件最似你想接嘅 job，每件寫一句說明（例如「護膚品 15 秒廣告」）。相片會縮細儲存；影片同文件只保留到重新整理（網站模型限制）。</p>
         ${uploader("works-up", list, { label: "加作品", caption: true, limit: 20 })}
       </form>
       <div class="drawer-foot"><button class="btn btn-primary" type="submit" form="works-form">儲存作品集</button></div>`);
@@ -2113,7 +2181,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       const c = state.chat;
       later(800, () => { if (state.chat === c) pushMsg("them", "冇問題，可以加埋，價錢唔變。"); });
     });
-    $("#chat-sum").addEventListener("click", () => pushMsg("ai", `AI 總結\n工作：${need.title}\n報價：${hk(price)}（預算 ${hk(need.budget)}）\n期限：${days} 日\n未傾清楚：修改次數、版權歸邊個`));
+    $("#chat-sum").addEventListener("click", () => pushMsg("ai", `AI 總結\njob：${need.title}\n報價：${hk(price)}（預算 ${hk(need.budget)}）\n期限：${days} 日\n未傾清楚：修改次數、版權歸邊個`));
     $("#chat-agree").addEventListener("click", showConfirm);
   }
   function pushMsg(kind, text) {
@@ -2132,7 +2200,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
         <div><span class="muted">協定金額</span><span class="num">${hk(c.quote)}</span></div>
         <div><span class="muted">交貨</span><span>${c.days} 日內</span></div>
       </div>
-      <p class="small muted">金額同付款方法由你同 ${esc(c.t.name)} 自行傾，平台唔經手、唔收費。落實之後雙方會見到對方 WhatsApp。</p>
+      <p class="small muted">金額同付款方式由你同 ${esc(c.t.name)} 自行傾，平台唔經手、唔收費。落實之後雙方會見到對方 WhatsApp。</p>
       <button class="btn btn-primary" type="button" id="pay-go">落實，交換聯絡</button>`;
     $("#pay-go").addEventListener("click", () => {
       const { need, t, quote } = state.chat;
@@ -2193,10 +2261,10 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     if (d.fill) { const q = document.getElementById(d.fill); q.value = d.text; q.focus(); return; }
     if (d.tier) { state.tier = state.tier === d.tier && b.classList.contains("tier-card") ? "all" : d.tier; return RENDER[state.view]({}); }
     if (d.filter) { state.filter = d.filter; return RENDER[state.view]({}); }
-    // 發工作 draft
+    // 發 job draft
     if (d.dcat) { readDraft(); const dr = state.draft, c = catById(d.dcat); dr.cat = c.id; dr.skills = c.skills.slice(0, 3); dr.trial.brief = TRIAL_EG[c.id]; return renderDraft(false); }
     if (d.dtier) { readDraft(); state.draft.tier = d.dtier; return renderDraft(false); }
-    // 我發嘅工作
+    // 我發嘅 job
     if (d.need) { state.selNeed = d.need; state.needTab = "replies"; return RENDER.needs(); }
     if (d.ntab) { state.needTab = d.ntab; return RENDER.needs(); }
     if (d.invite) {
@@ -2217,6 +2285,9 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     if (d.quote) { if (!needProfile("quote", d.quote)) openQuote(d.quote); return; }
     if (d.trial) { if (!needProfile("trial", d.trial)) openSubmit(d.trial); return; }
     if (d.editprofile) return renderProfile({ edit: true });
+    if (d.joinwork !== undefined) return requireLogin(() => { if (!state.profile) startAddWorker(); }, "profile");
+    if (d.addworker !== undefined) return startAddWorker();
+    if (d.joinhire !== undefined) return requireLogin(() => {}, "publish");
     if (d.works) return openWorks();
     if (d.unphoto !== undefined) { state.user.photo = state.user.gphoto || ""; saveMe(); renderAccount(); RENDER[state.view]({}); toast("用返 Google 頭像"); return openAccount(); }
     if (d.ptier) { const p = state.profile; p.tier = d.ptier; p.rate = rateFor(p.tier, catById(p.cat)); return RENDER.find({}); }
@@ -2404,6 +2475,42 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     document.addEventListener("visibilitychange", () => { if (!document.hidden) syncNow(); });
   }
 
+  // ---------- 說明 under the bar: change the text (and its date) and it shows again for everyone ----------
+  // notes under the bar, top to bottom; each one stays closed once its × is pressed, until its id changes
+  const MEMOS = [
+    { id: "info-2026-11-03", tag: "說明", text: "AI拍檔試用緊：用 Google 登入，就可以發 job、報價同上載作品。平台只做配對，金額同付款方式由雙方自己傾。有問題或者建議，歡迎話我哋知。" },
+    { id: "need-2026-11-04c", tag: "而家最需要", kind: "need", text: "AI 搵客：用 AI 喺網上搵出有興趣嘅客，再引佢哋去 WhatsApp 或者落單頁成交，用最少錢搵最多客。識做嘅人，而家最多老闆搵。",
+      go: { label: "睇搵客 job", view: "find", filter: "leads" } },
+  ];
+  function closedMemos() {
+    try { return JSON.parse(localStorage.getItem("aipd-memos-closed") || "[]"); } catch (e) { return []; }
+  }
+  function showMemo() {
+    const closed = closedMemos();
+    $("#memos").innerHTML = MEMOS.filter(m => m.text && !closed.includes(m.id)).map(m => `
+      <aside class="memo ${m.kind || ""}" aria-label="${esc(m.tag)}">
+        <div class="wrap memo-in">
+          <span class="memo-tag">${esc(m.tag)}</span>
+          <p>${esc(m.text)}</p>
+          ${m.go ? `<button type="button" class="memo-go" data-memogo="${m.id}">${esc(m.go.label)}</button>` : ""}
+          <button type="button" class="memo-x" data-memox="${m.id}" aria-label="關閉${esc(m.tag)}，之後唔再顯示">×</button>
+        </div>
+      </aside>`).join("");
+  }
+  $("#memos").addEventListener("click", e => {
+    const x = e.target.closest("[data-memox]"), g = e.target.closest("[data-memogo]");
+    if (x) {
+      const list = closedMemos().concat(x.dataset.memox);
+      try { localStorage.setItem("aipd-memos-closed", JSON.stringify(list)); } catch (err) {}
+      x.closest(".memo").remove();
+    }
+    if (g) {
+      const m = MEMOS.find(y => y.id === g.dataset.memogo);
+      closeDrawer(); go(m.go.view); state.filter = m.go.filter; RENDER[state.view]({});
+    }
+  });
+
+
   // ---------- examples so each page has something to show ----------
   (function seed() {
     TALENT.forEach((t, i) => { t.works = WORK_CAPS[t.cat].map((cap, k) => ({ ...demoFile(cap, k % 2 ? CAT_HUE[t.cat] : t.hue, i * 7 + k) })); });
@@ -2411,28 +2518,12 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       j.refs = REF_EG[j.cat].map((n, k) => demoFile(n, CAT_HUE[j.cat], i * 5 + k));
       if (j.trial) j.trial.files = (j.trial.refs || []).map((n, k) => demoFile(n, CAT_HUE[j.cat], i * 3 + k + 50));
     });
-    const n = {
-      id: "n0", example: true, title: "新店開張 30 秒 AI 宣傳片", cat: "video", tier: "master", skills: ["AI 影片生成", "剪接", "腳本"],
-      budget: 5000, days: 14, desc: "旺角新開嘅甜品店，想用 AI 整條 30 秒開張宣傳片，有店舖、甜品同粵語旁白，出 IG 同小紅書。",
-      hard: catById("video").hard, mode: "direct", trial: null, posted: "今日", status: "open", invited: ["t2", "t1", "t3"], subs: [],
-      refs: [demoFile("甜品相", "#D7424E", 3), demoFile("店舖門面", "#0874AB", 4), demoFile("餐牌.pdf")],
-      offers: [
-        { id: "f01", talentId: "t2", price: 5000, days: 8, msg: QUOTE_LINES[0], status: "new", files: worksOf(TALENT[1]).slice(0, 2) },
-        { id: "f02", talentId: "t1", price: 4800, days: 10, msg: QUOTE_LINES[1], status: "new", files: worksOf(TALENT[0]).slice(0, 3) },
-      ],
-    };
-    state.needs.push(n);
-    state.selNeed = n.id;
-    state.orders.push({ id: "o9", side: "boss", example: true, title: "20 條 AI 短片粵語字幕校對", partner: "Kiki", amount: 1500, status: 6, files: [demoFile("字幕校對前後", "#8A3F5C", 9), demoFile("字幕.srt")],
-      reviews: { mine: { stars: 5, tags: ["準時交貨", "質素好"], text: "錯字執得好乾淨，仲幫我標咗幾個斷句問題。" }, theirs: { stars: 5, tags: ["需求清楚", "準時確認"], text: "片段整理得好清楚，交咗即日確認。" } } });
-    state.orders.push({ id: "o8", side: "worker", example: true, title: "每月 8 條 AI 短片（小紅書 + IG）", partner: "銅鑼灣 · 美甲店", amount: 8000, status: 6,
-      reviews: { mine: { stars: 5, tags: ["需求清楚", "準時確認"], text: "相片同要求一次過畀齊，好易合作。" }, theirs: { stars: 5, tags: ["準時交貨", "質素好", "肯改"], text: "每星期準時交，條條都有人問邊度整。" } } });
-    state.orders.push({ id: "o0", side: "boss", example: true, title: "老闆 AI 分身講解產品 10 條", partner: "Sam", amount: 12000, status: 2, rating: 0 });
   })();
 
   try { const u = JSON.parse(localStorage.getItem("aipd-user") || "null"); if (u && u.name) { state.user = u; if (known[u.email]) { state.profile = known[u.email].profile; if (state.profile) state.profile.id = "u:" + u.email; } } } catch (e) {}
   renderAccount();
   go(location.hash.slice(1) || "post");
+  showMemo();
   startSync();
 })();
 </script>
