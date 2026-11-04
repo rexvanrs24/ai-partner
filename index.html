@@ -498,6 +498,8 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); backgro
 .toast { background: var(--ink); color: var(--bg); border-radius: 8px; font-weight: 600; }
 footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
 /* a note under the bar; once closed it stays closed until the text changes */
+.login-pill { border: 0; background: #FFFFFF; color: #000000; font-weight: 700; padding: 8px 18px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+.login-pill:hover { opacity: .88; }
 .memo { background: var(--signal-soft); border-bottom: 1px solid color-mix(in srgb, var(--signal) 35%, transparent); }
 .memo-in { display: flex; align-items: flex-start; gap: 12px; padding-block: 12px; }
 .memo-tag { flex: none; font-size: 12.5px; font-weight: 700; background: var(--signal); color: var(--signal-soft); padding: 2px 8px; border-radius: 4px; margin-top: 2px; }
@@ -1486,7 +1488,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
 
   function renderProfile(opts) {
     const p = state.profile, side = $("#find-side");
-    if (!p && !signedUp()) {
+    if (!signedUp()) {
       side.innerHTML = `
         <div class="box">
           <h1 class="h-side">用你嘅 AI 技能接工賺錢</h1>
@@ -1847,7 +1849,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     const u = signedUp() ? state.user : null, unread = u ? myNotes().filter(n => !n.read).length : 0;
     $("#account").innerHTML = u
       ? `<button type="button" class="bell" data-notes aria-label="通知${unread ? "，" + unread + " 個未睇" : ""}">${BELL}${unread ? `<span class="count">${unread}</span>` : ""}</button><button type="button" class="me-btn" data-me aria-label="你嘅帳戶：${esc(u.name)}">${avatar(u)}<span class="long">${esc(u.name)}</span></button>`
-      : "";
+      : `<button type="button" class="login-pill" data-gologin>${state.user ? "完成登記" : "登入"}</button>`;
   }
   const signedUp = () => !!(state.user && state.user.onboarded);
   function requireLogin(fn, why) {
@@ -2285,6 +2287,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     if (d.quote) { if (!needProfile("quote", d.quote)) openQuote(d.quote); return; }
     if (d.trial) { if (!needProfile("trial", d.trial)) openSubmit(d.trial); return; }
     if (d.editprofile) return renderProfile({ edit: true });
+    if (d.gologin !== undefined) return requireLogin(() => {}, state.view === "find" ? "profile" : "publish");
     if (d.joinwork !== undefined) return requireLogin(() => { if (!state.profile) startAddWorker(); }, "profile");
     if (d.addworker !== undefined) return startAddWorker();
     if (d.joinhire !== undefined) return requireLogin(() => {}, "publish");
@@ -2468,8 +2471,10 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       CFG.google = c.google_client_id || ""; CFG.demo = !!c.demo;
     } catch (e) {}
     // on the real site a saved login without its server session is not a login
-    if (realLogin() && state.user && !session && !CFG.demo) { state.user = null; state.profile = null; renderAccount(); }
-    if (state.view === "login") RENDER.login({});
+    if (realLogin() && state.user && !session && !CFG.demo) { state.user = null; state.profile = null; }
+    // draw the page again now that it is known whether you are logged in
+    renderAccount();
+    go(PRIVATE.includes(state.view) && !signedUp() ? "login" : state.view);
     syncNow();
     setInterval(syncNow, 3000);
     document.addEventListener("visibilitychange", () => { if (!document.hidden) syncNow(); });
