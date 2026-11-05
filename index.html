@@ -2421,9 +2421,15 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
         if (email === me()) {
           // your own account: take the saved copy unless you changed something here that is not saved yet
           if (sent[key] !== undefined && JSON.stringify({ id: me(), user: state.user, profile: state.profile }) !== sent[key]) continue;
+          const was = JSON.stringify([state.user, state.profile]);
           if (data.user) Object.assign(state.user, data.user);
           if (data.profile) state.profile = state.profile ? Object.assign(state.profile, data.profile) : data.profile;
           sent[key] = JSON.stringify({ id: me(), user: state.user, profile: state.profile });
+          // your own details changed (for example the saved copy says you finished signing up): redraw the header too
+          if (JSON.stringify([state.user, state.profile]) !== was) {
+            changed = true;
+            try { localStorage.setItem("aipd-user", JSON.stringify(state.user)); } catch (e) {}
+          }
         }
         const before = JSON.stringify(known[email] || null);
         known[email] = { user: data.user, profile: data.profile };
