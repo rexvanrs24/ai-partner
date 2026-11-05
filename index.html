@@ -1073,6 +1073,8 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     if (view !== state.view) { state.filter = "all"; state.tier = "all"; }
     state.view = view;
     VIEWS.forEach(v => { $("#v-" + v).hidden = v !== view; });
+    // the notes would push the login and setup form below the first screen on a phone
+    $("#memos").hidden = view === "login";
     try { if (location.hash.slice(1) !== view) history.replaceState(null, "", "#" + view); } catch (e) {}
     renderNav();
     RENDER[view](opts || {});
@@ -2479,6 +2481,13 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     } catch (e) {}
     // on the real site a saved login without its server session is not a login
     if (realLogin() && state.user && !session && !CFG.demo) { state.user = null; state.profile = null; }
+    // this browser remembers an older account than the one Google logged in: follow the Google login
+    if (session && session.email && state.user && String(state.user.email).toLowerCase() !== session.email) {
+      const back = known[session.email];
+      state.user = back && back.user ? { ...back.user } : { name: "", email: session.email, hue: hueFor(session.email) };
+      state.profile = back && back.profile ? back.profile : null;
+      try { localStorage.setItem("aipd-user", JSON.stringify(state.user)); } catch (e) {}
+    }
     // draw the page again now that it is known whether you are logged in
     renderAccount();
     go(PRIVATE.includes(state.view) && !signedUp() ? "login" : state.view);
