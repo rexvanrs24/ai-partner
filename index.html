@@ -766,6 +766,69 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
   .role button { padding: 6px 10px; font-size: 14px; }
   #account { gap: 6px; }
 }
+
+/* ================= layers (2026-11-05): a grey page, white cards above it, details one tap away in sheets ================= */
+:root { --page: #EEF1F4; --e1: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.08); --e2: 0 6px 16px -4px rgba(16,24,40,.14), 0 2px 4px -2px rgba(16,24,40,.06); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page: #000000; --e1: 0 0 0 1px rgba(255,255,255,.06); --e2: 0 0 0 1px rgba(255,255,255,.09), 0 10px 24px -10px rgba(0,0,0,.9); } }
+:root[data-theme="dark"] { --page: #000000; --e1: 0 0 0 1px rgba(255,255,255,.06); --e2: 0 0 0 1px rgba(255,255,255,.09), 0 10px 24px -10px rgba(0,0,0,.9); }
+body { background: var(--page); }
+.v2-bar { background: var(--page); }
+.top { background: color-mix(in srgb, var(--top-bg) 86%, transparent); backdrop-filter: saturate(1.6) blur(14px); -webkit-backdrop-filter: saturate(1.6) blur(14px); }
+.box, .v2row, .v2-q, .sub { border-color: transparent; box-shadow: var(--e1); background: var(--surface); }
+.v2row { cursor: pointer; }
+.v2row:hover { box-shadow: var(--e2); border-color: transparent; }
+.v2row.best { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), var(--e2); }
+.v2-cats button, .v2-seg, .v2-looks { box-shadow: var(--e1); }
+.v2-cats button { border-color: transparent; }
+.v2-tip { background: var(--surface); border: 0; box-shadow: var(--e1); }
+.v2-kpi { background: var(--surface); box-shadow: var(--e1); }
+/* the notices: one line; tap it for the full text */
+#memos .wrap { padding-top: 14px; }
+.memo-line { display: flex; gap: 10px; align-items: center; width: 100%; padding: 10px 14px; border: 0; border-radius: 16px; background: var(--surface); box-shadow: var(--e1); color: var(--ink); text-align: left; cursor: pointer; font: inherit; }
+.memo-line .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--need); flex: none; }
+.memo-line span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14.5px; }
+.memo-line small { color: var(--muted); white-space: nowrap; font-size: 13.5px; }
+.memo-card { display: grid; gap: 8px; padding: 14px; border-radius: 14px; background: var(--tile); }
+.memo-card .memo-tag { justify-self: start; margin: 0; }
+.memo-card.need .memo-tag { background: var(--need); color: var(--need-ink); }
+.memo-card .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+/* not logged in on 搵工: one strip, the levels behind ⓘ */
+.join-strip { display: flex; gap: 12px; align-items: center; padding: 14px 14px 14px 16px; border-radius: 20px; background: linear-gradient(120deg, var(--worker), #064E78); color: #fff; box-shadow: var(--e2); }
+.join-strip b { display: block; font-size: 17px; line-height: 1.3; }
+.join-strip small { opacity: .85; font-size: 13.5px; }
+.join-strip .info { border: 0; background: rgba(255,255,255,.18); color: #fff; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; flex: none; margin-left: auto; cursor: pointer; font: 700 16px var(--f-num); }
+.join-strip .go { border: 0; background: #fff; color: #000; font-weight: 800; border-radius: 12px; padding: 10px 14px; white-space: nowrap; cursor: pointer; }
+.tier-line { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; align-items: start; padding: 12px; background: var(--tile); border-radius: 14px; }
+.tier-line .tier { grid-row: span 2; } .tier-line small { color: var(--muted); }
+/* the filter sheet button: phones only */
+.v2-fbtn { display: none !important; }
+.sheet-sec { display: grid; gap: 8px; }
+.sheet-sec .lbl { font-size: 13.5px; color: var(--muted); font-weight: 700; }
+.sheet-sec .v2-cats { flex-wrap: wrap; overflow: visible; }
+.prof-toggle { display: none; }
+@media (max-width: 980px) {
+  /* your worker profile folds to its first lines on a phone or tablet */
+  .prof-toggle { display: inline-flex; justify-self: start; border: 0; background: var(--tile); border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: 14px; cursor: pointer; color: var(--ink); }
+  .prof.folded > :not(.ask-row):not(.v2-done):not(.prof-toggle) { display: none !important; }
+}
+@media (max-width: 760px) {
+  /* a row on a phone: picture, name, where and when, money, match; the rest is in its sheet */
+  .v2-desc, .v2-skills, .v2-why, .v2-act { display: none !important; }
+  .v2-side, .v2-list.cards .v2-side { grid-template-columns: 1fr auto; align-items: center; }
+  .v2-side::after { content: "›"; font-size: 24px; color: var(--muted); line-height: 1; }
+  .v2-side .v2-ring { grid-column: 2; grid-row: 1; margin-right: 22px; }
+  .v2-side .v2-bud { grid-column: 1; grid-row: 1; }
+  .v2-side::after { grid-column: 2; grid-row: 1; justify-self: end; }
+  .v2-ring { width: 40px; height: 40px; } .v2-ring b { width: 32px; height: 32px; font-size: 13px; } .v2-ring b small { display: none; }
+  .v2-fbtn { display: inline-flex !important; background: var(--accent) !important; color: var(--accent-ink) !important; }
+  .v2-bar .v2-row2 { display: none; }
+  .v2-stats .v2-stat { font-size: 13px; padding: 4px 10px; }
+  /* sheets come up from the bottom */
+  .drawer { left: 0; right: 0; top: auto; bottom: 0; transform: none; width: 100%; max-height: 88vh; border-radius: 22px 22px 0 0; animation: sheet-up .28s cubic-bezier(.2,.8,.2,1); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .drawer::before { content: ""; display: block; width: 40px; height: 5px; border-radius: 3px; background: var(--tile-2); margin: 8px auto 0; flex: none; }
+  .drawer-head { padding-top: 10px; }
+}
+@keyframes sheet-up { from { transform: translateY(40%); opacity: .4; } }
 </style>
 
 <header class="top">
@@ -1240,14 +1303,38 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
     run: '<path d="M4 12h4l3-8 4 16 3-8h2"/>',
     send: '<path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>',
     wa: '<path d="M3 21l1.7-5A9 9 0 1 1 8 19.4z"/>',
+    sliders: '<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
   };
   const ico = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${SVG[n] || ""}</svg>`;
   // the ring around a match score: green when it fits well, the side colour when it is fair, grey otherwise
   const ring = total => `<div class="v2-ring" style="--p:${total};--c:${total >= 80 ? "var(--need)" : total >= 50 ? "var(--accent)" : "var(--muted)"}" title="配對分"><b>${total}<small>配對</small></b></div>`;
-  function catBar(items) {
+  function catBar(items, inSheet) {
     const n = id => id === "all" ? items.length : items.filter(x => x.cat === id).length;
-    return `<div class="v2-cats" role="group" aria-label="類別">${[{ id: "all", name: "全部" }].concat(CATS).filter(c => c.id === "all" || n(c.id)).map(c =>
+    const set = (state.tier !== "all") + (state.filter !== "all");
+    return `<div class="v2-cats" role="group" aria-label="類別">${inSheet ? "" : `<button type="button" class="v2-fbtn" data-openfilter>${ico("sliders")}篩選${set ? ` <small>${set}</small>` : ""}</button>`}${[{ id: "all", name: "全部" }].concat(CATS).filter(c => c.id === "all" || n(c.id)).map(c =>
       `<button type="button" data-filter="${c.id}" aria-pressed="${state.filter === c.id}"><span class="ic" style="background:${c.id === "all" ? "#555" : CAT_HUE[c.id]}">${ico(c.id)}</span>${c.name} <small>${n(c.id)}</small></button>`).join("")}</div>`;
+  }
+  // which sort orders each list offers
+  const sortOpts = () => state.view === "post"
+    ? (state.draft && state.draft.touched ? [["match", "最啱你"]] : []).concat([["rating", "評分最高"], ["done", "做得最多"], ["cheap", "價錢最平"]])
+    : (state.profile ? [["match", "最啱你"]] : []).concat([["new", "最新"], ["budget", "預算最高"], ["due", "最快要交"]]);
+  function openFilter() {
+    const items = state.view === "post" ? TALENT : openJobs();
+    const n = (state.view === "post" ? $("#v-post .v2-head em") : $("#v-find .v2-head em"));
+    openDrawer(`${head("篩選同排序")}
+      <div class="drawer-body">
+        <div class="sheet-sec"><span class="lbl">類別</span>${catBar(items, true)}</div>
+        <div class="sheet-sec"><span class="lbl">級別</span>${tierSeg()}</div>
+        <div class="sheet-sec"><span class="lbl">排序</span>${sortBar(sortOpts())}</div>
+        <div class="sheet-sec"><span class="lbl">顯示</span>${looks()}</div>
+      </div>
+      <div class="drawer-foot"><button type="button" class="btn btn-primary" data-close>睇 ${n ? n.textContent : ""} 個結果</button></div>`);
+  }
+  function openTiers() {
+    openDrawer(`${head("三個級別係咩？", "登入時 AI 會按你講嘅經驗建議，可以自己改")}
+      <div class="drawer-body">${Object.entries(TIERS).map(([k, v]) => `<div class="tier-line">${tierBadge(k)}<b>${esc(v.desc)}</b><small class="num">${v.price}</small></div>`).join("")}
+        <p class="small muted">平台只做配對：落實之後同客戶交換 WhatsApp，金額自己收，平台唔抽佣。</p></div>
+      <div class="drawer-foot"><button class="btn btn-primary" type="button" data-joinwork>登入，開始接工</button></div>`);
   }
   const tierSeg = () => `<div class="v2-seg" role="group" aria-label="級別">${[["all", "全部級別"], ["master", "大師"], ["mid", "熟手"], ["backup", "兜底"]].map(([k, n]) => `<button type="button" data-tier="${k}" aria-pressed="${state.tier === k}">${n}</button>`).join("")}</div>`;
   const sortBar = opts => `<div class="v2-sort" role="group" aria-label="排序"><span class="muted">排序</span>${opts.map(([k, n]) => `<button type="button" data-sortby="${k}" aria-pressed="${state.sort === k}">${n}</button>`).join("")}</div>`;
@@ -1942,12 +2029,10 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
     const p = state.profile, side = $("#find-side");
     if (!signedUp()) {
       side.innerHTML = `
-        <div class="box">
-          <h1 class="h-side">用你嘅 AI 技能接工賺錢</h1>
-          <div class="sum small">${Object.entries(TIERS).map(([k, v]) => `<div><span>${tierBadge(k)} <span class="muted">${v.desc}</span></span></div>`).join("")}</div>
-          <p>用 Google 登入，填一次基本資料（級別、做邊類 job、作品），就可以報價、交試工，客戶亦會搵到你。</p>
-          <button class="btn btn-primary" type="button" data-joinwork>登入，開始接工</button>
-          <p class="small muted">平台只做配對：落實之後同客戶交換 WhatsApp，金額自己收，平台唔抽佣。</p>
+        <div class="join-strip">
+          <div><b>用你嘅 AI 技能接工賺錢</b><small>登入，填一次資料就可以報價同交試工</small></div>
+          <button type="button" class="info" data-tiers aria-label="三個級別係咩">i</button>
+          <button type="button" class="go" data-joinwork>登入</button>
         </div>`;
       return;
     }
@@ -1977,12 +2062,13 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
     syncMyRating();
     const cat = catById(p.cat);
     side.innerHTML = `
-      <div class="box">
+      <div class="box prof${state.profOpen ? "" : " folded"}">
         <div class="ask-row">
           <div class="person">${avatar(p)}<div><h3>你嘅檔案 ${tierBadge(p.tier)}</h3><div class="muted small">${esc(cat.name)} · ${p.done ? "★ " + p.rating.toFixed(1) + "（" + p.done + " 個評價）" : "新人，未有評價"}</div></div></div>
           <button class="link" type="button" data-editprofile="1">改</button>
         </div>
         ${profileTodo(p)}
+        <button type="button" class="prof-toggle" data-proftoggle>${state.profOpen ? "收埋檔案 ⌃" : "睇晒我嘅檔案 ⌄"}</button>
         <p class="small">${esc(p.bio)}</p>
         <div class="group"><div class="ask-row"><span class="small muted">作品集（${worksOf(p).length}）</span><button class="link" type="button" data-works="1">${worksOf(p).length ? "管理作品" : "加作品"}</button></div>
           ${gallery(worksOf(p), { limit: 6, cap: true, empty: `<p class="small muted">未有作品。上載 3–6 件過往作品，客戶揀人時最睇呢樣。</p>` })}</div>
@@ -2735,10 +2821,16 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
 
   // ---------- events ----------
   document.addEventListener("click", e => {
-    const b = e.target.closest("button");
+    let b = e.target.closest("button");
+    // tapping anywhere on a job or a person opens it, like its picture
+    if (!b) { const row = e.target.closest(".v2row"); if (row && !e.target.closest("a")) b = row.querySelector(".v2-pic"); }
     if (b) handle(b, { ...b.dataset });
   });
   function handle(b, d) {
+    if (d.memos !== undefined || d.memox || d.memogo) return memoAction(d);
+    if (d.openfilter !== undefined) return openFilter();
+    if (d.tiers !== undefined) return openTiers();
+    if (d.proftoggle !== undefined) { const box = b.closest(".prof"); state.profOpen = box.classList.toggle("folded") ? false : true; b.textContent = state.profOpen ? "收埋檔案 ⌃" : "睇晒我嘅檔案 ⌄"; return; }
     if (d.lb) return openLB(d.lb);
     if (d.lbclose !== undefined) return closeLB();
     if (d.lbgo) return stepLB(+d.lbgo);
@@ -2757,10 +2849,16 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
     if (d.job) return showJob(d.job);
     if (d.talent) return showTalent(d.talent);
     if (d.fill) { const q = document.getElementById(d.fill); q.value = d.text; q.focus(); return; }
-    if (d.tier) { state.tier = state.tier === d.tier && b.classList.contains("tier-card") ? "all" : d.tier; return RENDER[state.view]({}); }
-    if (d.filter) { state.filter = d.filter; return RENDER[state.view]({}); }
-    if (d.sortby) { state.sort = d.sortby; return RENDER[state.view]({}); }
-    if (d.look) { state.look = d.look; return RENDER[state.view]({}); }
+    if (d.tier && !b.closest("#drawer")) { state.tier = state.tier === d.tier && b.classList.contains("tier-card") ? "all" : d.tier; return RENDER[state.view]({}); }
+    if (d.filter || d.sortby || d.look || (d.tier && b.closest("#drawer"))) {
+      if (d.filter) state.filter = d.filter;
+      if (d.sortby) state.sort = d.sortby;
+      if (d.look) state.look = d.look;
+      if (d.tier) state.tier = d.tier;
+      RENDER[state.view]({});
+      if (b.closest("#drawer")) openFilter();
+      return;
+    }
     // 發 job draft
     if (d.autofill !== undefined) return autoFill();
     // on a phone the job form folds away under its heading until tapped
@@ -3009,28 +3107,30 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
   }
   function showMemo() {
     const closed = closedMemos();
-    $("#memos").innerHTML = MEMOS.filter(m => m.text && !closed.includes(m.id)).map(m => `
-      <aside class="memo ${m.kind || ""}" aria-label="${esc(m.tag)}">
-        <div class="wrap memo-in">
-          <span class="memo-tag">${esc(m.tag)}</span>
-          <p>${esc(m.text)}</p>
-          ${m.go ? `<button type="button" class="memo-go" data-memogo="${m.id}">${esc(m.go.label)}</button>` : ""}
-          <button type="button" class="memo-x" data-memox="${m.id}" aria-label="關閉${esc(m.tag)}，之後唔再顯示">×</button>
-        </div>
-      </aside>`).join("");
+    const list = MEMOS.filter(m => m.text && !closed.includes(m.id));
+    // the most useful notice leads the line; the full text of all of them is one tap away
+    const lead = list.find(m => m.kind === "need") || list[0];
+    $("#memos").innerHTML = lead ? `<div class="wrap"><button type="button" class="memo-line" data-memos><i class="dot" aria-hidden="true"></i><span><b>${esc(lead.tag)}：</b>${esc(lead.text)}</span><small>${list.length > 1 ? list.length + " 則 ›" : "›"}</small></button></div>` : "";
   }
-  $("#memos").addEventListener("click", e => {
-    const x = e.target.closest("[data-memox]"), g = e.target.closest("[data-memogo]");
-    if (x) {
-      const list = closedMemos().concat(x.dataset.memox);
+  function openMemos() {
+    const closed = closedMemos(), list = MEMOS.filter(m => m.text && !closed.includes(m.id));
+    if (!list.length) return closeDrawer();
+    openDrawer(`${head("消息")}
+      <div class="drawer-body">${list.map(m => `<div class="memo-card ${m.kind || ""}"><span class="memo-tag">${esc(m.tag)}</span><p>${esc(m.text)}</p>
+        <div class="btns">${m.go ? `<button type="button" class="btn btn-primary btn-sm" data-memogo="${m.id}">${esc(m.go.label)}</button>` : ""}<button type="button" class="btn btn-ghost btn-sm" data-memox="${m.id}">知道，唔使再顯示</button></div></div>`).join("")}</div>`);
+  }
+  function memoAction(d) {
+    if (d.memos !== undefined) return openMemos();
+    if (d.memox) {
+      const list = closedMemos().concat(d.memox);
       try { localStorage.setItem("aipd-memos-closed", JSON.stringify(list)); } catch (err) {}
-      x.closest(".memo").remove();
+      showMemo(); return openMemos();
     }
-    if (g) {
-      const m = MEMOS.find(y => y.id === g.dataset.memogo);
+    if (d.memogo) {
+      const m = MEMOS.find(y => y.id === d.memogo);
       closeDrawer(); go(m.go.view); state.filter = m.go.filter; RENDER[state.view]({});
     }
-  });
+  }
 
 
   // ---------- examples so each page has something to show ----------
