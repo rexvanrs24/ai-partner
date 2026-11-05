@@ -2007,6 +2007,12 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       box.scrollIntoView({ block: "center" });
     }
   }
+  // already on the setup form: show where to fill in, instead of drawing the same page again
+  function pointSetup(missing) {
+    const el = $("#setup-form .err") || $("#setup-form input:not([type=checkbox]):placeholder-shown, #setup-form input[value='']") || $("#setup-form [type=submit]");
+    if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); const inp = el.matches("input") ? el : el.closest(".group") && el.closest(".group").querySelector("input"); if (inp) setTimeout(() => inp.focus({ preventScroll: true }), 350); }
+    toast(missing ? `仲有 ${missing} 項未填好，紅字嗰度補返` : "填好呢頁基本資料，撳最底「完成，開始使用」就登記完成");
+  }
   function submitSetup() {
     const f = state.setup, work = f.kind !== "boss", boss = f.kind !== "worker", err = {};
     if (!f.name) err.name = "請填顯示名稱";
@@ -2018,7 +2024,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     if (!/^[2-9]\d{7}$/.test(f.phone)) err.phone = "請填 8 位數字嘅香港電話";
     if (!f.agree) err.agree = "要同意條款先可以用";
     state.setupErr = err;
-    if (Object.keys(err).length) return renderSetup();
+    if (Object.keys(err).length) { renderSetup(); return pointSetup(Object.keys(err).length); }
     const u = state.user;
     Object.assign(u, { name: f.name, kind: f.kind, phone: f.phone, company: boss ? f.company : "", district: boss ? f.district : "", onboarded: true });
     if (f.photo[0]) u.photo = f.photo[0].url;
@@ -2287,6 +2293,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     if (d.quote) { if (!needProfile("quote", d.quote)) openQuote(d.quote); return; }
     if (d.trial) { if (!needProfile("trial", d.trial)) openSubmit(d.trial); return; }
     if (d.editprofile) return renderProfile({ edit: true });
+    if (d.gologin !== undefined && state.view === "login" && $("#setup-form")) return pointSetup();
     if (d.gologin !== undefined) return requireLogin(() => {}, state.view === "find" ? "profile" : "publish");
     if (d.joinwork !== undefined) return requireLogin(() => { if (!state.profile) startAddWorker(); }, "profile");
     if (d.addworker !== undefined) return startAddWorker();
