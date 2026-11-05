@@ -1970,7 +1970,8 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
           </div>
           <label class="group"><span class="field-title">顯示名稱${req}<span class="small muted">（其他人會見到呢個名，唔會用你 Google 帳戶嘅名）</span></span><input type="text" id="su-name" value="${esc(f.name)}" maxlength="20" placeholder="例如：阿明、陳小姐、Studio K">${e("name")}</label>
           <div class="group"><span class="field-title">頭像<span class="small muted">（唔上載就用 Google 頭像）</span></span>
-            <div class="avatar-row">${avatar({ ...u, photo: f.photo[0] ? f.photo[0].url : u.photo }, true)}${uploader("su-photo", f.photo, { label: "換相", hint: "正面清楚嘅相，客戶同工作者更放心。", single: true, accept: "image/*", max: 400, onChange: () => { read(); renderSetup(); } })}</div></div>
+            <div class="avatar-row">${avatar({ ...u, photo: f.gpic ? u.gphoto : f.photo[0] ? f.photo[0].url : u.photo }, true)}${uploader("su-photo", f.photo, { label: "換相", hint: "正面清楚嘅相，客戶同工作者更放心。", single: true, accept: "image/*", max: 400, onChange: () => { read(); f.gpic = false; renderSetup(); } })}</div>
+            ${u.gphoto && (f.photo[0] || (u.photo && u.photo !== u.gphoto)) && !f.gpic ? `<button type="button" class="link" data-sugpic>用返 Google 頭像</button>` : ""}</div>
           ${work ? `
           <div class="group">
             <span class="field-title">你係邊個級別${req}</span>
@@ -2012,6 +2013,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       if (b.dataset.editcancel !== undefined) return closeLogin();
       read();
       const d = b.dataset;
+      if (d.sugpic !== undefined) { f.gpic = true; f.photo.length = 0; }
       if (d.sukind) f.kind = d.sukind;
       if (d.sutier) f.tier = d.sutier;
       if (d.sucat) f.cats = f.cats.includes(d.sucat) ? f.cats.filter(c => c !== d.sucat) : f.cats.concat(d.sucat);
@@ -2047,6 +2049,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     const u = state.user;
     Object.assign(u, { name: f.name, kind: f.kind, phone: f.phone, company: boss ? f.company : "", district: boss ? f.district : "", onboarded: true });
     if (f.photo[0]) u.photo = f.photo[0].url;
+    else if (f.gpic) u.photo = u.gphoto || "";
     if (work) {
       const cats = f.cats.map(catById), cat = cats[0], old = state.profile || {};
       state.profile = {
@@ -2073,12 +2076,9 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     const u = state.user;
     syncMyRating();
     const asWorker = u.kind !== "boss" || state.profile, asBoss = u.kind !== "worker";
-    const ph = [];
     openDrawer(`${head("我嘅資料")}
       <div class="drawer-body">
-        <div class="avatar-row">${avatar(u, true)}<div style="min-width:0;flex:1"><h3>${esc(u.name)}</h3><div class="muted small">${esc(u.email)}</div>
-          ${uploader("acc-photo", ph, { label: "換頭像", hint: "揀一張相", single: true, accept: "image/*", max: 400, onChange: list => { u.photo = list[0] ? list[0].url : u.photo; saveMe(); renderAccount(); RENDER[state.view]({}); openAccount(); toast("頭像已更新"); } })}
-          ${u.photo && u.photo !== u.gphoto ? `<button type="button" class="link" data-unphoto>用返 Google 頭像</button>` : ""}</div></div>
+        <div class="avatar-row">${avatar(u, true)}<div style="min-width:0;flex:1"><h3>${esc(u.name)}</h3><div class="muted small">${esc(u.email)}</div></div></div>
         <div class="sum small">
           <div><span class="muted">顯示名稱</span><span>${esc(u.name)}</span></div>
           <div><span class="muted">登入方式</span><span>Google</span></div>
