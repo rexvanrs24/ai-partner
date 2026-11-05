@@ -1441,33 +1441,38 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
     $("#v-post").innerHTML = `
       <div class="split">
         <div class="side">
-          ${signedUp() ? `
-          <form class="box" id="ask-form">
-            <h1 class="h-side">你嘅需求</h1>
-            <p class="muted small">講一句想做咩，AI 幫你整理成 job，再通知最啱嘅人報價或者試工。</p>
-            <textarea id="ask-q" rows="4" placeholder="例如：${esc(HIRE_EG[0])}">${esc(state.draft ? state.draft.raw : "")}</textarea>
-            <div class="chips">${HIRE_EG.map(e => `<button type="button" class="chip" data-fill="ask-q" data-text="${esc(e)}">${esc(e.slice(0, 12))}…</button>`).join("")}</div>
-            <button class="btn ${state.draft ? "btn-ghost" : "btn-primary"}" type="submit">${state.draft ? "重新整理" : "AI 幫我整理"}</button>
-          </form>` : `
-          <div class="box">
-            <h1 class="h-side">AI 嘢識都唔想自己做？搵人幫你做。</h1>
-            <p class="muted small">AI 影片、相片、分身配音、自動化、網店上架。講一句需求，AI 幫你整理，再通知最啱嘅人報價或者試工。</p>
-            <p>用 Google 登入，填一次基本資料，就可以發 job、收報價同揀人。</p>
-            <button class="btn btn-primary" type="button" data-joinhire>登入，開始搵人</button>
-            <p class="small muted">平台只做配對：落實之後交換 WhatsApp，金額同付款方式由雙方自己傾，平台唔收費。</p>
-          </div>`}
           <div id="draft"></div>
         </div>
         <div class="main">${talentList()}</div>
       </div>`;
-    if (!signedUp()) return;
-    $("#ask-form").addEventListener("submit", e => { e.preventDefault(); runDraft(); });
-    if (state.draft) renderDraft(false);
+    if (!state.draft) state.draft = blankDraft();
+    renderDraft(false);
   };
+
+  // an empty job to fill in straight away; the category starts on 影片 and the money on that category's usual price
+  function blankDraft() {
+    const cat = CATS[0];
+    return { raw: "", title: "", cat: cat.id, tier: "mid", suggested: "mid", skills: cat.skills.slice(0, 3),
+      budget: cat.median, budgetGuess: true, days: 14, daysGuess: true, mode: "direct", refs: [], touched: false,
+      trial: { brief: TRIAL_EG[cat.id], max: 5, days: 3, files: [] } };
+  }
+  // 「AI 幫我填」: read what was written and fill in the title, category, level, money and days
+  function autoFill() {
+    readDraft();
+    const d = state.draft, raw = d.raw.trim();
+    if (!raw) { toast("先寫低你想做咩"); $("#d-desc").focus(); return; }
+    const cat = detectCat(raw), budget = parseBudget(raw), days = parseDays(raw);
+    const tier = suggestJobTier(raw, cat, budget || cat.median);
+    Object.assign(d, { title: titleFrom(raw, cat), cat: cat.id, tier, suggested: tier, touched: true,
+      skills: [...new Set(skillsIn(raw).concat(cat.skills.slice(0, 3)))].slice(0, 4),
+      budget: budget || cat.median, budgetGuess: !budget, days: days || 14, daysGuess: !days });
+    d.trial.brief = TRIAL_EG[cat.id];
+    renderDraft(true);
+  }
 
   // the 搵人 list: same shape as the 搵工 list (heading, numbers, one filter bar, rows that show the work)
   function talentList() {
-    const d = state.draft;
+    const d = state.draft && state.draft.touched ? state.draft : null;
     let list = TALENT.filter(inFilters).map(t => ({ t, m: d ? match(d, t) : null }));
     const by = {
       match: (a, b) => (b.m ? b.m.total : 0) - (a.m ? a.m.total : 0) || b.t.rating - a.t.rating,
@@ -1528,9 +1533,11 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
   // keep what was typed before re-drawing the draft
   function readDraft() {
     const d = state.draft; if (!d || !$("#d-title")) return;
-    d.title = $("#d-title").value.trim() || d.title;
-    d.budget = Math.max(100, parseInt($("#d-budget").value, 10) || d.budget);
-    d.days = Math.max(1, parseInt($("#d-days").value, 10) || d.days);
+    d.raw = $("#d-desc").value;
+    d.title = $("#d-title").value.trim();
+    if (d.title || d.raw.trim()) d.touched = true;
+    if ($("#d-budget").value) { d.budget = Math.max(100, parseInt($("#d-budget").value, 10) || d.budget); d.budgetGuess = false; }
+    if ($("#d-days").value) { d.days = Math.max(1, parseInt($("#d-days").value, 10) || d.days); d.daysGuess = false; }
     if ($("#t-brief")) {
       d.trial.brief = $("#t-brief").value.trim() || d.trial.brief;
       d.trial.max = Math.max(1, parseInt($("#t-max").value, 10) || d.trial.max);
@@ -1544,13 +1551,18 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
     const top = ranked(d, TALENT.filter(t => t.avail !== "off")).slice(0, 3).map(x => x.t.name);
     $("#draft").innerHTML = `
       <form class="box ${fresh ? "reveal" : ""}" id="draft-form">
-        <div class="step"><span>1</span>確認需求 <span class="ai">AI 整理咗，可以改</span></div>
+        <h1 class="h-side">你嘅需求</h1>
+        <div class="step"><span>1</span>講你要做咩</div>
+        <label class="field-label" for="d-desc">詳細講吓要做咩</label>
+        <textarea id="d-desc" rows="4" placeholder="例如：${esc(HIRE_EG[0])}">${esc(d.raw)}</textarea>
+        <div class="chips">${HIRE_EG.map(e => `<button type="button" class="chip" data-fill="d-desc" data-text="${esc(e)}">${esc(e.slice(0, 12))}…</button>`).join("")}</div>
+        <button type="button" class="btn btn-ghost btn-sm" data-autofill style="justify-self:start">AI 幫我填下面</button>
         <div class="fields">
-          <label>job<input type="text" id="d-title" value="${esc(d.title)}"></label>
+          <label>job 名<input type="text" id="d-title" value="${esc(d.title)}" placeholder="例如：60 秒產品宣傳片"></label>
           <label>預算（HK$）<input type="number" id="d-budget" min="100" step="100" value="${d.budget}"></label>
           <label>幾多日內交<input type="number" id="d-days" min="1" value="${d.days}"></label>
         </div>
-        ${guess.length ? `<div class="note">你未講${guess.join("同")}，AI 按${cat.name}市價先填咗。</div>` : ""}
+        ${guess.length ? `<div class="note">${guess.join("同")}係按${cat.name}市價先填，可以改。</div>` : ""}
         <div class="group"><span class="small muted">類別</span>${chipRow("類別", "dcat", CATS.map(c => [c.id, c.name]), d.cat)}</div>
         <div class="group"><span class="small muted">搵邊類人（AI 建議：${TIERS[d.suggested].name}）</span>${chipRow("級別", "dtier", Object.entries(TIERS).map(([k, v]) => [k, v.name]), d.tier)}
           <span class="small muted">${TIERS[d.tier].desc}，一般 ${TIERS[d.tier].price}</span></div>
@@ -1574,7 +1586,14 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
         <button class="btn btn-primary" type="submit">發佈 job</button>
       </form>`;
     document.querySelectorAll('input[name="d-mode"]').forEach(r => r.addEventListener("change", () => { readDraft(); d.mode = r.value; renderDraft(false); }));
-    $("#draft-form").addEventListener("submit", e => { e.preventDefault(); readDraft(); requireLogin(publishNeed, "publish"); });
+    $("#draft-form").addEventListener("submit", e => {
+      e.preventDefault(); readDraft();
+      if (!d.raw.trim()) { toast("請寫低你要做咩"); $("#d-desc").focus(); return; }
+      if (!d.title) { toast("請填 job 名"); $("#d-title").focus(); return; }
+      d.skills = [...new Set(skillsIn(d.raw + " " + d.title).concat(catById(d.cat).skills.slice(0, 3)))].slice(0, 4);
+      requireLogin(publishNeed, "publish");
+    });
+    const main = $("#v-post .main"); if (main) main.innerHTML = talentList();
     bindUploaders();
   }
 
@@ -2717,8 +2736,10 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
     if (d.sortby) { state.sort = d.sortby; return RENDER[state.view]({}); }
     if (d.look) { state.look = d.look; return RENDER[state.view]({}); }
     // 發 job draft
-    if (d.dcat) { readDraft(); const dr = state.draft, c = catById(d.dcat); dr.cat = c.id; dr.skills = c.skills.slice(0, 3); dr.trial.brief = TRIAL_EG[c.id]; return renderDraft(false); }
-    if (d.dtier) { readDraft(); state.draft.tier = d.dtier; return renderDraft(false); }
+    if (d.autofill !== undefined) return autoFill();
+    if (d.dcat) { readDraft(); const dr = state.draft, c = catById(d.dcat); dr.cat = c.id; dr.touched = true;
+      if (dr.budgetGuess) dr.budget = c.median; dr.skills = c.skills.slice(0, 3); dr.trial.brief = TRIAL_EG[c.id]; return renderDraft(false); }
+    if (d.dtier) { readDraft(); state.draft.tier = d.dtier; state.draft.touched = true; return renderDraft(false); }
     // 我發嘅 job
     if (d.need) { state.selNeed = d.need; state.needTab = "replies"; return RENDER.needs(); }
     if (d.ntab) { state.needTab = d.ntab; return RENDER.needs(); }
