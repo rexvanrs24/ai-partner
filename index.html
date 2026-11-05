@@ -514,11 +514,246 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
 @media (max-width: 560px) { .memo-in { flex-wrap: wrap; } .memo p { flex-basis: calc(100% - 100px); } .memo .memo-go { margin-left: 52px; } }
 :focus-visible { outline-color: var(--ink); }
 .top :focus-visible { outline-color: #FFFFFF; }
+
+/* ---------- landing page: what this is and how each side uses it; the list pages stay as they are ---------- */
+body[data-side="home"] { --accent: var(--ink); --accent-ink: var(--bg); --accent-soft: var(--tile); --side: #FFFFFF; }
+#v-home { gap: 0; }
+.lp-hero { padding: 40px 0 10px; text-align: center; }
+.lp-hero h1 { font: 900 clamp(34px, 5.6vw, 64px)/1.08 var(--f-display); letter-spacing: -.02em; max-width: 14em; margin: 0 auto; text-wrap: balance; }
+.lp-hero h1 .b { color: var(--boss); } .lp-hero h1 .w { color: var(--worker); }
+.lp-hero .lead { margin: 18px auto 0; max-width: 36em; font-size: 18px; color: var(--muted); }
+.lp-doors { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+.lp-door { position: relative; overflow: hidden; border-radius: 24px; padding: 28px; min-height: 240px; display: grid; align-content: space-between; gap: 18px; border: 0; color: #FFFFFF; text-align: left; cursor: pointer; font: inherit; }
+.lp-door.b { background: linear-gradient(150deg, #E24E5B, #A8202E); }
+.lp-door.w { background: linear-gradient(150deg, #1388C4, #064E78); }
+.lp-door .t { font: 900 34px/1.1 var(--f-display); position: relative; z-index: 1; }
+.lp-door p { font-size: 16px; opacity: .92; margin: 8px 0 0; max-width: 22em; position: relative; z-index: 1; }
+.lp-door .go { display: inline-flex; align-items: center; gap: 10px; background: #FFFFFF; color: #000000; font-weight: 900; padding: 12px 20px; border-radius: 999px; justify-self: start; position: relative; z-index: 1; transition: transform .15s ease; }
+.lp-door:hover .go { transform: translateX(4px); }
+.lp-door .deco { position: absolute; right: -30px; bottom: -40px; width: 200px; height: 200px; border-radius: 40px; transform: rotate(14deg); opacity: .9; box-shadow: 0 20px 40px -10px rgba(0,0,0,.4); }
+.lp-a1 { background: radial-gradient(circle at 70% 35%, #FFD27A 0 12%, transparent 13%), linear-gradient(160deg, #FF7A59, #B4237A 55%, #2A0E4A); }
+.lp-a3 { background: radial-gradient(circle at 50% 45%, #F4C9A8 0 20%, transparent 21%), radial-gradient(circle at 50% 95%, #3B2A6B 0 38%, transparent 39%), linear-gradient(135deg, #C9B6FF, #6E56CF); }
+.lp-sec { padding-top: 44px; display: grid; gap: 16px; }
+.lp-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.lp-head h2 { font: 900 28px/1.2 var(--f-display); margin: 0; }
+.lp-head span { color: var(--muted); }
+.lp-how { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.lp-col { border-radius: 22px; padding: 26px; background: var(--tile); display: grid; gap: 16px; align-content: start; }
+.lp-col h3 { font-size: 22px; margin: 0; display: flex; align-items: center; gap: 10px; }
+.lp-col h3 i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.lp-col ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.lp-col li { display: grid; grid-template-columns: 36px 1fr; gap: 12px; }
+.lp-col li b { width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; font: 900 17px var(--f-display); color: #FFFFFF; }
+.lp-col li span { font-weight: 700; }
+.lp-col li small { display: block; color: var(--muted); font-weight: 400; font-size: 14px; margin-top: 2px; }
+.lp-btn { justify-self: start; border: 0; border-radius: 12px; padding: 12px 18px; font-weight: 800; color: #FFFFFF; cursor: pointer; font-size: 16px; }
+.lp-tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.lp-tier { border: 1px solid var(--line); border-radius: 18px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.lp-tier b { font-size: 18px; } .lp-tier p { margin: 0; color: var(--muted); font-size: 15px; } .lp-tier .num { font-weight: 800; font-family: var(--f-num); }
+.lp-band { background: var(--top-bg); color: #FFFFFF; border: 1px solid var(--top-line); border-radius: 24px; padding: 32px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; align-items: center; }
+.lp-band h2 { font: 900 30px/1.15 var(--f-display); margin: 0; }
+.lp-band p { color: #BDBDBD; margin: 10px 0 0; }
+.lp-band ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.lp-band li { display: flex; gap: 12px; align-items: start; background: var(--top-tile); border-radius: 14px; padding: 14px; }
+.lp-band li b { color: var(--worker-top); font-size: 20px; line-height: 1; }
+.lp-band li small { display: block; color: #BDBDBD; }
+.lp-final { text-align: center; padding: 40px 0 10px; display: grid; gap: 16px; justify-items: center; }
+.lp-final h2 { font: 900 32px/1.15 var(--f-display); margin: 0; }
+.lp-final .btns { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.lp-final .btns button { border: 0; border-radius: 999px; padding: 14px 26px; font-weight: 900; font-size: 17px; color: #FFFFFF; cursor: pointer; }
+.lp-b { background: var(--boss); } .lp-w { background: var(--worker); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lp-b, :root:not([data-theme="light"]) .lp-w { color: #000000; } }
+:root[data-theme="dark"] .lp-b, :root[data-theme="dark"] .lp-w { color: #000000; }
+.lp-dock { display: none; }
+/* the logo badge: half coral, half blue on the landing page, the side's colour once you pick 搵人 or 搵工;
+   it stays on a narrow phone (where the name is hidden) so the logo still leads back to the landing page */
+.top .logo .logo-mark { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--accent); color: var(--accent-ink); font: 900 15px/1 var(--f-display); letter-spacing: 0; transition: background .2s ease; }
+.top .logo .logo-mark::before, .top .logo .logo-mark::after { content: none; }
+body[data-side="home"] .top .logo .logo-mark { background: linear-gradient(135deg, var(--boss-top) 50%, var(--worker-top) 50%); color: #000000; }
+@media (max-width: 760px) {
+  .lp-doors, .lp-how, .lp-tiers, .lp-band { grid-template-columns: 1fr; }
+  .lp-hero { padding-top: 20px; } .lp-hero .lead { font-size: 16.5px; }
+  .lp-door { min-height: 190px; padding: 22px; } .lp-door .t { font-size: 28px; } .lp-door p { max-width: 15em; }
+  .lp-door .deco { width: 120px; height: 120px; right: -36px; bottom: -44px; border-radius: 28px; }
+  .lp-band { padding: 22px; }
+  .lp-dock { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; gap: 8px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--bg); border-top: 1px solid var(--line); }
+  .lp-dock button { flex: 1; border: 0; border-radius: 12px; padding: 13px; font-weight: 800; font-size: 16px; color: #FFFFFF; cursor: pointer; }
+  body[data-side="home"] footer { padding-bottom: 76px; }
+}
+
+/* ================= design v2 (2026-11-05): lively lists, the 搵人 side mirrors the 搵工 side ================= */
+svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.v2-head { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: end; justify-content: space-between; }
+.v2-head h2 { font-size: 30px; font-weight: 900; line-height: 1.2; margin: 0; }
+.v2-head h2 em { font-style: normal; color: var(--accent); font-family: var(--f-num); }
+.v2-head p { color: var(--muted); margin: 4px 0 0; }
+.v2-stats { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.v2-stat { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: var(--tile); font-size: 14px; font-weight: 700; }
+.v2-stat.new { background: var(--need-soft); color: var(--need); }
+.v2-stat.hot { background: var(--signal-soft); color: var(--signal); }
+.v2-looks { display: inline-flex; background: var(--tile); border-radius: 12px; padding: 3px; }
+.v2-looks button { border: 0; background: none; padding: 7px 12px; border-radius: 9px; font-weight: 700; font-size: 14px; display: inline-flex; gap: 6px; align-items: center; color: var(--muted); cursor: pointer; }
+.v2-looks button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.v2-bar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 64px); z-index: 5; background: var(--bg); padding: 12px 0; display: grid; gap: 10px; border-bottom: 1px solid var(--line); }
+.v2-cats { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.v2-cats::-webkit-scrollbar { display: none; }
+.v2-cats button { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 14px; padding: 7px 14px 7px 8px; font-weight: 700; display: inline-flex; gap: 8px; align-items: center; font-size: 15px; cursor: pointer; }
+.v2-cats .ic { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; color: #fff; }
+.v2-cats .ic svg { width: 15px; height: 15px; }
+.v2-cats small { color: var(--muted); font-weight: 600; font-family: var(--f-num); }
+.v2-cats button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.v2-cats button[aria-pressed="true"] small { color: inherit; opacity: .7; }
+.v2-row2 { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.v2-seg { display: inline-flex; background: var(--tile); border-radius: 999px; padding: 3px; }
+.v2-seg button { border: 0; background: none; padding: 6px 14px; border-radius: 999px; font-weight: 700; font-size: 14px; color: var(--muted); cursor: pointer; }
+.v2-seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.v2-sort { display: flex; gap: 4px; align-items: center; font-size: 14px; flex-wrap: wrap; }
+.v2-sort button { border: 0; background: none; padding: 6px 10px; border-radius: 8px; font-weight: 700; color: var(--muted); cursor: pointer; }
+.v2-sort button[aria-pressed="true"] { color: var(--ink); background: var(--tile); }
+.v2-list { display: grid; gap: 12px; }
+.v2row { position: relative; display: grid; grid-template-columns: 112px minmax(0, 1fr) auto; gap: 18px; padding: 16px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); transition: transform .15s ease, box-shadow .15s ease; }
+.v2row:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.v2row.best { border: 2px solid var(--accent); }
+.v2-flag { position: absolute; top: -11px; left: 18px; background: var(--accent); color: var(--accent-ink); font-size: 12.5px; font-weight: 800; padding: 1px 10px; border-radius: 999px; z-index: 1; }
+.v2-pic { position: relative; height: 112px; border-radius: 14px; overflow: hidden; border: 0; padding: 0; cursor: pointer; background: var(--tile); display: block; width: 100%; }
+.v2-pic > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.v2-pic .cat { position: absolute; left: 6px; bottom: 6px; background: rgba(0,0,0,.6); color: #fff; font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
+.v2-pic .tile { width: 100%; height: 100%; display: grid; place-items: center; color: #fff; font-weight: 900; font-size: 18px; }
+.v2-works { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 3px; height: 100%; }
+.v2-works img, .v2-works i { width: 100%; height: 100%; object-fit: cover; display: block; min-height: 0; }
+.v2-works > :first-child { grid-row: span 2; }
+.v2-works.one { grid-template-columns: 1fr; } .v2-works.one > :first-child { grid-row: auto; }
+.v2-pic .avatar { position: absolute; left: 8px; bottom: 8px; width: 40px; height: 40px; border: 3px solid var(--surface); font-size: 16px; }
+.v2-pic .dot { position: absolute; left: 38px; bottom: 8px; width: 13px; height: 13px; border-radius: 50%; background: #22C55E; border: 2px solid var(--surface); }
+.v2-body { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.v2-t { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+.v2-t button { border: 0; background: none; padding: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.v2-t h3 { font-size: 19px; font-weight: 800; line-height: 1.3; margin: 0; }
+.v2-t button:hover h3 { color: var(--accent); }
+.v2-pill { font-size: 12.5px; font-weight: 800; padding: 1px 9px; border-radius: 999px; background: var(--tile); white-space: nowrap; }
+.v2-pill.new { background: var(--need-soft); color: var(--need); }
+.v2-pill.trialp { background: var(--accent-soft); color: var(--accent); }
+.v2-meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 14px; color: var(--muted); }
+.v2-meta span { display: inline-flex; gap: 5px; align-items: center; }
+.v2-meta .urgent { color: var(--signal); font-weight: 700; }
+.v2-meta .star { color: var(--ink); font-weight: 800; }
+.v2-desc { font-size: 15px; margin: 0; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.v2-skills { display: flex; flex-wrap: wrap; gap: 6px; }
+.v2-skills span { font-size: 13px; padding: 1px 9px; border-radius: 8px; border: 1px solid var(--line); color: var(--muted); }
+.v2-skills span.has { border-color: transparent; background: var(--need-soft); color: var(--need); font-weight: 700; }
+.v2-skills span.has::before { content: "✓ "; }
+.v2-side { display: grid; grid-template-columns: auto auto; gap: 10px 14px; align-items: center; justify-items: end; align-content: center; }
+.v2-ring { flex: none; width: 58px; height: 58px; border-radius: 50%; background: conic-gradient(var(--c, var(--need)) calc(var(--p) * 1%), var(--tile-2) 0); display: grid; place-items: center; }
+.v2-ring b { width: 46px; height: 46px; border-radius: 50%; background: var(--surface); display: grid; place-items: center; line-height: 1; font: 900 17px var(--f-num); }
+.v2-ring b small { display: block; font: 700 9.5px var(--f-body); color: var(--muted); margin-top: -8px; }
+.v2-bud { text-align: right; }
+.v2-bud b { display: block; font: 900 24px/1.1 var(--f-num); }
+.v2-bud small { color: var(--muted); font-size: 13px; }
+.v2-act { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end; }
+.v2-act .btn { padding: 10px 18px; border-radius: 12px; }
+.v2-why { grid-column: 1 / -1; font-size: 13px; color: var(--muted); text-align: right; max-width: 220px; }
+.v2-tip { border: 2px dashed var(--line); border-radius: 18px; padding: 18px; display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.v2-tip b { font-size: 17px; }
+.v2-tip p { margin: 4px 0 0; }
+/* card view */
+.v2-list.cards { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; }
+.v2-list.cards .v2row { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 0 0 16px; overflow: hidden; }
+.v2-list.cards .v2-pic { height: 160px; border-radius: 0; }
+.v2-list.cards .v2-body, .v2-list.cards .v2-side { padding-inline: 16px; }
+.v2-list.cards .v2-side { grid-template-columns: auto 1fr; justify-items: start; }
+.v2-list.cards .v2-bud { justify-self: end; }
+.v2-list.cards .v2-desc { -webkit-line-clamp: 2; }
+.v2-list.cards .v2-act .btn { flex: 1; }
+.v2-list.cards .v2-why { text-align: left; max-width: none; }
+.v2-list.cards .v2-flag { top: 10px; left: 10px; }
+/* profile completeness on the 搵工 panel */
+.v2-done { display: flex; gap: 14px; align-items: center; font-size: 14.5px; }
+.v2-done b { display: block; font-size: 16px; }
+.v2-pring { width: 60px; height: 60px; border-radius: 50%; background: conic-gradient(var(--accent) calc(var(--p) * 1%), var(--tile-2) 0); display: grid; place-items: center; flex: none; }
+.v2-pring b { width: 46px; height: 46px; border-radius: 50%; background: var(--surface); display: grid; place-items: center; font: 900 15px var(--f-num); }
+.v2-todo { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.v2-todo li { display: flex; gap: 10px; align-items: center; font-size: 14.5px; padding: 9px 12px; border-radius: 12px; background: var(--tile); }
+.v2-todo li.ok { background: none; color: var(--muted); text-decoration: line-through; padding-block: 2px; }
+.v2-todo .tick { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--muted); flex: none; display: grid; place-items: center; font-size: 12px; }
+.v2-todo li.ok .tick { border-color: var(--need); background: var(--need); color: var(--bg); }
+.v2-todo li .btn { margin-left: auto; padding: 4px 12px; border-radius: 999px; font-size: 13.5px; text-decoration: none; }
+/* numbers on top of 我發嘅 job / 我嘅報價 / 進行中 */
+.v2-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.v2-kpi { background: var(--tile); border-radius: 18px; padding: 14px 16px; }
+.v2-kpi small { color: var(--muted); display: block; font-size: 13.5px; }
+.v2-kpi b { font: 900 26px/1.2 var(--f-num); }
+.v2-kpi span { display: block; color: var(--muted); font-size: 13px; }
+/* steps: 發出 job → 收報價 → 揀人 → 開工 */
+.v2-track { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); counter-reset: s; margin: 4px 0; }
+.v2-track span { position: relative; text-align: center; font-size: 13px; color: var(--muted); padding-top: 30px; font-weight: 700; }
+.v2-track span::before { counter-increment: s; content: counter(s); position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 24px; height: 24px; border-radius: 50%; background: var(--tile-2); color: var(--muted); display: grid; place-items: center; font: 800 12px var(--f-num); z-index: 1; }
+.v2-track span::after { content: ""; position: absolute; top: 11px; left: -50%; width: 100%; height: 3px; background: var(--tile-2); }
+.v2-track span:first-child::after { display: none; }
+.v2-track span.on { color: var(--ink); }
+.v2-track span.on::before { content: "✓"; background: var(--accent); color: var(--accent-ink); }
+.v2-track span.on::after, .v2-track span.now::after { background: var(--accent); }
+.v2-track span.now { color: var(--accent); }
+.v2-track span.now::before { background: var(--surface); color: var(--accent); box-shadow: 0 0 0 3px var(--accent); }
+/* quotes side by side */
+.v2-quotes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 12px; }
+.v2-q { position: relative; border: 1px solid var(--line); background: var(--surface); border-radius: 18px; padding: 14px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.v2-q.top1 { border: 2px solid var(--accent); }
+.v2-q .who { display: flex; gap: 10px; align-items: center; border: 0; background: none; padding: 0; text-align: left; cursor: pointer; color: inherit; font: inherit; }
+.v2-q .who b { display: block; } .v2-q .who small { color: var(--muted); font-size: 13px; }
+.v2-q .price { font: 900 26px/1 var(--f-num); }
+.v2-q .price small { font: 600 13px var(--f-body); color: var(--muted); margin-left: 6px; }
+.v2-q p { font-size: 14px; color: var(--muted); margin: 0; }
+.v2-q .btns { display: flex; gap: 8px; } .v2-q .btns .btn { flex: 1; }
+/* an order's four steps */
+.v2-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.v2-st { border-radius: 14px; padding: 10px 12px; background: var(--tile); font-size: 13.5px; display: grid; gap: 2px; }
+.v2-st b { font-size: 15px; } .v2-st small { color: var(--muted); }
+.v2-st.done { background: var(--need-soft); } .v2-st.done b::before { content: "✓ "; color: var(--need); }
+.v2-st.now { background: var(--accent-soft); outline: 2px solid var(--accent); }
+.btn-wa { background: #25D366; color: #00210C; gap: 6px; }
+/* phone: a tab bar at the bottom for the three pages of each side */
+.tabbar { display: none; }
+@media (max-width: 980px) { .v2-head h2 { font-size: 26px; } }
+@media (max-width: 760px) {
+  .tabbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--bg); border-top: 1px solid var(--line); padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); }
+  body[data-side="home"] .tabbar { display: none; }
+  .tabbar button { flex: 1; border: 0; background: none; display: grid; justify-items: center; gap: 2px; font-size: 12.5px; font-weight: 700; color: var(--muted); padding: 6px 0; position: relative; cursor: pointer; }
+  .tabbar button svg { width: 22px; height: 22px; }
+  .tabbar button[aria-current="page"] { color: var(--accent); }
+  .tabbar .count { position: absolute; top: 0; left: calc(50% + 6px); background: var(--accent); color: var(--accent-ink); font-size: 11px; min-width: 18px; height: 18px; border-radius: 9px; display: grid; place-items: center; font-family: var(--f-num); padding: 0 4px; }
+  body:not([data-side="home"]) .top .nav { display: none; }
+  body:not([data-side="home"]) footer { padding-bottom: 70px; }
+  .v2-head h2 { font-size: 23px; }
+  .v2-looks { display: none; }
+  .v2-bar { top: calc(env(safe-area-inset-top, 0px) + 56px); }
+  .v2row, .v2-list.cards .v2row { grid-template-columns: 84px minmax(0, 1fr); gap: 8px 12px; padding: 12px; }
+  .v2-pic, .v2-list.cards .v2-pic { height: 84px; border-radius: 12px; grid-row: span 2; }
+  .v2-pic .cat { display: none; }
+  .v2-pic .avatar { width: 32px; height: 32px; left: 4px; bottom: 4px; font-size: 13px; } .v2-pic .dot { left: 28px; bottom: 4px; }
+  .v2-body, .v2-list.cards .v2-body { display: contents; }
+  .v2-t, .v2-meta { grid-column: 2; }
+  .v2-t h3 { font-size: 17px; }
+  .v2-desc, .v2-skills { grid-column: 1 / -1; }
+  .v2-side, .v2-list.cards .v2-side { grid-column: 1 / -1; grid-template-columns: auto 1fr; justify-items: start; border-top: 1px solid var(--line); padding: 10px 0 0; }
+  .v2-ring { width: 48px; height: 48px; } .v2-ring b { width: 38px; height: 38px; font-size: 15px; }
+  .v2-bud { text-align: left; } .v2-bud b { font-size: 20px; }
+  .v2-act .btn { flex: 1; }
+  .v2-why { text-align: left; max-width: none; }
+  .v2-kpis { gap: 8px; } .v2-kpi { padding: 10px 12px; } .v2-kpi b { font-size: 20px; } .v2-kpi span { display: none; }
+  .v2-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .v2-track span { font-size: 11.5px; }
+}
+/* a narrow phone: the role switch, the bell and your picture must fit on one line */
+@media (max-width: 420px) {
+  .top .wrap { column-gap: 8px; }
+  .role button { padding: 6px 10px; font-size: 14px; }
+  #account { gap: 6px; }
+}
 </style>
 
 <header class="top">
   <div class="wrap">
-    <button class="logo" id="logo" type="button" aria-label="AI拍檔首頁"><span class="logo-mark" aria-hidden="true"></span><span class="logo-text">AI拍檔</span></button>
+    <button class="logo" id="logo" type="button" aria-label="AI拍檔首頁"><span class="logo-mark" aria-hidden="true">AI</span><span class="logo-text">AI拍檔</span></button>
     <div class="role" role="group" aria-label="身份">
       <button type="button" data-role="boss">我要搵人</button>
       <button type="button" data-role="worker">我要搵工</button>
@@ -533,7 +768,8 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
 <div id="memos"></div>
 
 <main class="wrap">
-  <section class="view" id="v-post"></section>
+  <section class="view" id="v-home" hidden></section>
+  <section class="view" id="v-post" hidden></section>
   <section class="view" id="v-login" hidden></section>
   <section class="view" id="v-needs" hidden></section>
   <section class="view" id="v-hired" hidden></section>
@@ -544,6 +780,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
 
 <footer><div class="wrap">網站模型：AI 回應、工作者報價、試工作品同客戶回覆都係模擬，job、人才同訂單都係虛構例子，唔會真係收錢。平台只做配對：金額同付款方式由雙方自行處理，平台唔經手、唔收費、唔抽佣。</div></footer>
 
+<nav class="tabbar" id="tabbar" aria-label="主選單"></nav>
 <div class="scrim" id="scrim" hidden></div>
 <aside class="drawer" id="drawer" hidden aria-modal="true" role="dialog" aria-labelledby="drawer-title"></aside>
 <div class="toast" id="toast" hidden role="status"></div>
@@ -735,6 +972,8 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     view: "post",
     filter: "all",
     tier: "all",
+    sort: "match",        // order of the 搵人 / 搵工 lists
+    look: "list",         // list or cards
     draft: null,          // the need being written on 發 job
     needs: [],            // needs you posted as a client
     selNeed: null,
@@ -963,6 +1202,42 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
   const jobThumb = j => { const f = firstPic(j.refs); return f ? `<img class="job-thumb" src="${f.url}" alt="">` : `<span class="job-thumb cat-tile">${CAT_SHORT[j.cat] || ""}</span>`; };
   const worksOf = t => t.works || [];
 
+  // ---------- design v2 pieces ----------
+  const SVG = {
+    video: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/>',
+    photo: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/>',
+    avatar: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    auto: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+    bulk: '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
+    audio: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+    leads: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>',
+    teach: '<path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/>',
+    other: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
+    all: '<circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/>',
+    pin: '<path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+    grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+    doc: '<path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h6"/>',
+    run: '<path d="M4 12h4l3-8 4 16 3-8h2"/>',
+    send: '<path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>',
+    wa: '<path d="M3 21l1.7-5A9 9 0 1 1 8 19.4z"/>',
+  };
+  const ico = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${SVG[n] || ""}</svg>`;
+  // the ring around a match score: green when it fits well, the side colour when it is fair, grey otherwise
+  const ring = total => `<div class="v2-ring" style="--p:${total};--c:${total >= 80 ? "var(--need)" : total >= 50 ? "var(--accent)" : "var(--muted)"}" title="配對分"><b>${total}<small>配對</small></b></div>`;
+  function catBar(items) {
+    const n = id => id === "all" ? items.length : items.filter(x => x.cat === id).length;
+    return `<div class="v2-cats" role="group" aria-label="類別">${[{ id: "all", name: "全部" }].concat(CATS).filter(c => c.id === "all" || n(c.id)).map(c =>
+      `<button type="button" data-filter="${c.id}" aria-pressed="${state.filter === c.id}"><span class="ic" style="background:${c.id === "all" ? "#555" : CAT_HUE[c.id]}">${ico(c.id)}</span>${c.name} <small>${n(c.id)}</small></button>`).join("")}</div>`;
+  }
+  const tierSeg = () => `<div class="v2-seg" role="group" aria-label="級別">${[["all", "全部級別"], ["master", "大師"], ["mid", "熟手"], ["backup", "兜底"]].map(([k, n]) => `<button type="button" data-tier="${k}" aria-pressed="${state.tier === k}">${n}</button>`).join("")}</div>`;
+  const sortBar = opts => `<div class="v2-sort" role="group" aria-label="排序"><span class="muted">排序</span>${opts.map(([k, n]) => `<button type="button" data-sortby="${k}" aria-pressed="${state.sort === k}">${n}</button>`).join("")}</div>`;
+  const looks = () => `<div class="v2-looks" role="group" aria-label="顯示方式"><button type="button" data-look="list" aria-pressed="${state.look === "list"}">${ico("list")}列表</button><button type="button" data-look="cards" aria-pressed="${state.look === "cards"}">${ico("grid")}卡片</button></div>`;
+  const listCls = () => "v2-list" + (state.look === "cards" ? " cards" : "");
+  const ageDays = j => { const t = String(j.posted || ""); return /啱啱|分鐘|小時/.test(t) ? 0 : /昨日/.test(t) ? 1 : /(\d+)\s*日/.test(t) ? +RegExp.$1 : /星期/.test(t) ? 7 : 3; };
+
   // an upload box: drop zone, previews with a remove button and (optionally) a caption each
   const UPL = {};
   function uploader(id, list, o = {}) {
@@ -1043,8 +1318,8 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     boss:   [["post", "搵人幫手"], ["needs", "我發嘅 job"], ["hired", "進行中"]],
     worker: [["find", "搵工"], ["sent", "我嘅報價"], ["work", "進行中"]],
   };
-  const roleOf = view => view === "login" ? roleOf(state.loginNext || "post") : NAV.worker.some(([v]) => v === view) ? "worker" : "boss";
-  const VIEWS = NAV.boss.concat(NAV.worker).map(([v]) => v).concat("login");
+  const roleOf = view => view === "home" ? "home" : view === "login" ? roleOf(state.loginNext || "post") : NAV.worker.some(([v]) => v === view) ? "worker" : "boss";
+  const VIEWS = NAV.boss.concat(NAV.worker).map(([v]) => v).concat("login", "home");
   // 我發嘅 job / 進行中 / 我嘅報價 belong to someone: without a login they open the login page first
   const PRIVATE = ["needs", "hired", "sent", "work"];
   const RENDER = {};
@@ -1061,9 +1336,14 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     const role = roleOf(state.view);
     document.body.dataset.side = role;
     document.querySelectorAll(".role [data-role]").forEach(b => b.setAttribute("aria-pressed", b.dataset.role === role));
-    $("#nav").innerHTML = NAV[role].map(([v, n]) => {
+    $("#nav").innerHTML = (NAV[role] || []).map(([v, n]) => {
       const c = navCount(v);
       return `<button type="button" data-go="${v}" ${state.view === v || (state.view === "login" && state.loginNext === v) ? 'aria-current="page"' : ""}>${n}${c ? ` <span class="count">${c}</span>` : ""}</button>`;
+    }).join("");
+    const TAB_ICON = { post: "search", needs: "doc", hired: "run", find: "search", sent: "send", work: "run" };
+    $("#tabbar").innerHTML = (NAV[role] || []).map(([v, n]) => {
+      const c = navCount(v);
+      return `<button type="button" data-go="${v}" ${state.view === v || (state.view === "login" && state.loginNext === v) ? 'aria-current="page"' : ""}>${ico(TAB_ICON[v])}${n}${c ? `<span class="count">${c}</span>` : ""}</button>`;
     }).join("");
   }
   function go(view, opts) {
@@ -1074,7 +1354,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     state.view = view;
     VIEWS.forEach(v => { $("#v-" + v).hidden = v !== view; });
     // the notes would push the login and setup form below the first screen on a phone
-    $("#memos").hidden = view === "login";
+    $("#memos").hidden = view === "login" || view === "home";
     try { if (location.hash.slice(1) !== view) history.replaceState(null, "", "#" + view); } catch (e) {}
     renderNav();
     RENDER[view](opts || {});
@@ -1086,6 +1366,76 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     if (views.includes(state.view) && $("#drawer").hidden) RENDER[state.view]({});
   }
 
+  // =================== landing page ===================
+  // what AI拍檔 is and how each side uses it; the doors open the same list pages as the 我要搵人 / 我要搵工 switch
+  RENDER.home = function () {
+    const tiers = Object.values(TIERS).map(t => `<div class="lp-tier"><b>${t.name}</b><p>${t.desc}</p><span class="num">${t.price}</span></div>`).join("");
+    $("#v-home").innerHTML = `
+      <div class="lp-hero">
+        <h1>識 AI 嘅人，<br>同<span class="b">要做 AI 嘢嘅老闆</span>，<br>喺度<span class="w">配對</span>。</h1>
+        <p class="lead">AI拍檔係香港嘅 AI 工作配對平台。老闆講一句需求，就搵到識做 AI 影片、相片、分身配音、自動化嘅人；識 AI 嘅人，就搵到 job 接。平台只做配對，唔經手錢。</p>
+        <div class="lp-doors">
+          <button type="button" class="lp-door b" data-role="boss">
+            <div><div class="t">我要搵人</div><p>AI 嘢識都唔想自己做？講一句需求，揀人或者先試工。</p></div>
+            <span class="go">搵人幫手 →</span>
+            <div class="deco lp-a1" aria-hidden="true"></div>
+          </button>
+          <button type="button" class="lp-door w" data-role="worker">
+            <div><div class="t">我要搵工</div><p>用你嘅 AI 技能接工賺錢。填一次資料，就可以報價同交試工。</p></div>
+            <span class="go">睇吓有咩 job →</span>
+            <div class="deco lp-a3" aria-hidden="true"></div>
+          </button>
+        </div>
+      </div>
+
+      <div class="lp-sec">
+        <div class="lp-head"><h2>點樣用</h2><span>兩邊都係三步</span></div>
+        <div class="lp-how">
+          <div class="lp-col">
+            <h3><i class="lp-b"></i>老闆：搵人幫手</h3>
+            <ol>
+              <li><b class="lp-b">1</b><span>講你嘅需求<small>打一句就得，AI 幫你整理成清楚嘅 job：做咩、幾時交、預算幾多。</small></span></li>
+              <li><b class="lp-b">2</b><span>揀人，或者先試工<small>睇作品同評分直接揀；唔肯定就叫幾個人交試工作品，睇完先決定。</small></span></li>
+              <li><b class="lp-b">3</b><span>交換 WhatsApp 開工<small>落實之後交換 WhatsApp，金額同付款方式自己傾。完成後互相評分。</small></span></li>
+            </ol>
+            <button type="button" class="lp-btn lp-b" data-role="boss">我要搵人 →</button>
+          </div>
+          <div class="lp-col">
+            <h3><i class="lp-w"></i>工作者：接工賺錢</h3>
+            <ol>
+              <li><b class="lp-w">1</b><span>用 Google 登入<small>唔使記密碼，填一次基本資料：級別、做邊類 job。</small></span></li>
+              <li><b class="lp-w">2</b><span>上載作品<small>3–6 件過往作品最好，客戶揀人時最睇呢樣。</small></span></li>
+              <li><b class="lp-w">3</b><span>報價或者交試工<small>揀啱你嘅 job 報價；客戶揀中你，就交換 WhatsApp 開工。</small></span></li>
+            </ol>
+            <button type="button" class="lp-btn lp-w" data-role="worker">我要搵工 →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="lp-sec">
+        <div class="lp-head"><h2>三類 AI 人才</h2><span>搵人幫手時 AI 會建議你搵邊類</span></div>
+        <div class="lp-tiers">${tiers}</div>
+      </div>
+
+      <div class="lp-sec">
+        <div class="lp-band">
+          <div><h2>平台只做配對，<br>唔經手你一分錢。</h2><p>落實之後雙方交換 WhatsApp，金額同付款方式由雙方自己傾。有問題或者建議，歡迎話我哋知。</p></div>
+          <ul>
+            <li><b>✓</b><div>睇作品先揀人<small>每位工作者都有作品集同評分</small></div></li>
+            <li><b>✓</b><div>唔肯定可以先試工<small>叫幾個人交試工作品，睇完先決定</small></div></li>
+            <li><b>✓</b><div>完成之後互相評分<small>好嘅工作者會越嚟越易被揀中</small></div></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lp-final">
+        <h2>你係邊一邊？</h2>
+        <div class="btns"><button type="button" class="lp-b" data-role="boss">我要搵人</button><button type="button" class="lp-w" data-role="worker">我要搵工</button></div>
+      </div>
+
+      <div class="lp-dock"><button type="button" class="lp-b" data-role="boss">我要搵人</button><button type="button" class="lp-w" data-role="worker">我要搵工</button></div>`;
+  };
+
   // =================== 老闆：發 job ===================
   RENDER.post = function () {
     $("#v-post").innerHTML = `
@@ -1093,9 +1443,8 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
         <div class="side">
           ${signedUp() ? `
           <form class="box" id="ask-form">
-            <h1 class="h-side">AI 嘢識都唔想自己做？搵人幫你做。</h1>
-            <p class="muted small">AI 影片、相片、分身配音、自動化、網店上架。講一句需求，AI 幫你整理，你揀直接聯絡定先試工。落實之後交換 WhatsApp，金額你哋自己傾，平台唔收費。</p>
-            <div class="step"><span>1</span>講你嘅需求</div>
+            <h1 class="h-side">你嘅需求</h1>
+            <p class="muted small">講一句想做咩，AI 幫你整理成 job，再通知最啱嘅人報價或者試工。</p>
             <textarea id="ask-q" rows="4" placeholder="例如：${esc(HIRE_EG[0])}">${esc(state.draft ? state.draft.raw : "")}</textarea>
             <div class="chips">${HIRE_EG.map(e => `<button type="button" class="chip" data-fill="ask-q" data-text="${esc(e)}">${esc(e.slice(0, 12))}…</button>`).join("")}</div>
             <button class="btn ${state.draft ? "btn-ghost" : "btn-primary"}" type="submit">${state.draft ? "重新整理" : "AI 幫我整理"}</button>
@@ -1109,29 +1458,53 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
           </div>`}
           <div id="draft"></div>
         </div>
-        <div class="main">
-          <div class="ask-row"><h2>平台上嘅人才</h2><span class="small muted">分三類，搵人幫手時 AI 會建議你搵邊類</span></div>
-          <div class="tiers">${Object.entries(TIERS).map(([k, v]) => `<button type="button" class="tier-card" data-tier="${k}" aria-pressed="${state.tier === k}">
-            <span>${tierBadge(k)}</span><span class="small">${v.desc}</span>
-            <span class="meta"><span class="num">${v.price}</span><span>${TALENT.filter(t => t.tier === k).length} 個人</span></span></button>`).join("")}</div>
-          ${catChips()}
-          <div class="rows">${TALENT.filter(inFilters).map(t => talentRow(t)).join("") || `<div class="row muted">呢個組合暫時未有人才。</div>`}</div>
-        </div>
+        <div class="main">${talentList()}</div>
       </div>`;
     if (!signedUp()) return;
     $("#ask-form").addEventListener("submit", e => { e.preventDefault(); runDraft(); });
     if (state.draft) renderDraft(false);
   };
 
-  function talentRow(t, m, action) {
-    return `<div class="row">
-      <button type="button" class="row-main" data-talent="${t.id}">${avatar(t)}<div>
-        <h3>${esc(t.name)} ${tierBadge(t.tier)} <span class="muted small" style="font-weight:400">${esc(t.head)}</span></h3>
-        <div class="meta"><span>${ratingText(t)}</span><span class="num">${hk(t.rate[0])} 起</span><span>${m ? esc(m.why) : AVAIL[t.avail]}</span></div>
-        <p class="snip">${esc(t.bio)}</p>${miniThumbs(worksOf(t))}
-      </div></button>
-      <div class="row-side">${m ? scoreBadge(m) : ""}${action || `<button type="button" class="btn btn-ghost btn-sm" data-talent="${t.id}">睇資料</button>`}</div>
-    </div>`;
+  // the 搵人 list: same shape as the 搵工 list (heading, numbers, one filter bar, rows that show the work)
+  function talentList() {
+    const d = state.draft;
+    let list = TALENT.filter(inFilters).map(t => ({ t, m: d ? match(d, t) : null }));
+    const by = {
+      match: (a, b) => (b.m ? b.m.total : 0) - (a.m ? a.m.total : 0) || b.t.rating - a.t.rating,
+      rating: (a, b) => b.t.rating - a.t.rating, done: (a, b) => b.t.done - a.t.done, cheap: (a, b) => a.t.rate[0] - b.t.rate[0],
+    };
+    const sort = state.sort === "match" && !d ? "rating" : state.sort;
+    list.sort(by[sort] || by.rating);
+    const now = list.filter(x => x.t.avail === "now").length, rs = list.map(x => x.t.rate[0]);
+    const avg = list.length ? list.reduce((a, x) => a + x.t.rating, 0) / list.length : 0;
+    return `
+      <div class="v2-head"><div><h2>${d ? `有 <em>${list.length}</em> 位人才啱你嘅需求` : `平台上有 <em>${list.length}</em> 位人才`}</h2>
+        <div class="v2-stats">${now ? `<span class="v2-stat new">${now} 位即時可接</span>` : ""}${list.length ? `<span class="v2-stat">平均 ★ ${avg.toFixed(1)}</span><span class="v2-stat">${hk(Math.min(...rs))} 起</span>` : ""}</div></div>${looks()}</div>
+      <div class="v2-bar">${catBar(TALENT)}<div class="v2-row2">${tierSeg()}${sortBar((d ? [["match", "最啱你"]] : []).concat([["rating", "評分最高"], ["done", "做得最多"], ["cheap", "價錢最平"]]))}</div></div>
+      <div class="${listCls()}">${list.map(({ t, m }, k) => talentRow(t, m, null, k === 0 && sort === "match" && m && m.total >= 80)).join("") || `<p class="muted">呢個組合暫時未有人才。</p>`}</div>
+      <div class="v2-tip"><div><b>${d ? "睇中邊個？" : "唔知揀邊個？"}</b><p class="muted">${d ? "發佈 job 之後，AI 會即刻通知配對分最高嘅 3 個人。" : "喺左邊講一句需求，AI 會幫你按配對分排好啲人。"}</p></div></div>`;
+  }
+  // one person: three pieces of work with the face on top, the facts, and what you can do
+  function talentRow(t, m, action, best) {
+    const pics = worksOf(t).filter(isImg).slice(0, 3);
+    const works = pics.length ? `<span class="v2-works${pics.length === 1 ? " one" : ""}">${pics.map(f => `<img src="${f.url}" alt="" loading="lazy">`).join("")}</span>`
+      : `<span class="tile" style="background:${t.hue}">${esc(CAT_SHORT[t.cat] || "")}</span>`;
+    return `<article class="v2row${best ? " best" : ""}">
+      ${best ? `<span class="v2-flag">最啱你嘅需求</span>` : ""}
+      <button type="button" class="v2-pic" data-talent="${t.id}" aria-label="睇 ${esc(t.name)} 嘅作品">${works}${avatar(t)}${t.avail === "now" ? `<span class="dot" title="即時可接"></span>` : ""}</button>
+      <div class="v2-body">
+        <div class="v2-t"><button type="button" data-talent="${t.id}"><h3>${esc(t.name)}</h3></button>${tierBadge(t.tier)}<span class="v2-pill">${AVAIL[t.avail]}</span></div>
+        <div class="v2-meta">${t.done ? `<span class="star">★ ${t.rating.toFixed(1)}</span><span>完成 ${t.done} 單</span>` : `<span>新人，未有評價</span>`}<span>${esc(t.head)}</span></div>
+        <p class="v2-desc">${esc(t.bio)}</p>
+        <div class="v2-skills">${t.skills.slice(0, 4).map(x => `<span>${esc(x)}</span>`).join("")}</div>
+      </div>
+      <div class="v2-side">
+        ${m ? ring(m.total) : ""}
+        <div class="v2-bud"><b>${hk(t.rate[0])}</b><small>起 · 最高 ${hk(t.rate[1])}</small></div>
+        <div class="v2-act">${action === undefined || action === null ? `<button type="button" class="btn btn-primary" data-talent="${t.id}">睇作品</button>` : action}</div>
+        ${m ? `<div class="v2-why">${esc(m.why)}</div>` : ""}
+      </div>
+    </article>`;
   }
 
   async function runDraft() {
@@ -1171,7 +1544,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     const top = ranked(d, TALENT.filter(t => t.avail !== "off")).slice(0, 3).map(x => x.t.name);
     $("#draft").innerHTML = `
       <form class="box ${fresh ? "reveal" : ""}" id="draft-form">
-        <div class="step"><span>2</span>確認需求 <span class="ai">AI 整理咗，可以改</span></div>
+        <div class="step"><span>1</span>確認需求 <span class="ai">AI 整理咗，可以改</span></div>
         <div class="fields">
           <label>job<input type="text" id="d-title" value="${esc(d.title)}"></label>
           <label>預算（HK$）<input type="number" id="d-budget" min="100" step="100" value="${d.budget}"></label>
@@ -1184,7 +1557,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
         <div><b class="small">呢類 job 花時間喺邊</b><ul class="hard">${cat.hard.map(h => `<li>${esc(h)}</li>`).join("")}</ul></div>
         ${uploader("d-refs", d.refs, { label: "參考檔案（可選）", hint: "產品相、舊片、logo、規格表、想要嘅風格例子。工作者報價前會睇到，可以拖入嚟。", limit: 12 })}
 
-        <div class="step"><span>3</span>點樣揀人</div>
+        <div class="step"><span>2</span>點樣揀人</div>
         <div class="modes" role="radiogroup" aria-label="點樣揀人">${Object.entries(MODES).map(([k, v]) => `
           <label><input type="radio" name="d-mode" value="${k}" ${d.mode === k ? "checked" : ""}><span><b>${v.name}</b><span class="small muted">${v.desc}</span></span></label>`).join("")}
         </div>
@@ -1274,8 +1647,10 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
               <span class="pill ${c}">${s}</span></button>`; }).join("")}</div>
         </div>
         <div class="main">
+          ${needKpis(needs)}
           <div class="box">
             <div class="ask-row"><h2>${esc(n.title)} ${tierBadge(n.tier)}</h2><span class="pill ${needStatus(n)[1]}">${needStatus(n)[0]}</span></div>
+            ${needTrack(n)}
             <div class="meta"><span>預算 <span class="num">${hk(n.budget)}</span></span><span>${n.days} 日內交</span><span>${catById(n.cat).name}</span><span>${MODES[n.mode].name}</span><span>${n.posted}發佈</span></div>
             <p class="small">${esc(n.desc)}</p>
             ${filesSec("你上載嘅參考檔案", n.refs)}
@@ -1288,20 +1663,32 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       </div>`;
   };
 
+  // where a need stands: 發出 job → 收報價 / 收樣板 → 揀人 → 開工
+  function needTrack(n) {
+    const got = n.mode === "trial" ? n.subs.length : n.offers.length;
+    const at = n.status === "hired" ? 4 : got ? 2 : 1;
+    return `<div class="v2-track">${["發出 job", n.mode === "trial" ? "收樣板" : "收報價", "揀人", "開工"].map((x, i) => `<span class="${i < at ? "on" : i === at ? "now" : ""}">${x}</span>`).join("")}</div>`;
+  }
+  function needKpis(needs) {
+    const real = needs.filter(n => !n.example);
+    const open = real.filter(n => n.status === "open").length, hired = real.filter(n => n.status === "hired").length;
+    const replies = real.reduce((a, n) => a + n.offers.filter(o => o.status === "new").length + n.subs.filter(x => x.status === "new").length, 0);
+    return `<div class="v2-kpis"><div class="v2-kpi"><small>收緊報價</small><b>${open} 單</b></div><div class="v2-kpi"><small>未睇嘅報價同樣板</small><b>${replies}</b></div><div class="v2-kpi"><small>已請人</small><b>${hired} 單</b></div></div>`;
+  }
   function offersHtml(n) {
     if (!n.offers.length) return `<div class="box thinking">已通知 ${n.invited.map(id => esc(talentById(id).name)).join("、")}，等緊佢哋報價…</div>`;
-    return `<div class="rows">${n.offers.map(o => {
+    const best = n.offers.length > 1 ? n.offers.map(o => ({ o, m: match(n, talentById(o.talentId)).total })).sort((a, b) => b.m - a.m)[0].o.id : null;
+    return `<div class="v2-quotes">${n.offers.map(o => {
       const t = talentById(o.talentId);
       const act = o.status === "accepted" ? `<span class="pill accepted">已接受</span>` : o.status === "declined" ? `<span class="pill declined">冇揀</span>`
         : n.status === "hired" ? "" : `<button type="button" class="btn btn-ghost btn-sm" data-offerchat="${o.id}">傾吓</button><button type="button" class="btn btn-primary btn-sm" data-accept="${o.id}">接受</button>`;
-      return `<div class="row">
-        <button type="button" class="row-main" data-talent="${t.id}">${avatar(t)}<div>
-          <h3>${esc(t.name)} ${tierBadge(t.tier)} <span class="muted small" style="font-weight:400">${esc(t.head)}</span></h3>
-          <div class="meta"><span>${ratingText(t)}</span><span>${o.days} 日交</span></div>
-          <p class="small">「${esc(o.msg)}」</p>
-        </div></button>
-        <div class="row-side"><span class="price">${hk(o.price)}</span>${act}</div>
-        ${o.files && o.files.length ? `<div class="span-all">${filesSec("附上嘅作品", o.files, { limit: 4, cap: true })}</div>` : ""}
+      const top = o.id === best && n.status !== "hired";
+      return `<div class="v2-q${top ? " top1" : ""}">${top ? `<span class="v2-flag">AI 推薦</span>` : ""}
+        <button type="button" class="who" data-talent="${t.id}">${avatar(t)}<span><b>${esc(t.name)} ${tierBadge(t.tier)}</b><small>${ratingText(t)}</small></span></button>
+        <div class="price">${hk(o.price)}<small>${o.days} 日交</small></div>
+        <p>「${esc(o.msg)}」</p>
+        ${o.files && o.files.length ? gallery(o.files, { limit: 3 }) : ""}
+        <div class="btns">${act}</div>
       </div>`; }).join("")}</div>`;
   }
 
@@ -1325,7 +1712,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     const list = ranked(n, TALENT.filter(t => !n.invited.includes(t.id)));
     const label = n.mode === "trial" ? "邀請試工" : "邀請報價";
     return `<p class="small muted">AI 已經通知咗配對分最高嘅人。想多啲選擇，可以再邀請以下人才。</p>
-      <div class="rows">${list.map(({ t, m }) => talentRow(t, m, n.status === "hired" ? "" : `<button type="button" class="btn btn-ghost btn-sm" data-invite="${t.id}">${label}</button>`)).join("") || `<div class="row muted">全部人都邀請咗。</div>`}</div>`;
+      <div class="v2-list">${list.map(({ t, m }) => talentRow(t, m, n.status === "hired" ? "" : `<button type="button" class="btn btn-primary" data-invite="${t.id}">${label}</button>`)).join("") || `<p class="muted">全部人都邀請咗。</p>`}</div>`;
   }
 
   // accept a quote or a sample: chat opens on the payment step
@@ -1339,8 +1726,8 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
   RENDER.hired = function () {
     const list = myOrders("boss").reverse(), br = received("boss");
     $("#v-hired").innerHTML = `
-      <div class="ask-row"><div><h2>進行中</h2><p class="muted small">工作者交貨上載成品，你睇完確認完成或者要求修改。金額同付款方式你哋自己處理。完成後雙方互相評分。</p></div>
-        <div class="row-side"><span class="small">${br.length ? `你作為老闆嘅評分 <b>★ ${avgOf(br).toFixed(1)}</b>（${br.length} 個評價）` : "完成第一單之後，工作者都會評你"}</span><button class="btn btn-ghost btn-sm" type="button" data-go="needs">我發嘅 job</button></div></div>
+      <div class="v2-head"><div><h2>進行中</h2><p>工作者交貨上載成品，你睇完確認完成或者要求修改。金額同付款方式你哋自己處理。完成後雙方互相評分。</p></div><button class="btn btn-ghost btn-sm" type="button" data-go="needs">我發嘅 job</button></div>
+      ${(() => { const real = list.filter(o => !o.example); return `<div class="v2-kpis"><div class="v2-kpi"><small>進行中</small><b>${real.filter(o => o.status < 5).length} 單</b></div><div class="v2-kpi"><small>已完成</small><b>${real.filter(o => o.status >= 5).length} 單</b></div><div class="v2-kpi"><small>你作為老闆嘅評分</small><b>${br.length ? "★ " + avgOf(br).toFixed(1) : "—"}</b><span>${br.length ? br.length + " 個評價" : "完成第一單之後，工作者都會評你"}</span></div></div>`; })()}
       ${list.length ? `<div class="rows">${list.map(orderRow).join("")}</div>` : `<div class="box empty"><p class="muted">未請過人。喺「我發嘅 job」接受報價或者揀試工樣板之後，job 會喺度出現。</p></div>`}`;
   };
 
@@ -1373,6 +1760,9 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       <div class="review-list">${shown.map(r => reviewHtml(esc(r.from) + (r.title ? " · " + esc(r.title) : ""), r)).join("")}</div>`;
   }
 
+  // whose turn a step is: 交貨 is the worker's, 確認完成 the client's, 落實 and 評分 both
+  const STEP_WHO = (o, i) => i === 1 ? o.side === "worker" : i === 2 ? o.side === "boss" : !(o.reviews && o.reviews.mine);
+  const waLink = c => { const d = String(c || "").replace(/\D/g, ""); return d ? "https://wa.me/" + (d.length === 8 ? "852" + d : d) : ""; };
   function orderRow(o) {
     const boss = o.side === "boss";
     // who acts at each status; for a made-up partner the other side is simulated
@@ -1388,9 +1778,9 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       <div class="ask-row">
         <div style="min-width:0"><h3>${esc(o.title)}${o.example ? ' <span class="chip">例子</span>' : ""}</h3>
           <div class="meta"><span>${boss ? "工作者：" : "客戶："}${esc(o.partner)}</span><span>協定 <span class="num">${hk(o.amount)}</span></span><span>而家：${status}</span>${o.contact ? `<span>WhatsApp <span class="num">${esc(o.contact)}</span></span>` : ""}</div></div>
-        <div class="row-side">${side}</div>
+        <div class="row-side">${o.contact && waLink(o.contact) ? `<a class="btn btn-wa btn-sm" href="${waLink(o.contact)}" target="_blank" rel="noopener">${ico("wa")}WhatsApp</a>` : ""}${side}</div>
       </div>
-      <div class="progress" aria-hidden="true">${STEPS.map((s, i) => `<i class="${i < STEP_AT[o.status] ? "done" : i === STEP_AT[o.status] ? "now" : ""}" title="${s}"></i>`).join("")}</div>
+      <div class="v2-steps">${STEPS.map((x, i) => `<div class="v2-st${i < STEP_AT[o.status] ? " done" : i === STEP_AT[o.status] ? " now" : ""}"><b>${x}</b><small>${i < STEP_AT[o.status] ? "做好咗" : i === STEP_AT[o.status] ? (STEP_WHO(o, i) ? "到你" : "等" + esc(o.partner)) : "—"}</small></div>`).join("")}</div>
       ${o.status === 2 && o.revNote ? `<div class="note"><b>客戶要求修改（第 ${o.revisions} 次）</b><br>${esc(o.revNote)}${filesSec("客戶附圖", o.revFiles)}</div>` : ""}
       ${o.files && o.files.length && o.status >= 3 ? `<div class="deliv"><span class="small muted">${boss ? "工作者交嘅成品" : "你交嘅成品"}${o.revisions ? `（改咗 ${o.revisions} 次）` : ""}</span>${gallery(o.files, { cap: true })}${o.note ? `<p class="small">${esc(o.note)}</p>` : ""}
         ${!boss && o.status >= 5 && !o.example ? (o.inWorks ? `<span class="small muted">已加入你嘅作品集</span>` : `<div class="btns">${btn("加入作品集", "towork", true)}<span class="small muted">公開之前記得問准客戶</span></div>`) : ""}</div>` : ""}
@@ -1458,34 +1848,49 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
   RENDER.find = function (opts) {
     const p = state.profile;
     const list = openJobs().filter(inFilters).map(j => ({ j, m: p ? match(j, p) : null }));
-    if (p) list.sort((a, b) => b.m.total - a.m.total);
+    const sort = state.sort === "match" && !p ? "new" : state.sort;
+    const by = { match: (a, b) => b.m.total - a.m.total, new: (a, b) => ageDays(a.j) - ageDays(b.j), budget: (a, b) => b.j.budget - a.j.budget, due: (a, b) => a.j.days - b.j.days };
+    list.sort(by[sort] || by.new);
+    const bs = list.map(x => x.j.budget), fresh = list.filter(x => ageDays(x.j) === 0).length, soon = list.filter(x => x.j.days <= 7).length;
     $("#v-find").innerHTML = `
       <div class="split">
         <div class="side" id="find-side"></div>
         <div class="main">
-          <div class="ask-row"><h2>${p ? "推薦畀你嘅需求" : "全部需求"}</h2><span class="small muted">${p ? "按你嘅技能、級別、收費同檔期排" : "建立檔案之後會按配對分排"}</span></div>
+          <div class="v2-head"><div><h2>${p ? `有 <em>${list.length}</em> 單 job 啱你` : `而家有 <em>${list.length}</em> 單 job`}</h2>
+            <div class="v2-stats">${fresh ? `<span class="v2-stat new">${fresh} 單今日新</span>` : ""}${soon ? `<span class="v2-stat hot">${ico("clock")}${soon} 單一星期內交</span>` : ""}${list.length ? `<span class="v2-stat">預算 ${hk(Math.min(...bs))}–${Math.max(...bs).toLocaleString("en-HK")}</span>` : ""}</div></div>${looks()}</div>
           ${p && p.avail === "off" ? `<div class="note">你暫停咗接單，客戶唔會自動通知你。改返檔期就得。</div>` : ""}
-          ${tierChips()}${catChips()}
-          <div class="legend small muted"><span><b class="tag-direct">報價</b> 老闆揀咗直接聯絡，報價就得</span><span><b class="trial-tag">交試工</b> 老闆要先睇樣板</span></div>
-          <div class="rows">${list.map(({ j, m }) => jobRow(j, m)).join("") || `<div class="row muted">呢個組合暫時未有需求。</div>`}</div>
+          <div class="v2-bar">${catBar(openJobs())}<div class="v2-row2">${tierSeg()}${sortBar((p ? [["match", "最啱你"]] : []).concat([["new", "最新"], ["budget", "預算最高"], ["due", "最快要交"]]))}</div></div>
+          <div class="${listCls()}">${list.map(({ j, m }, k) => jobRow(j, m, k === 0 && sort === "match" && m && m.total >= 80)).join("") || `<p class="muted">呢個組合暫時未有需求。</p>`}</div>
+          ${p ? `<div class="v2-tip"><div><b>搵唔到啱你嘅？</b><p class="muted">加多兩個技能或者改級別，配對範圍會闊啲；有新 job 啱你，右上角鈴會通知你。</p></div><button type="button" class="btn btn-primary" data-editprofile="1">改技能</button></div>` : ""}
         </div>
       </div>`;
     renderProfile(opts);
   };
 
-  function jobRow(j, m) {
+  // one job: the client's first picture, what and where, your matching skills ticked, the budget and what to do
+  function jobRow(j, m, best) {
     const quoted = myQuotes().find(q => q.jobId === j.id), sent = mySubs().find(s => s.jobId === j.id);
     const act = j.mode === "trial"
-      ? (sent ? `<button type="button" class="btn btn-ghost btn-sm" disabled>已交試工</button>` : `<button type="button" class="btn btn-primary btn-sm" data-trial="${j.id}">交試工</button>`)
-      : (quoted ? `<button type="button" class="btn btn-ghost btn-sm" disabled>已報價</button>` : `<button type="button" class="btn btn-primary btn-sm" data-quote="${j.id}">報價</button>`);
-    return `<div class="row">
-      <button type="button" class="row-main" data-job="${j.id}">${jobThumb(j)}<div>
-        <h3>${esc(j.title)} ${tierBadge(j.tier)}</h3>
-        <div class="meta"><span>${esc(j.client)}</span><span>${j.days} 日內交</span>${j.mode === "trial" ? `<span class="trial-tag">試工</span>` : `<span class="tag-direct">直接報價</span>`}${j.owner ? `<span class="pill accepted">新需求</span>` : ""}<span>${m ? esc(m.why) : esc(j.posted)}</span></div>
-        <p class="snip">${esc(j.desc)}</p>
-      </div></button>
-      <div class="row-side">${m ? scoreBadge(m) : ""}<span class="price">${hk(j.budget)}</span>${act}</div>
-    </div>`;
+      ? (sent ? `<button type="button" class="btn btn-ghost" disabled>已交試工</button>` : `<button type="button" class="btn btn-primary" data-trial="${j.id}">交試工</button>`)
+      : (quoted ? `<button type="button" class="btn btn-ghost" disabled>已報價</button>` : `<button type="button" class="btn btn-primary" data-quote="${j.id}">報價</button>`);
+    const f = firstPic(j.refs), mine = state.profile ? state.profile.skills : [];
+    const age = ageDays(j);
+    return `<article class="v2row${best ? " best" : ""}">
+      ${best ? `<span class="v2-flag">最啱你</span>` : ""}
+      <button type="button" class="v2-pic" data-job="${j.id}" aria-label="睇 job：${esc(j.title)}">${f ? `<img src="${f.url}" alt="" loading="lazy">` : `<span class="tile" style="background:${CAT_HUE[j.cat] || "#475569"}">${esc(CAT_SHORT[j.cat] || "")}</span>`}<span class="cat">${esc((catById(j.cat) || {}).name || "")}</span></button>
+      <div class="v2-body">
+        <div class="v2-t"><button type="button" data-job="${j.id}"><h3>${esc(j.title)}</h3></button>${age === 0 || j.owner ? `<span class="v2-pill new">新</span>` : ""}${tierBadge(j.tier)}${j.mode === "trial" ? `<span class="v2-pill trialp">要交試工</span>` : ""}</div>
+        <div class="v2-meta"><span>${ico("pin")}${esc(j.client)}</span><span class="${j.days <= 7 ? "urgent" : ""}">${ico("clock")}${j.days} 日內交</span><span>${esc(j.posted)}</span></div>
+        <p class="v2-desc">${esc(j.desc)}</p>
+        <div class="v2-skills">${(j.skills || []).map(x => `<span class="${mine.includes(x) ? "has" : ""}">${esc(x)}</span>`).join("")}</div>
+      </div>
+      <div class="v2-side">
+        ${m ? ring(m.total) : ""}
+        <div class="v2-bud"><b>${hk(j.budget)}</b><small>${j.mode === "trial" ? "試工揀人" : "直接報價"}</small></div>
+        <div class="v2-act">${act}</div>
+        ${m ? `<div class="v2-why">${esc(m.why)}</div>` : ""}
+      </div>
+    </article>`;
   }
 
   function renderProfile(opts) {
@@ -1532,6 +1937,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
           <div class="person">${avatar(p)}<div><h3>你嘅檔案 ${tierBadge(p.tier)}</h3><div class="muted small">${esc(cat.name)} · ${p.done ? "★ " + p.rating.toFixed(1) + "（" + p.done + " 個評價）" : "新人，未有評價"}</div></div></div>
           <button class="link" type="button" data-editprofile="1">改</button>
         </div>
+        ${profileTodo(p)}
         <p class="small">${esc(p.bio)}</p>
         <div class="group"><div class="ask-row"><span class="small muted">作品集（${worksOf(p).length}）</span><button class="link" type="button" data-works="1">${worksOf(p).length ? "管理作品" : "加作品"}</button></div>
           ${gallery(worksOf(p), { limit: 6, cap: true, empty: `<p class="small muted">未有作品。上載 3–6 件過往作品，客戶揀人時最睇呢樣。</p>` })}</div>
@@ -1549,6 +1955,20 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
       p.rate.sort((a, b) => a - b);
       RENDER.find({});
     }));
+  }
+
+  // how complete your worker profile is, and the next things that get you picked
+  function profileTodo(p) {
+    const items = [
+      ["填好級別同技能", !!(p.tier && p.skills && p.skills.length), ""],
+      ["上載 3 件作品", worksOf(p).length >= 3, `<button type="button" class="btn btn-primary" data-works="1">加作品</button>`],
+      ["設定檔期", p.avail && p.avail !== "off", ""],
+      ["完成第一單，攞第一個評價", p.done > 0, ""],
+    ];
+    const pc = Math.round(100 * items.filter(x => x[1]).length / items.length);
+    if (pc === 100) return "";
+    return `<div class="v2-done"><div class="v2-pring" style="--p:${pc}"><b>${pc}%</b></div><p><b>檔案完成咗 ${pc}%</b>做埋下面幾樣，老闆揀人時排得前啲。</p></div>
+      <ul class="v2-todo">${items.map(([t, ok, btn]) => `<li class="${ok ? "ok" : ""}"><span class="tick">${ok ? "✓" : ""}</span>${t}${ok ? "" : btn}</li>`).join("")}</ul>`;
   }
 
   async function runProfile() {
@@ -1711,7 +2131,9 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     const label = { waiting: "等客戶回覆", accepted: "客戶接受 · 開工", picked: "客戶揀咗你 · 開工", declined: "客戶揀咗其他人" };
     const qs = myQuotes().reverse(), ss = mySubs().reverse();
     $("#v-sent").innerHTML = `
-      <div class="ask-row"><div><h2>我嘅報價同試工</h2><p class="muted small">客戶接受或者揀中你嘅樣板，job 就會轉去「進行中」，同埋交換 WhatsApp。</p></div><button class="btn btn-ghost btn-sm" type="button" data-go="find">搵更多工</button></div>
+      <div class="v2-head"><div><h2>我嘅報價同試工</h2><p>客戶接受或者揀中你嘅樣板，job 就會轉去「進行中」，同埋交換 WhatsApp。</p></div><button class="btn btn-ghost btn-sm" type="button" data-go="find">搵更多工</button></div>
+      ${(() => { const all = qs.map(q => q.status).concat(ss.map(x => x.status)), won = all.filter(x => x === "accepted" || x === "picked").length, lost = all.filter(x => x === "declined").length, waitN = all.length - won - lost;
+        return all.length ? `<div class="v2-kpis"><div class="v2-kpi"><small>等緊回覆</small><b>${waitN}</b></div><div class="v2-kpi"><small>揀中</small><b>${won}</b></div><div class="v2-kpi"><small>揀中率</small><b>${won + lost ? Math.round(100 * won / (won + lost)) + "%" : "—"}</b><span>有結果嘅報價同試工計</span></div></div>` : ""; })()}
       ${!qs.length && !ss.length ? `<div class="box empty"><p class="muted">未報過價或者交過試工。去「搵工」揀一個需求。</p><div><button class="btn btn-primary" type="button" data-go="find">去搵工</button></div></div>` : ""}
       ${qs.length ? `<h3>報價（${qs.length}）</h3><div class="rows">${qs.map(q => { const j = jobById(q.jobId); return `<div class="row">
           <button type="button" class="row-main" data-job="${j.id}"><div><h3>${esc(j.title)}</h3>
@@ -2292,6 +2714,8 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     if (d.fill) { const q = document.getElementById(d.fill); q.value = d.text; q.focus(); return; }
     if (d.tier) { state.tier = state.tier === d.tier && b.classList.contains("tier-card") ? "all" : d.tier; return RENDER[state.view]({}); }
     if (d.filter) { state.filter = d.filter; return RENDER[state.view]({}); }
+    if (d.sortby) { state.sort = d.sortby; return RENDER[state.view]({}); }
+    if (d.look) { state.look = d.look; return RENDER[state.view]({}); }
     // 發 job draft
     if (d.dcat) { readDraft(); const dr = state.draft, c = catById(d.dcat); dr.cat = c.id; dr.skills = c.skills.slice(0, 3); dr.trial.brief = TRIAL_EG[c.id]; return renderDraft(false); }
     if (d.dtier) { readDraft(); state.draft.tier = d.dtier; return renderDraft(false); }
@@ -2342,7 +2766,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     if (!$("#drawer").hidden) closeDrawer();
     else if (state.view === "login") closeLogin();
   });
-  $("#logo").addEventListener("click", () => { closeDrawer(); go("post"); });
+  $("#logo").addEventListener("click", () => { closeDrawer(); go("home"); });
   window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (v && v !== state.view) go(v); });
 
   // ---------- back end: records and files are kept on the Mac when the page can reach it ----------
@@ -2571,7 +2995,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
 
   try { const u = JSON.parse(localStorage.getItem("aipd-user") || "null"); if (u && u.name) { state.user = u; if (known[u.email]) { state.profile = known[u.email].profile; if (state.profile) state.profile.id = "u:" + u.email; } } } catch (e) {}
   renderAccount();
-  go(location.hash.slice(1) || "post");
+  go(location.hash.slice(1) || "home");
   showMemo();
   startSync();
 })();
