@@ -178,6 +178,21 @@ textarea:focus, input:focus { border-color: var(--accent); outline: none; box-sh
 .split > .main { display: grid; gap: 12px; min-width: 0; }
 /* the job form and the worker profile are taller than a screen: let them scroll with the page instead of sticking */
 #v-post .split > .side, #v-find .split > .side { position: static; }
+.form-head { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: none; padding: 0; color: inherit; font: inherit; text-align: left; cursor: default; }
+.form-head .h-side { margin: 0; }
+.form-head .form-hint, .form-head .chev { display: none; }
+@media (max-width: 980px) {
+  .form-head { cursor: pointer; }
+  .form-head .chev { display: inline-block; margin-left: auto; font-size: 22px; line-height: 1; transition: transform .2s ease; }
+  #draft-form:not(.folded) .form-head .chev { transform: rotate(180deg); }
+  /* folded: the heading and the box to write in stay; the rest opens once you write or tap the heading */
+  #draft-form.folded > :not(.form-head):not(.step):not([for="d-desc"]):not(#d-desc) { display: none !important; }
+  #draft-form.folded > .step ~ .step { display: none !important; }
+  #draft-form.folded #d-desc { min-height: 0; }
+}
+/* the name next to the logo stays on one line, and gives way on a narrow phone */
+.logo-text { white-space: nowrap; }
+@media (max-width: 480px) { .logo-text { display: none; } }
 @media (max-width: 980px) {
   .split { grid-template-columns: minmax(0, 1fr); }
   .split > .side { position: static; }
@@ -1458,6 +1473,13 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
       budget: cat.median, budgetGuess: true, days: 14, daysGuess: true, mode: "direct", refs: [], touched: false,
       trial: { brief: TRIAL_EG[cat.id], max: 5, days: 3, files: [] } };
   }
+  // open or fold the job form on a phone without redrawing it, so what is typed and the cursor stay put
+  function foldForm(open) {
+    state.formOpen = open;
+    const f = $("#draft-form"); if (!f) return;
+    f.classList.toggle("folded", !open);
+    const h = f.querySelector(".form-head"); if (h) h.setAttribute("aria-expanded", open);
+  }
   // 「AI 幫我填」: read what was written and fill in the title, category, level, money and days
   function autoFill() {
     readDraft();
@@ -1552,8 +1574,8 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
     const guess = [d.budgetGuess && "預算", d.daysGuess && "期限"].filter(Boolean);
     const top = ranked(d, TALENT.filter(t => t.avail !== "off")).slice(0, 3).map(x => x.t.name);
     $("#draft").innerHTML = `
-      <form class="box ${fresh ? "reveal" : ""}" id="draft-form">
-        <h1 class="h-side">你嘅需求</h1>
+      <form class="box ${fresh ? "reveal" : ""}${state.formOpen ? "" : " folded"}" id="draft-form">
+        <button type="button" class="form-head" data-formtoggle aria-expanded="${!!state.formOpen}"><span class="h-side">你嘅需求</span><span class="chev" aria-hidden="true">⌄</span></button>
         <div class="step"><span>1</span>講你要做咩</div>
         <label class="field-label" for="d-desc">詳細講吓要做咩</label>
         <textarea id="d-desc" rows="4" placeholder="例如：${esc(HIRE_EG[0])}">${esc(d.raw)}</textarea>
@@ -1596,6 +1618,8 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
       requireLogin(publishNeed, "publish");
     });
     const main = $("#v-post .main"); if (main) main.innerHTML = talentList();
+    // starting to write opens the rest of the form
+    $("#d-desc").addEventListener("focus", () => { if (!state.formOpen) foldForm(true); });
     bindUploaders();
   }
 
@@ -2739,6 +2763,8 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
     if (d.look) { state.look = d.look; return RENDER[state.view]({}); }
     // 發 job draft
     if (d.autofill !== undefined) return autoFill();
+    // on a phone the job form folds away under its heading until tapped
+    if (d.formtoggle !== undefined) { if (innerWidth > 980) return; return foldForm(!state.formOpen); }
     if (d.dcat) { readDraft(); const dr = state.draft, c = catById(d.dcat); dr.cat = c.id; dr.touched = true;
       if (dr.budgetGuess) dr.budget = c.median; dr.skills = c.skills.slice(0, 3); dr.trial.brief = TRIAL_EG[c.id]; return renderDraft(false); }
     if (d.dtier) { readDraft(); state.draft.tier = d.dtier; state.draft.touched = true; return renderDraft(false); }
