@@ -1594,6 +1594,21 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     go("login");
   }
 
+  // change your details later: the same form as signing up, filled with what is saved now
+  function startEditMe() {
+    const u = state.user, p = state.profile;
+    const cats = p ? (p.cats || CATS.filter(c => (p.head || "").split(" · ").includes(c.name)).map(c => c.id)) : [];
+    if (p && !cats.length && p.cat) cats.push(p.cat);
+    state.setup = { kind: u.kind || "boss", tier: p ? p.tier || "" : "", cats, name: u.name || "", intro: p ? p.bio || p.raw || "" : "",
+      company: u.company || "", district: u.district || "", phone: u.phone || "", agree: true, photo: [], works: p ? worksOf(p).slice() : [] };
+    state.setupErr = null;
+    state.forceSetup = true; state.editMe = true;
+    closeDrawer();
+    if (state.view !== "login") state.loginFrom = state.view;
+    state.loginNext = state.loginFrom || "post";
+    go("login");
+  }
+
   function openQuote(jobId) {
     const job = jobById(jobId), p = state.profile, cat = catById(job.cat);
     const price = quoteFor(job, p), days = Math.max(2, Math.round(job.days * 0.8));
@@ -1891,7 +1906,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     let view = state.loginFrom || (roleOf("login") === "worker" ? "find" : "post");
     if (view === "login" || (PRIVATE.includes(view) && !signedUp())) view = roleOf("login") === "worker" ? "find" : "post";
     state.afterLogin = null; state.loginNext = null; state.loginWhy = null; state.loginFrom = null;
-    if (state.forceSetup) { state.forceSetup = false; state.setup = null; state.setupErr = null; state.pending = null; }
+    if (state.forceSetup) { state.forceSetup = false; state.editMe = false; state.setup = null; state.setupErr = null; state.pending = null; }
     go(view);
   }
   function bindLoginClose() {
@@ -1947,8 +1962,8 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
         <div class="login-wrap wide">
         <button class="x login-x" type="button" data-loginclose aria-label="關閉，返回上一頁">×</button>
         <form class="box login-card setup-card" id="setup-form" novalidate>
-          <div class="person">${avatar(u)}<div><h1>基本資料</h1><div class="muted small">${esc(u.email)} · Google 登入 ✓</div></div></div>
-          <div class="note">${state.forceSetup ? "補埋工作者資料：級別、做邊類 job 同作品。" : "最後一步：填好基本資料就完成登記。<b>只需填一次</b>"}，之後用呢個 Google 帳戶登入會直接入去。有 <span class="req">*</span> 嘅必須填。</div>
+          <div class="person">${avatar(u)}<div><h1>${state.editMe ? "修改資料" : "基本資料"}</h1><div class="muted small">${esc(u.email)} · Google 登入 ✓</div></div></div>
+          <div class="note">${state.editMe ? "改好之後撳最底「儲存修改」。有 <span class=\"req\">*</span> 嘅必須填。" : `${state.forceSetup ? "補埋工作者資料：級別、做邊類 job 同作品。" : "最後一步：填好基本資料就完成登記。<b>只需填一次</b>"}，之後用呢個 Google 帳戶登入會直接入去。有 <span class="req">*</span> 嘅必須填。`}</div>
           <div class="group">
             <span class="field-title">你嚟做乜${req}</span>
             ${chipRow("你嚟做乜", "sukind", Object.entries(KINDS), f.kind)}
@@ -1976,8 +1991,9 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
           </div>` : ""}
           <label class="group"><span class="field-title">WhatsApp 電話${req}</span><input type="tel" id="su-phone" value="${esc(f.phone)}" placeholder="8 位數字" inputmode="numeric" maxlength="9"><span class="small muted">只會喺落實之後畀對方，用嚟聯絡交收。</span>${e("phone")}</label>
           <label class="check"><input type="checkbox" id="su-agree" ${f.agree ? "checked" : ""}><span>我同意服務條款同私隱政策${req}</span></label>${e("agree")}
-          <button class="btn btn-primary" type="submit">完成，開始使用</button>
-          <p class="small muted">（模擬）資料只留喺呢個瀏覽器。</p>
+          <button class="btn btn-primary" type="submit">${state.editMe ? "儲存修改" : "完成，開始使用"}</button>
+          ${state.editMe ? `<button class="btn btn-ghost" type="button" data-editcancel>取消</button>` : ""}
+          ${API ? "" : `<p class="small muted">（模擬）資料只留喺呢個瀏覽器。</p>`}
         </form>
         </div>
       </div>`;
@@ -1993,6 +2009,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     form.addEventListener("click", ev => {
       const b = ev.target.closest("button[type=button]"); if (!b || b.dataset.lb || b.closest(".upl")) return;
       ev.stopPropagation();
+      if (b.dataset.editcancel !== undefined) return closeLogin();
       read();
       const d = b.dataset;
       if (d.sukind) f.kind = d.sukind;
@@ -2031,17 +2048,20 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     Object.assign(u, { name: f.name, kind: f.kind, phone: f.phone, company: boss ? f.company : "", district: boss ? f.district : "", onboarded: true });
     if (f.photo[0]) u.photo = f.photo[0].url;
     if (work) {
-      const cats = f.cats.map(catById), cat = cats[0];
+      const cats = f.cats.map(catById), cat = cats[0], old = state.profile || {};
       state.profile = {
-        id: "u:" + u.email, raw: f.intro, name: u.name, head: cats.map(c => c.name).join(" · "), cat: cat.id, tier: f.tier,
+        rating: 4.5, done: 0, avail: "now", ...old,
+        id: "u:" + u.email, raw: f.intro, name: u.name, head: cats.map(c => c.name).join(" · "), cat: cat.id, cats: f.cats.slice(), tier: f.tier,
         skills: [...new Set(cats.flatMap(c => c.skills.slice(0, 2)))].slice(0, 5), rate: rateFor(f.tier, cat),
-        rating: 4.5, done: 0, avail: "now", hue: u.hue, bio: f.intro, photo: u.photo || "", works: f.works.slice(),
+        hue: u.hue, bio: f.intro, photo: u.photo || "", works: f.works.slice(),
       };
     }
     saveMe();
-    const adding = state.forceSetup;
-    state.setup = null; state.setupErr = null; state.forceSetup = false;
+    const adding = state.forceSetup, editing = state.editMe;
+    state.setup = null; state.setupErr = null; state.forceSetup = false; state.editMe = false;
+    if (state.profile) state.profile.name = u.name;
     renderAccount();
+    if (editing) { toast("資料已經更新"); return closeLogin(); }
     toast(adding ? "工作者資料已經儲好，可以接工" : `歡迎，${u.name}，資料已經儲好`);
     finishLogin();
     // a quote or sample that was waiting for the worker details opens now
@@ -2060,6 +2080,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
           ${uploader("acc-photo", ph, { label: "換頭像", hint: "揀一張相", single: true, accept: "image/*", max: 400, onChange: list => { u.photo = list[0] ? list[0].url : u.photo; saveMe(); renderAccount(); RENDER[state.view]({}); openAccount(); toast("頭像已更新"); } })}
           ${u.photo && u.photo !== u.gphoto ? `<button type="button" class="link" data-unphoto>用返 Google 頭像</button>` : ""}</div></div>
         <div class="sum small">
+          <div><span class="muted">顯示名稱</span><span>${esc(u.name)}</span></div>
           <div><span class="muted">登入方式</span><span>Google</span></div>
           <div><span class="muted">身份</span><span>${esc(KINDS[u.kind] || "")}</span></div>
           ${u.company ? `<div><span class="muted">公司 / 店舖</span><span>${esc(u.company)} · ${esc(u.district)}</span></div>` : ""}
@@ -2071,7 +2092,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
         ${asWorker ? `<section class="rating-sec"><h3>作為工作者 · 客戶評價</h3>${ratingBlock(received("worker"), "未有客戶評價。", 0, "worker")}</section>` : ""}
         ${asBoss ? `<section class="rating-sec"><h3>作為老闆 · 工作者評價</h3>${ratingBlock(received("boss"), "未有工作者評價。", 0, "boss")}</section>` : ""}
       </div>
-      <div class="drawer-foot"><button type="button" class="btn btn-ghost" data-logout>登出</button></div>`);
+      <div class="drawer-foot"><button type="button" class="btn btn-primary" data-editme>修改資料</button><button type="button" class="btn btn-ghost" data-logout>登出</button></div>`);
   }
   function signOut(expired) {
     if (state.user && state.user.onboarded) { known[state.user.email] = { user: state.user, profile: state.profile }; saveKnown(); }
@@ -2299,6 +2320,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     if (d.gologin !== undefined) return requireLogin(() => {}, state.view === "find" ? "profile" : "publish");
     if (d.joinwork !== undefined) return requireLogin(() => { if (!state.profile) startAddWorker(); }, "profile");
     if (d.addworker !== undefined) return startAddWorker();
+    if (d.editme !== undefined) return startEditMe();
     if (d.joinhire !== undefined) return requireLogin(() => {}, "publish");
     if (d.works) return openWorks();
     if (d.unphoto !== undefined) { state.user.photo = state.user.gphoto || ""; saveMe(); renderAccount(); RENDER[state.view]({}); toast("用返 Google 頭像"); return openAccount(); }
