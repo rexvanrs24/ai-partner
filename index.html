@@ -1920,7 +1920,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
     try { localStorage.setItem("aipd-user", JSON.stringify(state.user)); } catch (e) {}
     renderAccount();
     if (!state.user.onboarded) { toast("已經用 Google 登入，填埋基本資料就得"); return go("login"); }
-    toast(`歡迎返嚟，${acc.name}`);
+    toast(`歡迎返嚟，${state.user.name}`);
     finishLogin();
   }
   function finishLogin() {
@@ -1935,7 +1935,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
   const KINDS = { boss: "搵人（我係老闆）", worker: "搵工（我係工作者）", both: "兩樣都有" };
   function renderSetup() {
     const u = state.user;
-    const f = state.setup || (state.setup = { kind: roleOf(state.loginNext || "post"), tier: "", cats: [], name: u.name, intro: "", company: "", district: "", phone: "", agree: false, photo: [], works: [] });
+    const f = state.setup || (state.setup = { kind: roleOf(state.loginNext || "post"), tier: "", cats: [], name: "", intro: "", company: "", district: "", phone: "", agree: false, photo: [], works: [] });
     const work = f.kind !== "boss", boss = f.kind !== "worker";
     const err = state.setupErr || {};
     const e = k => err[k] ? `<span class="err">${err[k]}</span>` : "";
@@ -1951,7 +1951,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 20px; }
             <span class="field-title">你嚟做乜${req}</span>
             ${chipRow("你嚟做乜", "sukind", Object.entries(KINDS), f.kind)}
           </div>
-          <label class="group"><span class="field-title">顯示名稱${req}</span><input type="text" id="su-name" value="${esc(f.name)}" maxlength="20">${e("name")}</label>
+          <label class="group"><span class="field-title">顯示名稱${req}<span class="small muted">（其他人會見到呢個名，唔會用你 Google 帳戶嘅名）</span></span><input type="text" id="su-name" value="${esc(f.name)}" maxlength="20" placeholder="例如：阿明、陳小姐、Studio K">${e("name")}</label>
           <div class="group"><span class="field-title">頭像<span class="small muted">（唔上載就用 Google 頭像）</span></span>
             <div class="avatar-row">${avatar({ ...u, photo: f.photo[0] ? f.photo[0].url : u.photo }, true)}${uploader("su-photo", f.photo, { label: "換相", hint: "正面清楚嘅相，客戶同工作者更放心。", single: true, accept: "image/*", max: 400, onChange: () => { read(); renderSetup(); } })}</div></div>
           ${work ? `
