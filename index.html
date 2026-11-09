@@ -2136,21 +2136,15 @@ body { background: var(--page); }
           ${gallery(worksOf(p), { limit: 6, cap: true, empty: `<p class="small muted">未有作品。上載 3–6 件過往作品，客戶揀人時最睇呢樣。</p>` })}</div>
         <div class="group"><span class="small muted">客戶評價</span>${ratingBlock(received("worker"), "未有客戶評價。", 2, "worker")}</div>
         <div class="chips">${p.skills.map(s => `<span class="chip">${esc(s)}</span>`).join("")}</div>
-        <div class="group"><span class="small muted">級別（AI 建議，可以改）</span>${chipRow("級別", "ptier", Object.entries(TIERS).map(([k, v]) => [k, v.name]), p.tier)}</div>
-        <div class="fields pair">
-          <label>每單最低（HK$）<input type="number" id="p-min" min="100" step="100" value="${p.rate[0]}"></label>
-          <label>最高（HK$）<input type="number" id="p-max" min="100" step="100" value="${p.rate[1]}"></label>
+        <div class="sum small">
+          <div><span class="muted">級別</span><span>${tierBadge(p.tier)}</span></div>
+          <div><span class="muted">每單收費</span><span class="num">${hk(p.rate[0])} – ${hk(p.rate[1])}</span></div>
+          <div><span class="muted">檔期</span><span>${AVAIL[p.avail] || ""}</span></div>
         </div>
-        <div class="group"><span class="small muted">檔期</span>${chipRow("檔期", "avail", Object.entries(AVAIL), p.avail)}</div>
         <button type="button" class="btn btn-ghost btn-sm prof-edit" data-editme>修改個人資料 ›</button>
       </div>`;
     // a tap anywhere on the folded profile opens it; its own buttons (改, 加作品, the toggle) still do their job
     side.querySelector(".prof").addEventListener("click", e => { if (state.profOpen || e.target.closest("button, a, input, label")) return; foldProf(true); });
-    ["#p-min", "#p-max"].forEach((sel, i) => $(sel).addEventListener("change", e => {
-      p.rate[i] = Math.max(100, parseInt(e.target.value, 10) || p.rate[i]);
-      p.rate.sort((a, b) => a - b);
-      RENDER.find({});
-    }));
   }
 
   // how complete your worker profile is, and the next things that get you picked
@@ -2215,6 +2209,7 @@ body { background: var(--page); }
     const cats = p ? (p.cats || CATS.filter(c => (p.head || "").split(" · ").includes(c.name)).map(c => c.id)) : [];
     if (p && !cats.length && p.cat) cats.push(p.cat);
     state.setup = { kind: u.kind || "boss", tier: p ? p.tier || "" : "", cats, name: u.name || "", intro: p ? p.bio || p.raw || "" : "",
+      rmin: p && p.rate ? p.rate[0] : "", rmax: p && p.rate ? p.rate[1] : "", avail: p ? p.avail || "now" : "now",
       company: u.company || "", district: u.district || "", phone: u.phone || "", contacts: { ...(u.contacts || {}) }, agree: true, photo: [], works: p ? worksOf(p).slice() : [] };
     state.setupErr = null;
     state.forceSetup = true; state.editMe = true;
@@ -2572,6 +2567,9 @@ body { background: var(--page); }
             <div class="chips" role="group" aria-label="job 類別">${CATS.map(c => `<button type="button" class="chip" data-sucat="${c.id}" aria-pressed="${f.cats.includes(c.id)}">${c.name}</button>`).join("")}</div>${e("cats")}
           </div>
           <label class="group"><span class="field-title">一句介紹自己${req}</span><input type="text" id="su-intro" value="${esc(f.intro)}" placeholder="例如：${esc(WORK_EG[0])}" maxlength="80">${e("intro")}</label>
+          ${(() => { const g = rateFor(f.tier || "mid", catById(f.cats[0]) || CATS[0]); return `<div class="group"><span class="field-title">每單收費（HK$）<span class="small muted">（可選，唔填就按級別同類別市價）</span></span>
+            <div class="fields pair"><label>最低<input type="number" id="su-rmin" min="100" step="100" value="${esc(f.rmin || "")}" placeholder="${g[0]}"></label><label>最高<input type="number" id="su-rmax" min="100" step="100" value="${esc(f.rmax || "")}" placeholder="${g[1]}"></label></div>${e("rate")}</div>`; })()}
+          <div class="group"><span class="field-title">檔期</span><div class="chips" role="group" aria-label="檔期">${Object.entries(AVAIL).map(([k, v]) => `<button type="button" class="chip" data-suavail="${k}" aria-pressed="${(f.avail || "now") === k}">${v}</button>`).join("")}</div></div>
           <div class="group"><span class="field-title">過往作品<span class="small muted">（可選，之後喺「你嘅檔案」都可以加）</span></span>
             ${uploader("su-works", f.works, { label: "上載作品", hint: "3–6 件最好，每件寫一句說明。客戶揀人時最睇呢樣。", caption: true, limit: 12 })}</div>` : ""}
           ${boss ? `
@@ -2596,6 +2594,7 @@ body { background: var(--page); }
     const read = () => {
       f.name = $("#su-name").value.trim();
       if ($("#su-intro")) f.intro = $("#su-intro").value.trim();
+      if ($("#su-rmin")) { f.rmin = $("#su-rmin").value.trim(); f.rmax = $("#su-rmax").value.trim(); }
       if ($("#su-company")) { f.company = $("#su-company").value.trim(); f.district = $("#su-district").value; }
       f.phone = $("#su-phone").value.replace(/\s/g, ""); f.agree = $("#su-agree").checked;
       f.contacts = {}; ["tg", "ig", "th"].forEach(k => { const el = $("#su-" + k); if (el) f.contacts[k] = VIAS[k].clean(el.value); });
@@ -2609,6 +2608,7 @@ body { background: var(--page); }
       if (d.sugpic !== undefined) { f.gpic = true; f.photo.length = 0; }
       if (d.sukind) f.kind = d.sukind;
       if (d.sutier) f.tier = d.sutier;
+      if (d.suavail) f.avail = d.suavail;
       if (d.sucat) f.cats = f.cats.includes(d.sucat) ? f.cats.filter(c => c !== d.sucat) : f.cats.concat(d.sucat);
       renderSetup();
     });
@@ -2633,6 +2633,8 @@ body { background: var(--page); }
     if (work && !f.tier) err.tier = "請揀一個級別";
     if (work && !f.cats.length) err.cats = "請揀最少一類 job";
     if (work && f.intro.length < 6) err.intro = "請用一句講吓你識做咩（最少 6 個字）";
+    const rmin = parseInt(f.rmin, 10), rmax = parseInt(f.rmax, 10);
+    if (work && (f.rmin || f.rmax) && !(rmin >= 100 && rmax >= rmin)) err.rate = "最低同最高都要填，最少 HK$100，最高唔可以細過最低";
     if (boss && !f.company) err.company = "請填公司或店舖名稱";
     if (boss && !f.district) err.district = "請揀地區";
     if (!/^[2-9]\d{7}$/.test(f.phone)) err.phone = "請填 8 位數字嘅香港電話";
@@ -2650,7 +2652,8 @@ body { background: var(--page); }
       state.profile = {
         rating: 4.5, done: 0, avail: "now", ...old,
         id: "u:" + u.email, raw: f.intro, name: u.name, head: cats.map(c => c.name).join(" · "), cat: cat.id, cats: f.cats.slice(), tier: f.tier,
-        skills: [...new Set(cats.flatMap(c => c.skills.slice(0, 2)))].slice(0, 5), rate: rateFor(f.tier, cat),
+        skills: [...new Set(cats.flatMap(c => c.skills.slice(0, 2)))].slice(0, 5),
+        rate: rmin >= 100 && rmax >= rmin ? [rmin, rmax] : rateFor(f.tier, cat), avail: f.avail || old.avail || "now",
         hue: u.hue, bio: f.intro, photo: u.photo || "", works: f.works.slice(),
       };
     }
