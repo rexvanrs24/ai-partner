@@ -734,6 +734,10 @@ svg.i { width: 16px; height: 16px; flex: none; vertical-align: -3px; fill: none;
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn-th { background: #fff; color: #101010; } }
 :root[data-theme="dark"] .btn-th { background: #fff; color: #101010; }
 /* the job form: which app to be contacted on, then the number or name there */
+/* the details form keeps to the screen: one column that never grows past it */
+#setup-form { grid-template-columns: minmax(0, 1fr); }
+#setup-form .fields { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+#setup-form input, #setup-form select { min-width: 0; max-width: 100%; }
 .vias { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .vias label { display: grid; justify-items: center; gap: 4px; padding: 10px 4px 8px; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; background: var(--surface); font-size: 13px; font-weight: 600; text-align: center; }
 .vias label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
@@ -1532,7 +1536,7 @@ body { background: var(--page); }
   // the app and name used on your last job, else your WhatsApp number from sign-up
   function lastContact() {
     const n = typeof myNeeds === "function" && state.user ? myNeeds().find(x => !x.example && x.contactVia && x.contact) : null;
-    return n ? { via: n.contactVia, handle: n.contact } : { via: "wa", handle: (state.user && state.user.phone) || null };
+    return n ? { via: n.contactVia, handle: myHandle(n.contactVia) || n.contact } : { via: "wa", handle: (state.user && state.user.phone) || null };
   }
   // 「AI 幫我填」: read what was written and fill in the title, category, level, money and days
   function autoFill() {
@@ -1672,15 +1676,14 @@ body { background: var(--page); }
           <label><input type="radio" name="d-via" value="${k}" ${(d.via || "wa") === k ? "checked" : ""}><span class="vi ${k}">${ico(k)}</span>${v.name}</label>`).join("")}</div>
         <label class="group"><span class="field-title">你嘅 ${viaOf(d.via).ask}</span>
           <input type="${d.via === "wa" ? "tel" : "text"}" id="d-handle" value="${esc(d.handle || "")}" placeholder="${esc(viaOf(d.via).hint)}" inputmode="${viaOf(d.via).mode}" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="40">
-          <span class="small muted">報價嘅人睇到你用 ${viaOf(d.via).name}；你揀中邊個，只有佢先會收到呢個聯絡。</span></label>
+          <span class="small muted">會存入你嘅個人資料。報價嘅人都要有 ${viaOf(d.via).name} 帳戶；你揀中邊個，雙方先會收到對方嘅帳戶。</span></label>
         <button class="btn btn-primary" type="submit">發佈 job</button>
       </form>`;
     document.querySelectorAll('input[name="d-mode"]').forEach(r => r.addEventListener("change", () => { readDraft(); d.mode = r.value; renderDraft(false); }));
     // a new app: keep what was typed only if it still fits; a WhatsApp number comes back from sign-up
     document.querySelectorAll('input[name="d-via"]').forEach(r => r.addEventListener("change", () => {
       readDraft(); const from = viaOf(d.via); d.via = r.value; const to = viaOf(d.via);
-      if (d.via === "wa" && !to.ok(to.clean(d.handle))) d.handle = (state.user && state.user.phone) || "";
-      else if (from !== to && !(from.mode === "text" && to.mode === "text")) d.handle = "";
+      if (from !== to) d.handle = myHandle(d.via);
       renderDraft(false); const h = $("#d-handle"); if (h) { h.focus(); h.setSelectionRange(h.value.length, h.value.length); }
     }));
     $("#draft-form").addEventListener("submit", e => {
@@ -1690,6 +1693,7 @@ body { background: var(--page); }
       const v = viaOf(d.via); d.via = VIAS[d.via] ? d.via : "wa"; d.handle = v.clean(d.handle);
       if (!d.handle) { toast(`請填你嘅 ${v.ask}`); $("#d-handle").focus(); return; }
       if (!v.ok(d.handle)) { toast(v.bad); $("#d-handle").focus(); return; }
+      if (signedUp() && myHandle(d.via) !== d.handle) setMyHandle(d.via, d.handle);
       d.skills = [...new Set(skillsIn(d.raw + " " + d.title).concat(catById(d.cat).skills.slice(0, 3)))].slice(0, 4);
       requireLogin(publishNeed, "publish");
     });
@@ -1887,6 +1891,28 @@ body { background: var(--page); }
       ok: v => /^[A-Za-z0-9._]{1,30}$/.test(v), bad: "Threads 帳戶名只可以有英文字母、數字、. 同 _", show: v => "@" + v, link: v => "https://www.threads.net/@" + v },
   };
   const viaOf = k => VIAS[k] || VIAS.wa;
+  // your account on one app, as saved in your details (shown to the other side only after 落實)
+  const handleOf = (u, via) => !u ? "" : via === "wa" || !VIAS[via] ? (u.phone || "") : ((u.contacts || {})[via] || "");
+  const myHandle = via => handleOf(state.user, via);
+  function setMyHandle(via, v) {
+    const u = state.user; if (!u) return;
+    if (via === "wa") u.phone = v; else u.contacts = { ...(u.contacts || {}), [via]: v };
+    saveMe();
+  }
+  // a quote or sample form asks for your account on the job's app when your details do not have it yet
+  const needHandleField = job => job.contactVia && !viaOf(job.contactVia).ok(viaOf(job.contactVia).clean(myHandle(job.contactVia)))
+    ? `<label class="group"><span class="field-title">你嘅 ${viaOf(job.contactVia).ask}</span>
+        <input type="${job.contactVia === "wa" ? "tel" : "text"}" id="x-handle" placeholder="${esc(viaOf(job.contactVia).hint)}" inputmode="${viaOf(job.contactVia).mode}" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="40">
+        <span class="small muted">呢個客戶用 ${viaOf(job.contactVia).name} 聯絡，雙方都要有帳戶。會存入你嘅個人資料，只有落實之後先畀對方。</span></label>` : "";
+  // read and keep that account; false (with a message) when it is missing or wrong
+  function takeHandleField(job) {
+    const el = $("#x-handle"); if (!el) return true;
+    const v = viaOf(job.contactVia), h = v.clean(el.value);
+    if (!h) { toast(`請填你嘅 ${v.ask}`); el.focus(); return false; }
+    if (!v.ok(h)) { toast(v.bad); el.focus(); return false; }
+    setMyHandle(job.contactVia, h);
+    return true;
+  }
   const viaTag = k => `<span class="via-tag">${ico(VIAS[k] ? k : "wa")}${viaOf(k).name}</span>`;
   // a button that opens the other side in their app; old orders without an app are WhatsApp numbers
   const contactBtn = (via, id) => { const v = viaOf(via); return id && v.ok(v.clean(id)) ? `<a class="btn btn-${VIAS[via] ? via : "wa"} btn-sm" href="${esc(v.link(v.clean(id)))}" target="_blank" rel="noopener">${ico(VIAS[via] ? via : "wa")}${v.name}</a>` : ""; };
@@ -2128,7 +2154,7 @@ body { background: var(--page); }
   function startAddWorker() {
     const u = state.user;
     state.setup = { kind: u.kind === "boss" ? "both" : (u.kind || "worker"), tier: "", cats: [], name: u.name, intro: "",
-      company: u.company || "", district: u.district || "", phone: u.phone || "", agree: true, photo: [], works: [] };
+      company: u.company || "", district: u.district || "", phone: u.phone || "", contacts: { ...(u.contacts || {}) }, agree: true, photo: [], works: [] };
     state.setupErr = null;
     state.forceSetup = true;
     if (state.view !== "login") state.loginFrom = state.view;
@@ -2142,7 +2168,7 @@ body { background: var(--page); }
     const cats = p ? (p.cats || CATS.filter(c => (p.head || "").split(" · ").includes(c.name)).map(c => c.id)) : [];
     if (p && !cats.length && p.cat) cats.push(p.cat);
     state.setup = { kind: u.kind || "boss", tier: p ? p.tier || "" : "", cats, name: u.name || "", intro: p ? p.bio || p.raw || "" : "",
-      company: u.company || "", district: u.district || "", phone: u.phone || "", agree: true, photo: [], works: p ? worksOf(p).slice() : [] };
+      company: u.company || "", district: u.district || "", phone: u.phone || "", contacts: { ...(u.contacts || {}) }, agree: true, photo: [], works: p ? worksOf(p).slice() : [] };
     state.setupErr = null;
     state.forceSetup = true; state.editMe = true;
     closeDrawer();
@@ -2171,6 +2197,7 @@ body { background: var(--page); }
         <div class="files-sec"><span class="small muted">附上作品（揀最似呢份工嘅 1–3 件，客戶會見到）</span>
           ${works.length ? `<div class="gal" id="q-works">${works.map((w, i) => thumbBtn(w, "", true).replace('class="thumb"', `class="thumb" data-pickw="${i}" aria-pressed="${picked.has(i)}"`)).join("")}</div>` : `<p class="small muted">你未有作品集，可以喺下面上載，或者喺「你嘅檔案」加作品。</p>`}</div>
         ${uploader("q-up", extra, { label: "上載其他作品", hint: "例如做過嘅類似作品，最多 3 個。", limit: 3 })}
+        ${needHandleField(job)}
       </form>
       <div class="drawer-foot"><button class="btn btn-primary" type="submit" form="quote-form">送出報價</button></div>`);
     if ($("#q-works")) $("#q-works").addEventListener("click", e => {
@@ -2185,6 +2212,7 @@ body { background: var(--page); }
     });
     $("#quote-form").addEventListener("submit", e => {
       e.preventDefault();
+      if (!takeHandleField(job)) return;
       const files = works.filter((w, i) => picked.has(i)).concat(extra);
       const q = { id: "q" + Date.now(), owner: me(), jobId, price: Math.max(100, parseInt($("#q-price").value, 10) || price), days: Math.max(1, parseInt($("#q-days").value, 10) || days), status: "waiting", files };
       state.quotes.push(q);
@@ -2215,11 +2243,13 @@ body { background: var(--page); }
         <label class="field-label" for="sub-note">講吓你點做</label>
         <textarea id="sub-note" rows="3" placeholder="例如：用咗 Kling 出畫面，CapCut 加字幕，正式版會再加配音"></textarea>
         <p class="small muted">樣板版權屬你，客戶揀中落實之後先轉畀佢。</p>
+        ${needHandleField(job)}
       </form>
       <div class="drawer-foot"><button class="btn btn-primary" type="submit" form="sub-form">交試工</button></div>`);
     $("#sub-form").addEventListener("submit", e => {
       e.preventDefault();
       if (!files.length) { toast("請上載最少一個樣板檔案"); return; }
+      if (!takeHandleField(job)) return;
       const sub = { id: "m" + Date.now(), owner: me(), jobId, files, note: $("#sub-note").value.trim(), status: "waiting" };
       state.subs.push(sub);
       if (t.others !== undefined) t.others++;
@@ -2503,6 +2533,9 @@ body { background: var(--page); }
             <label class="group"><span class="field-title">地區${req}</span><select id="su-district"><option value="">請揀</option>${DISTRICTS.map(d => `<option ${f.district === d ? "selected" : ""}>${d}</option>`).join("")}</select>${e("district")}</label>
           </div>` : ""}
           <label class="group"><span class="field-title">WhatsApp 電話${req}</span><input type="tel" id="su-phone" value="${esc(f.phone)}" placeholder="8 位數字" inputmode="numeric" maxlength="9"><span class="small muted">只會喺落實之後畀對方，用嚟聯絡交收。</span>${e("phone")}</label>
+          <div class="group"><span class="field-title">其他聯絡帳戶<span class="small muted">（可選；job 要求用邊個，雙方都要有）</span></span>
+            <div class="fields">${["tg", "ig", "th"].map(k => `<label>${VIAS[k].name}<input type="text" id="su-${k}" value="${esc((f.contacts || {})[k] || "")}" placeholder="${esc(VIAS[k].hint)}" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="40"></label>`).join("")}</div>
+            ${["tg", "ig", "th"].map(k => e("c_" + k)).join("")}</div>
           <label class="check"><input type="checkbox" id="su-agree" ${f.agree ? "checked" : ""}><span>我同意服務條款同私隱政策${req}</span></label>${e("agree")}
           <button class="btn btn-primary" type="submit">${state.editMe ? "儲存修改" : "完成，開始使用"}</button>
           ${state.editMe ? `<button class="btn btn-ghost" type="button" data-editcancel>取消</button>` : ""}
@@ -2518,6 +2551,7 @@ body { background: var(--page); }
       if ($("#su-intro")) f.intro = $("#su-intro").value.trim();
       if ($("#su-company")) { f.company = $("#su-company").value.trim(); f.district = $("#su-district").value; }
       f.phone = $("#su-phone").value.replace(/\s/g, ""); f.agree = $("#su-agree").checked;
+      f.contacts = {}; ["tg", "ig", "th"].forEach(k => { const el = $("#su-" + k); if (el) f.contacts[k] = VIAS[k].clean(el.value); });
     };
     form.addEventListener("click", ev => {
       const b = ev.target.closest("button[type=button]"); if (!b || b.dataset.lb || b.closest(".upl")) return;
@@ -2555,11 +2589,13 @@ body { background: var(--page); }
     if (boss && !f.company) err.company = "請填公司或店舖名稱";
     if (boss && !f.district) err.district = "請揀地區";
     if (!/^[2-9]\d{7}$/.test(f.phone)) err.phone = "請填 8 位數字嘅香港電話";
+    ["tg", "ig", "th"].forEach(k => { const h = (f.contacts || {})[k]; if (h && !VIAS[k].ok(h)) err["c_" + k] = VIAS[k].bad; });
     if (!f.agree) err.agree = "要同意條款先可以用";
     state.setupErr = err;
     if (Object.keys(err).length) { renderSetup(); return pointSetup(Object.keys(err).length); }
     const u = state.user;
-    Object.assign(u, { name: f.name, kind: f.kind, phone: f.phone, company: boss ? f.company : "", district: boss ? f.district : "", onboarded: true });
+    Object.assign(u, { name: f.name, kind: f.kind, phone: f.phone, company: boss ? f.company : "", district: boss ? f.district : "", onboarded: true,
+      contacts: Object.fromEntries(Object.entries(f.contacts || {}).filter(([, v]) => v)) });
     if (f.photo[0]) u.photo = f.photo[0].url;
     else if (f.gpic) u.photo = u.gphoto || "";
     if (work) {
@@ -2597,7 +2633,7 @@ body { background: var(--page); }
           <div><span class="muted">身份</span><span>${esc(KINDS[u.kind] || "")}</span></div>
           ${u.company ? `<div><span class="muted">公司 / 店舖</span><span>${esc(u.company)} · ${esc(u.district)}</span></div>` : ""}
           ${state.profile ? `<div><span class="muted">級別</span><span>${tierBadge(state.profile.tier)}</span></div>` : ""}
-          <div><span class="muted">WhatsApp</span><span class="num">${esc(u.phone || "")}</span></div>
+          ${Object.keys(VIAS).map(k => `<div><span class="muted">${VIAS[k].name}</span><span class="num">${handleOf(u, k) ? esc(VIAS[k].show(handleOf(u, k))) : `<span class="muted">未填</span>`}</span></div>`).join("")}
           <div><span class="muted">發過嘅 job</span><span>${myNeeds().filter(n => !n.example).length} 個</span></div>
         </div>
         ${state.profile ? `<section class="rating-sec"><div class="ask-row"><h3>作品集（${worksOf(state.profile).length}）</h3><button type="button" class="link" data-works="1">${worksOf(state.profile).length ? "管理作品" : "加作品"}</button></div>${gallery(worksOf(state.profile), { cls: "big", cap: true, empty: `<p class="small muted">未有作品。上載 3–6 件過往作品，客戶揀人時最睇呢樣。</p>` })}</section>` : ""}
@@ -2639,7 +2675,7 @@ body { background: var(--page); }
     const done = j.mode === "trial" ? mySubs().find(s => s.jobId === id) : myQuotes().find(q => q.jobId === id);
     openDrawer(`${head(esc(j.title), esc(j.posted) + "發佈")}
       <div class="drawer-body">
-        <div class="sum"><div><span class="muted">預算</span><span class="num">${hk(j.budget)}</span></div><div><span class="muted">期限</span><span>${j.days} 日內交</span></div><div><span class="muted">要搵</span><span>${tierBadge(j.tier)}</span></div><div><span class="muted">揀人方式</span><span>${MODES[j.mode].name}</span></div>${j.contactVia ? `<div><span class="muted">落實後聯絡</span><span>${viaTag(j.contactVia)}</span></div>` : ""}</div>
+        <div class="sum"><div><span class="muted">預算</span><span class="num">${hk(j.budget)}</span></div><div><span class="muted">期限</span><span>${j.days} 日內交</span></div><div><span class="muted">要搵</span><span>${tierBadge(j.tier)}</span></div><div><span class="muted">揀人方式</span><span>${MODES[j.mode].name}</span></div>${j.contactVia ? `<div><span class="muted">落實後聯絡</span><span>${viaTag(j.contactVia)}${signedUp() && !myHandle(j.contactVia) ? ` <small class="muted">（你要有 ${viaOf(j.contactVia).name} 帳戶）</small>` : ""}</span></div>` : ""}</div>
         <p>${esc(j.desc)}</p>
         ${filesSec("客戶畀嘅參考檔案", j.refs)}
         ${j.hard ? `<div><b class="small">點解要搵人做</b><ul class="hard">${j.hard.map(h => `<li>${esc(h)}</li>`).join("")}</ul></div>` : ""}
@@ -2721,7 +2757,7 @@ body { background: var(--page); }
         <div><span class="muted">協定金額</span><span class="num">${hk(c.quote)}</span></div>
         <div><span class="muted">交貨</span><span>${c.days} 日內</span></div>
       </div>
-      <p class="small muted">金額同付款方式由你同 ${esc(c.t.name)} 自行傾，平台唔經手、唔收費。落實之後 ${esc(c.t.name)} 會收到你嘅 ${viaOf(c.need.contactVia).name}${c.need.contact ? "（" + esc(viaOf(c.need.contactVia).show(c.need.contact)) + "）" : ""}，你會收到佢嘅 WhatsApp。</p>
+      <p class="small muted">金額同付款方式由你同 ${esc(c.t.name)} 自行傾，平台唔經手、唔收費。落實之後你同 ${esc(c.t.name)} 會收到對方嘅 ${viaOf(c.need.contact ? c.need.contactVia : "wa").name}${c.need.contact ? "（你嘅係 " + esc(viaOf(c.need.contactVia).show(c.need.contact)) + "）" : ""}。</p>
       <button class="btn btn-primary" type="button" id="pay-go">落實，交換聯絡</button>`;
     $("#pay-go").addEventListener("click", () => {
       const { need, t, quote } = state.chat;
@@ -2745,7 +2781,8 @@ body { background: var(--page); }
         const wEmail = t.id.slice(2), w = known[wEmail] ? known[wEmail].user : {};
         const wo = { id: "o" + (Date.now() + 1), owner: wEmail, side: "worker", title: need.title, partner: need.client, amount: quote, status: 2, rating: 0, link: bo.id,
           contactVia: need.contact ? (need.contactVia || "wa") : "wa", contact: need.contact || state.user.phone };
-        bo.link = wo.id; bo.contact = w.phone;
+        // the worker's account on the same app arrives once the server lets their details through (fillContacts)
+        bo.link = wo.id; bo.contactVia = wo.contactVia; bo.contact = handleOf(w, wo.contactVia) || "";
         state.orders.push(wo);
         const q = o && state.quotes.find(x => x.id === o.quoteId); if (q) q.status = "accepted";
         const ms = s && state.subs.find(x => x.id === s.subId); if (ms) ms.status = "picked";
@@ -2994,7 +3031,11 @@ body { background: var(--page); }
     let any = false;
     state.orders.filter(o => ownedBy(o) && o.link && !o.contact).forEach(o => {
       const lk = state.orders.find(x => x.id === o.link), k = lk && known[String(lk.owner || "").toLowerCase()];
-      if (k && k.user && k.user.phone) { o.contact = k.user.phone; any = true; }
+      if (!k || !k.user) return;
+      // their account on the job's app; someone who quoted before accounts were asked for falls back to WhatsApp
+      const h = handleOf(k.user, o.contactVia || "wa");
+      if (h) { o.contact = h; any = true; }
+      else if (k.user.phone) { o.contactVia = "wa"; o.contact = k.user.phone; any = true; }
     });
     return any;
   }
