@@ -1019,6 +1019,8 @@ body { background: var(--page); }
   const round100 = n => Math.round(n / 100) * 100;
   // every need, quote, sample and order belongs to the account that made it; examples are shown to everyone
   const me = () => state.user ? state.user.email : "";
+  // older jobs saved the client as "district · company": show only the company
+  const who = s => String(s || "").split(" · ").pop();
   const ownedBy = x => x.example || x.owner === me();
   const myNeeds = () => state.needs.filter(ownedBy);
   const myOrders = side => state.orders.filter(o => o.side === side && ownedBy(o));
@@ -1704,7 +1706,7 @@ body { background: var(--page); }
       desc: d.raw, hard: cat.hard, mode: d.mode, trial: d.mode === "trial" ? { ...d.trial } : null, refs: d.refs,
       contactVia: d.via, contact: d.handle,
       posted: "啱啱", status: "open", invited: [], offers: [], subs: [],
-      owner: me(), client: state.user.company ? `${state.user.district} · ${state.user.company}` : state.user.name,
+      owner: me(), client: state.user.company || state.user.name,
     };
     state.needs.unshift(need);
     state.draft = null;
@@ -1722,7 +1724,7 @@ body { background: var(--page); }
     ids.forEach(id => {
       if (need.invited.includes(id) || !String(id).startsWith("u:")) return;
       need.invited.push(id);
-      notify(id.slice(2), `${need.client} 邀請你${need.mode === "trial" ? "交試工" : "報價"}：${need.title}`, "find");
+      notify(id.slice(2), `${who(need.client)} 邀請你${need.mode === "trial" ? "交試工" : "報價"}：${need.title}`, "find");
     });
     refresh("needs");
   }
@@ -1846,7 +1848,7 @@ body { background: var(--page); }
   // reviews other people gave you, from finished orders on one side (boss = as a client, worker = as a worker)
   // example orders never count towards your own rating; they only show what a review looks like
   const reviewsOn = (side, example) => myOrders(side).filter(o => !o.example === !example && o.status >= 6 && o.reviews && o.reviews.theirs)
-    .map(o => ({ ...o.reviews.theirs, from: o.partner, title: o.title }));
+    .map(o => ({ ...o.reviews.theirs, from: who(o.partner), title: o.title }));
   const received = side => reviewsOn(side, false);
   const avgOf = list => list.reduce((a, r) => a + r.stars, 0) / list.length;
   function syncMyRating() {
@@ -1897,19 +1899,19 @@ body { background: var(--page); }
     let side = "";
     if (o.status === 2) side = !boss ? btn(o.revisions ? "重新交貨" : "交貨", "deliver") : `<span class="pill waiting">等工作者交貨</span>`;
     if (o.status === 3) side = boss ? btn("要求修改", "revise", true) + btn("確認完成", "confirm") : `<span class="pill waiting">等客戶確認</span>`;
-    if (o.status === 5) side = r.mine ? `<span class="pill waiting">等${esc(o.partner)}評分</span>`
-      : `<span class="small muted">${r.theirs ? esc(o.partner) + " 已經評咗你，你評完就會公開" : "雙方都評完先會公開"}</span><button class="btn btn-primary btn-sm" type="button" data-review="${o.id}">評分${boss ? "工作者" : "客戶"}</button>`;
+    if (o.status === 5) side = r.mine ? `<span class="pill waiting">等${esc(who(o.partner))}評分</span>`
+      : `<span class="small muted">${r.theirs ? esc(who(o.partner)) + " 已經評咗你，你評完就會公開" : "雙方都評完先會公開"}</span><button class="btn btn-primary btn-sm" type="button" data-review="${o.id}">評分${boss ? "工作者" : "客戶"}</button>`;
     return `<div class="row" style="grid-template-columns:minmax(0,1fr)">
       <div class="ask-row">
         <div style="min-width:0"><h3>${esc(o.title)}${o.example ? ' <span class="chip">例子</span>' : ""}</h3>
-          <div class="meta"><span>${boss ? "工作者：" : "客戶："}${esc(o.partner)}</span><span>協定 <span class="num">${hk(o.amount)}</span></span><span>而家：${status}</span>${o.contact ? `<span>${viaOf(o.contactVia).name} <span class="num">${esc(viaOf(o.contactVia).show(o.contact))}</span></span>` : ""}</div></div>
+          <div class="meta"><span>${boss ? "工作者：" : "客戶："}${esc(who(o.partner))}</span><span>協定 <span class="num">${hk(o.amount)}</span></span><span>而家：${status}</span>${o.contact ? `<span>${viaOf(o.contactVia).name} <span class="num">${esc(viaOf(o.contactVia).show(o.contact))}</span></span>` : ""}</div></div>
         <div class="row-side">${contactBtn(o.contactVia, o.contact)}${side}</div>
       </div>
-      <div class="v2-steps">${STEPS.map((x, i) => `<div class="v2-st${i < STEP_AT[o.status] ? " done" : i === STEP_AT[o.status] ? " now" : ""}"><b>${x}</b><small>${i < STEP_AT[o.status] ? "做好咗" : i === STEP_AT[o.status] ? (STEP_WHO(o, i) ? "到你" : "等" + esc(o.partner)) : "—"}</small></div>`).join("")}</div>
+      <div class="v2-steps">${STEPS.map((x, i) => `<div class="v2-st${i < STEP_AT[o.status] ? " done" : i === STEP_AT[o.status] ? " now" : ""}"><b>${x}</b><small>${i < STEP_AT[o.status] ? "做好咗" : i === STEP_AT[o.status] ? (STEP_WHO(o, i) ? "到你" : "等" + esc(who(o.partner))) : "—"}</small></div>`).join("")}</div>
       ${o.status === 2 && o.revNote ? `<div class="note"><b>客戶要求修改（第 ${o.revisions} 次）</b><br>${esc(o.revNote)}${filesSec("客戶附圖", o.revFiles)}</div>` : ""}
       ${o.files && o.files.length && o.status >= 3 ? `<div class="deliv"><span class="small muted">${boss ? "工作者交嘅成品" : "你交嘅成品"}${o.revisions ? `（改咗 ${o.revisions} 次）` : ""}</span>${gallery(o.files, { cap: true })}${o.note ? `<p class="small">${esc(o.note)}</p>` : ""}
         ${!boss && o.status >= 5 && !o.example ? (o.inWorks ? `<span class="small muted">已加入你嘅作品集</span>` : `<div class="btns">${btn("加入作品集", "towork", true)}<span class="small muted">公開之前記得問准客戶</span></div>`) : ""}</div>` : ""}
-      ${o.status >= 6 ? `<div class="reviews">${reviewHtml("你畀 " + esc(o.partner), r.mine)}${reviewHtml(esc(o.partner) + " 畀你", r.theirs)}</div>` : ""}
+      ${o.status >= 6 ? `<div class="reviews">${reviewHtml("你畀 " + esc(who(o.partner)), r.mine)}${reviewHtml(esc(who(o.partner)) + " 畀你", r.theirs)}</div>` : ""}
     </div>`;
   }
 
@@ -1917,7 +1919,7 @@ body { background: var(--page); }
     const o = state.orders.find(x => x.id === id), boss = o.side === "boss";
     const pick = { stars: 0, tags: [] };
     const drawStars = () => $("#rv-stars").innerHTML = [1, 2, 3, 4, 5].map(n => `<button type="button" class="${n <= pick.stars ? "on" : ""}" data-star="${n}" aria-label="${n} 粒星">★</button>`).join("");
-    openDrawer(`${head(`評分${boss ? "工作者" : "客戶"}：${esc(o.partner)}`, esc(o.title))}
+    openDrawer(`${head(`評分${boss ? "工作者" : "客戶"}：${esc(who(o.partner))}`, esc(o.title))}
       <form class="drawer-body" id="rv-form">
         <p class="small muted">雙方都評完先會公開，所以可以照直講。評分會影響${boss ? "佢日後接工嘅排名" : "其他工作者願唔願意接呢個老闆嘅工"}。</p>
         <div class="group"><span class="small muted">整體</span><div class="stars big" id="rv-stars"></div></div>
@@ -2191,7 +2193,7 @@ body { background: var(--page); }
       if (job.owner) {
         job.offers.push({ id: "f" + Date.now(), talentId: p.id, quoteId: q.id, price: q.price, days: q.days, msg: $("#q-msg").value.trim() || `我可以 ${q.days} 日內交，報價 ${hk(q.price)}。`, status: "new", files });
         notify(job.owner, `${state.user.name} 報咗價 ${hk(q.price)}：${job.title}`, "needs");
-        return toast(`已送出報價，${job.client} 會喺「我發嘅 job」見到`);
+        return toast(`已送出報價，${who(job.client)} 會喺「我發嘅 job」見到`);
       }
       toast("已送出報價，等客戶回覆");
     });
@@ -2226,7 +2228,7 @@ body { background: var(--page); }
       if (job.owner) {
         job.subs.push({ id: "s" + Date.now(), talentId: state.profile.id, subId: sub.id, note: sub.note || "跟足試工要求做咗。", files, status: "new" });
         notify(job.owner, `${state.user.name} 交咗試工樣板：${job.title}`, "needs");
-        return toast(`已交試工，${job.client} 會喺「我發嘅 job」見到`);
+        return toast(`已交試工，${who(job.client)} 會喺「我發嘅 job」見到`);
       }
       toast("已交試工，等客戶睇");
     });
@@ -2730,12 +2732,12 @@ body { background: var(--page); }
       need.offers.filter(x => x !== o && x.status === "new").forEach(x => {
         x.status = "declined";
         const q = state.quotes.find(y => y.id === x.quoteId);
-        if (q) { q.status = "declined"; notify(q.owner, `${need.client} 揀咗其他人：${need.title}`, "sent"); }
+        if (q) { q.status = "declined"; notify(q.owner, `${who(need.client)} 揀咗其他人：${need.title}`, "sent"); }
       });
       need.subs.filter(x => x !== s && x.status === "new").forEach(x => {
         x.status = "passed";
         const ms = state.subs.find(y => y.id === x.subId);
-        if (ms) { ms.status = "declined"; notify(ms.owner, `${need.client} 揀咗其他人：${need.title}`, "sent"); }
+        if (ms) { ms.status = "declined"; notify(ms.owner, `${who(need.client)} 揀咗其他人：${need.title}`, "sent"); }
       });
       const bo = { id: "o" + Date.now(), owner: me(), side: "boss", title: need.title, partner: t.name, amount: quote, status: 2, rating: 0 };
       state.orders.push(bo);
@@ -2747,7 +2749,7 @@ body { background: var(--page); }
         state.orders.push(wo);
         const q = o && state.quotes.find(x => x.id === o.quoteId); if (q) q.status = "accepted";
         const ms = s && state.subs.find(x => x.id === s.subId); if (ms) ms.status = "picked";
-        notify(wEmail, `${need.client} 揀咗你：${need.title}，可以開工`, "work");
+        notify(wEmail, `${who(need.client)} 揀咗你：${need.title}，可以開工`, "work");
       }
       closeDrawer();
       toast(`已落實，${t.name} 可以開工，聯絡已經交換`);
