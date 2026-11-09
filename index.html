@@ -190,11 +190,15 @@ textarea:focus, input:focus { border-color: var(--accent); outline: none; box-sh
   #draft-form.folded > .step ~ .step { display: none !important; }
   #draft-form.folded #d-desc { min-height: 0; }
   #draft-form.folded { cursor: pointer; }
+  .prof.folded { cursor: pointer; }
 }
 /* the job form stands out in the side colour: a coloured frame, a tinted top and the heading in that colour */
 #draft-form { border: 2px solid var(--accent); background: linear-gradient(180deg, var(--accent-soft), var(--surface) 220px); box-shadow: 0 10px 28px -14px var(--accent); }
 #draft-form .form-head .h-side { color: var(--accent); }
 #draft-form #d-desc { background: var(--surface); border: 1px solid var(--line); }
+/* your worker profile on 搵工 stands out the same way, in the worker colour */
+#find-side .prof { border: 2px solid var(--accent); background: linear-gradient(180deg, var(--accent-soft), var(--surface) 220px); box-shadow: 0 10px 28px -14px var(--accent); }
+#find-side .prof > .ask-row h3 { color: var(--accent); font-size: 24px; font-weight: 800; }
 /* the name next to the logo stays on one line, and gives way on a narrow phone */
 .logo-text { white-space: nowrap; }
 @media (max-width: 480px) { .logo-text { display: none; } }
@@ -1557,6 +1561,13 @@ body { background: var(--page); }
       budget: cat.median, budgetGuess: true, days: 14, daysGuess: true, mode: "direct", refs: [], touched: false, ...lastContact(),
       trial: { brief: TRIAL_EG[cat.id], max: 5, days: 3, files: [] } };
   }
+  // open or fold your worker profile on a phone without redrawing it
+  function foldProf(open) {
+    const box = $("#find-side .prof"); if (!box) return;
+    state.profOpen = open;
+    box.classList.toggle("folded", !open);
+    const t = box.querySelector(".prof-toggle"); if (t) t.textContent = open ? "收埋檔案 ⌃" : "睇晒我嘅檔案 ⌄";
+  }
   // open or fold the job form on a phone without redrawing it, so what is typed and the cursor stay put
   function foldForm(open) {
     state.formOpen = open;
@@ -2131,6 +2142,8 @@ body { background: var(--page); }
         <div class="group"><span class="small muted">檔期</span>${chipRow("檔期", "avail", Object.entries(AVAIL), p.avail)}</div>
         <button type="button" class="prof-toggle" data-proftoggle>${state.profOpen ? "收埋檔案 ⌃" : "睇晒我嘅檔案 ⌄"}</button>
       </div>`;
+    // a tap anywhere on the folded profile opens it; its own buttons (改, 加作品, the toggle) still do their job
+    side.querySelector(".prof").addEventListener("click", e => { if (state.profOpen || e.target.closest("button, a, input, label")) return; foldProf(true); });
     ["#p-min", "#p-max"].forEach((sel, i) => $(sel).addEventListener("change", e => {
       p.rate[i] = Math.max(100, parseInt(e.target.value, 10) || p.rate[i]);
       p.rate.sort((a, b) => a - b);
@@ -2837,7 +2850,7 @@ body { background: var(--page); }
     if (d.memos !== undefined || d.memox || d.memogo) return memoAction(d);
     if (d.openfilter !== undefined) return openFilter();
     if (d.tiers !== undefined) return openTiers();
-    if (d.proftoggle !== undefined) { const box = b.closest(".prof"); state.profOpen = box.classList.toggle("folded") ? false : true; b.textContent = state.profOpen ? "收埋檔案 ⌃" : "睇晒我嘅檔案 ⌄"; return; }
+    if (d.proftoggle !== undefined) return foldProf(b.closest(".prof").classList.contains("folded"));
     if (d.lb) return openLB(d.lb);
     if (d.lbclose !== undefined) return closeLB();
     if (d.lbgo) return stepLB(+d.lbgo);
