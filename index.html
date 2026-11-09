@@ -874,7 +874,7 @@ body { background: var(--page); }
   <section class="view" id="v-work" hidden></section>
 </main>
 
-<footer><div class="wrap">網站模型：AI 回應、工作者報價、試工作品同客戶回覆都係模擬，job、人才同訂單都係虛構例子，唔會真係收錢。平台只做配對：金額同付款方式由雙方自行處理，平台唔經手、唔收費、唔抽佣。</div></footer>
+<footer><div class="wrap">AI拍檔只做配對：金額同付款方式由雙方自行處理，平台唔經手、唔收費、唔抽佣。有問題或者建議，歡迎話我哋知。</div></footer>
 
 <nav class="tabbar" id="tabbar" aria-label="主選單"></nav>
 <div class="scrim" id="scrim" hidden></div>
@@ -947,79 +947,9 @@ body { background: var(--page); }
   };
   const ALL_SKILLS = [...new Set(CATS.flatMap(c => c.skills).concat(["Runway", "Kling", "Midjourney", "CapCut", "HeyGen", "ElevenLabs"]))];
 
-  const JOBS = [
-    { id: "j1", tier: "master", mode: "trial", trial: { brief: "用我哋畀嘅產品相，做一個 5 秒 AI 鏡頭樣板，產品樽要清楚。", max: 5, days: 3, refs: ["精華液正面", "精華液側面", "品牌色板"], others: 3, subs: [] }, title: "60 秒 AI 產品宣傳片 + 粵語配音", client: "觀塘 · 護膚品牌", cat: "video", skills: ["AI 影片生成", "剪接", "腳本"], budget: 6500, days: 10, posted: "2 小時前",
-      desc: "新出一支精華液，冇預算請團隊拍。想用 AI 做 60 秒宣傳片，有模特兒用產品嘅畫面、粵語旁白同字幕，出 IG 同 YouTube 版。",
-      hard: ["產品樽要每個鏡頭都一樣", "要寫腳本再出十幾個鏡頭", "配音同字幕要對齊"] },
-    { id: "j2", tier: "mid", mode: "direct", title: "每月 8 條 AI 短片（小紅書 + IG）", client: "銅鑼灣 · 美甲店", cat: "video", skills: ["AI 影片生成", "剪接", "字幕"], budget: 8000, days: 30, posted: "5 小時前",
-      desc: "每月 8 條 15–30 秒短片，介紹新款式同優惠。我提供相片，你用 AI 變成動態片，加音樂同字幕。",
-      hard: ["每星期都要出，好花時間", "要跟住潮流音樂同剪法", "要統一店舖風格"] },
-    { id: "j3", tier: "master", mode: "direct", title: "老闆 AI 分身講解產品 10 條", client: "荃灣 · 五金批發", cat: "avatar", skills: ["AI 數字人", "聲音複製", "口型同步"], budget: 12000, days: 21, posted: "昨日",
-      desc: "老闆唔想次次對鏡頭。想用佢樣貌同聲做 AI 分身，每條 1 分鐘用廣東話講解一款工具，以後改稿就可以再出。",
-      hard: ["要錄素材訓練分身", "廣東話口型要對", "要似真人唔怪"] },
-    { id: "j4", tier: "mid", mode: "trial", trial: { brief: "整 2 款菜式 AI 相：冬陰功同芒果糯米飯，要似真餸。", max: 8, days: 2, refs: ["冬陰功參考", "芒果糯米飯參考"], others: 5, subs: [] }, title: "40 款菜式 AI 相 + 中英菜單排版", client: "九龍城 · 泰菜館", cat: "photo", skills: ["AI 出圖", "修圖", "排版"], budget: 4800, days: 10, posted: "昨日",
-      desc: "冇時間逐碟影相。想用 AI 整 40 款菜式相，要似真餸，再排成中英對照菜單，出印刷檔同 WhatsApp 版。",
-      hard: ["要似真餸唔似 AI", "40 張要光線風格一致", "排版要印得出"] },
-    { id: "j5", tier: "backup", mode: "direct", title: "網店 300 件產品描述 + 換背景 + 上架", client: "旺角 · 電子配件網店", cat: "bulk", skills: ["AI 文案", "Shopify", "修圖"], budget: 6500, days: 14, posted: "3 日前",
-      desc: "300 件新貨，要 AI 寫中英產品描述、相片換白色背景，再上架 Shopify，分好類同價錢。",
-      hard: ["數量多，重複好悶", "規格唔可以寫錯", "上架要逐件核對"] },
-    { id: "j6", tier: "mid", mode: "direct", title: "WhatsApp 自動覆 + 預約接 Google Calendar", client: "灣仔 · 物理治療中心", cat: "auto", skills: ["WhatsApp Business", "Make / Zapier", "ChatGPT API"], budget: 9000, days: 14, posted: "3 日前",
-      desc: "晚上同假期有好多 WhatsApp 查詢。想 AI 自動答收費同地址，識幫客人揀時間預約，直接入 Google Calendar。",
-      hard: ["要接 WhatsApp 同日曆", "客人講法千奇百怪", "撞期要識處理"] },
-    { id: "j7", tier: "mid", mode: "direct", title: "Podcast 每月 4 集剪接 + 精華短片", client: "線上 · 理財 Podcast", cat: "audio", skills: ["音頻剪接", "AI 降噪", "短片精華"], budget: 5000, days: 30, posted: "4 日前",
-      desc: "每集錄 1 小時，要剪走口頭禪同冷場，加字幕，再每集剪 3 條 30 秒精華短片出 IG。",
-      hard: ["一小時要聽晒", "要揀最精彩片段", "每星期都要交"] },
-    { id: "j8", tier: "master", mode: "direct", title: "24 頁兒童繪本 AI 插圖 + 印刷排版", client: "沙田 · 幼稚園", cat: "photo", skills: ["AI 出圖", "排版", "品牌設計"], budget: 8000, days: 21, posted: "5 日前",
-      desc: "校長寫好故事，想用 AI 畫 24 頁插圖，主角每頁要一樣，排好版出印刷檔。",
-      hard: ["主角 24 頁要一模一樣", "畫風要適合小朋友", "要識印刷出血位"] },
-    { id: "j9", tier: "mid", mode: "direct", title: "公司 20 人 AI 形象照", client: "中環 · 會計師行", cat: "photo", skills: ["AI 出圖", "修圖"], budget: 3000, days: 7, posted: "6 日前",
-      desc: "同事交自拍，AI 變成統一背景同西裝嘅形象照，用喺網站同 LinkedIn，要似返本人。",
-      hard: ["要似返本人", "20 人光線背景統一", "要逐個同事確認"] },
-    { id: "j10", tier: "backup", mode: "direct", title: "120 張 AI 產品相人手執手指同文字", client: "深水埗 · 玩具批發", cat: "photo", skills: ["修圖"], budget: 1200, days: 4, posted: "6 日前",
-      desc: "我自己用 AI 出咗 120 張相，但有啲手指多咗、包裝上嘅字亂碼，要逐張執好。",
-      hard: ["逐張睇，好花眼", "包裝字要對返真品", "唔可以執到假"] },
-    { id: "j11", tier: "backup", mode: "trial", trial: { brief: "校對附件 1 分鐘片段嘅字幕，出 SRT。", max: 10, days: 1, refs: ["片段-1分鐘.mp4"], others: 2, subs: [] }, title: "20 條 AI 短片粵語字幕校對", client: "線上 · 旅遊 YouTuber", cat: "video", skills: ["字幕"], budget: 1500, days: 5, posted: "1 星期前",
-      desc: "AI 自動出咗字幕，但廣東話成日錯字同斷句唔啱，要逐條聽住改好再出 SRT。",
-      hard: ["要逐句聽", "廣東話口語字要寫啱", "時間軸要對齊"] },
-    { id: "j12", tier: "backup", mode: "direct", title: "AI 寫嘅 200 件產品描述逐件核對規格", client: "旺角 · 電子配件網店", cat: "bulk", skills: ["AI 文案"], budget: 900, days: 3, posted: "1 星期前",
-      desc: "AI 已經寫好描述，但有啲尺寸同兼容型號寫錯，要對住供應商規格表逐件改。",
-      hard: ["數量多好悶", "要對住規格表", "錯一個型號就有退貨"] },
-    { id: "j13", tier: "mid", mode: "trial", trial: { brief: "搵 20 間有可能用我哋服務嘅公司，附聯絡人同 AI 寫嘅開場 WhatsApp。", max: 5, days: 3, refs: ["目標地區地圖", "服務價目表.pdf"], others: 1, subs: [] }, title: "AI 搵 200 個公司客 + 外展訊息", client: "上環 · 辦公室清潔公司", cat: "leads", skills: ["客戶名單", "AI 外展訊息"], budget: 5000, days: 14, posted: "4 小時前",
-      desc: "想搵多啲寫字樓客。用 AI 幫我整理上環、中環 200 間公司嘅負責人，寫好一對一嘅開場訊息，我自己發。",
-      hard: ["名單要真、唔可以亂作", "訊息要逐間改，唔似群發", "要避開已經係我哋客嘅公司"] },
-    { id: "j14", tier: "mid", mode: "direct", title: "教我班員工用 ChatGPT 寫報價同電郵", client: "葵涌 · 物流公司", cat: "teach", skills: ["ChatGPT", "AI 工具教學"], budget: 3500, days: 7, posted: "2 日前",
-      desc: "8 個文職同事，想上一堂 2 小時嘅實用堂，用我哋自己嘅報價單同電郵做例子，教完要有一份指令範本。",
-      hard: ["要用公司真實例子", "同事唔熟電腦，要講得淺", "指令範本要即刻用得"] },
-  ];
+  const JOBS = [];
 
-  const TALENT = [
-    { id: "t1", tier: "mid", name: "Mandy", head: "AI 影片 · 短片", cat: "video", skills: ["AI 影片生成", "剪接", "字幕", "CapCut", "Kling"], rate: [2500, 10000], rating: 4.9, done: 81, avail: "now", hue: "#17694F",
-      bio: "每月做 30 條以上 AI 短片，美容同飲食類最熟，產品鏡頭會保持一致。" },
-    { id: "t2", tier: "master", name: "阿琛", head: "AI 宣傳片 · 腳本", cat: "video", skills: ["AI 影片生成", "腳本", "剪接", "Runway"], rate: [5000, 20000], rating: 4.8, done: 34, avail: "week", hue: "#B87A06",
-      bio: "前廣告公司剪接師，由腳本、AI 出畫面到配音一手包辦。" },
-    { id: "t3", tier: "master", name: "Sam", head: "AI 分身 · 粵語配音", cat: "avatar", skills: ["AI 數字人", "聲音複製", "粵語配音", "口型同步", "HeyGen"], rate: [4000, 15000], rating: 5.0, done: 22, avail: "now", hue: "#3E6FA8",
-      bio: "專做廣東話 AI 分身，口型同語氣調到似真人，亦可以真人配音。" },
-    { id: "t4", tier: "mid", name: "Coco", head: "AI 相片 · 修圖", cat: "photo", skills: ["AI 出圖", "修圖", "Midjourney"], rate: [1200, 6000], rating: 4.7, done: 63, avail: "now", hue: "#9A4E7A",
-      bio: "食物同產品相專家，AI 出圖再人手修，出到似真影。" },
-    { id: "t5", tier: "master", name: "Yan", head: "插圖 · 排版", cat: "photo", skills: ["AI 出圖", "排版", "品牌設計"], rate: [3000, 10000], rating: 4.8, done: 27, avail: "week", hue: "#5C7A2E",
-      bio: "做過十幾本繪本同菜單，角色一致同印刷規格都熟。" },
-    { id: "t6", tier: "mid", name: "Kelvin", head: "WhatsApp 自動化", cat: "auto", skills: ["WhatsApp Business", "Make / Zapier", "Google Sheets", "ChatGPT API"], rate: [4000, 15000], rating: 4.8, done: 23, avail: "now", hue: "#B4532E",
-      bio: "幫過 20 幾間診所同小店設定 WhatsApp 自動覆同預約。" },
-    { id: "t7", tier: "backup", name: "Ivy", head: "網店上架 · 核對", cat: "bulk", skills: ["AI 文案", "Shopify", "修圖", "中英翻譯"], rate: [2000, 8000], rating: 4.6, done: 41, avail: "now", hue: "#4A5BA0",
-      bio: "一星期可以上架 500 件貨，每件人手檢查規格。" },
-    { id: "t8", tier: "mid", name: "Leo", head: "Podcast 剪接", cat: "audio", skills: ["音頻剪接", "AI 降噪", "字幕", "短片精華"], rate: [1500, 6000], rating: 4.9, done: 52, avail: "week", hue: "#2F7F86",
-      bio: "幫 6 個 Podcast 長期剪接，精華短片平均多三成觀看。" },
-    { id: "t9", tier: "mid", name: "Joanne", head: "AI 形象照", cat: "photo", skills: ["AI 出圖", "修圖"], rate: [1500, 5000], rating: 4.7, done: 38, avail: "now", hue: "#7B5A2A",
-      bio: "專做公司團隊 AI 形象照，保證似返本人，唔滿意免費重做。" },
-    { id: "t10", tier: "backup", name: "阿明", head: "AI 相人手執", cat: "photo", skills: ["修圖", "AI 出圖"], rate: [300, 2000], rating: 4.8, done: 120, avail: "now", hue: "#6B6F2A",
-      bio: "專幫人執 AI 相嘅手指、文字同穿崩位，一日可以執 100 張。" },
-    { id: "t11", tier: "backup", name: "Kiki", head: "字幕校對 · 影片檢查", cat: "video", skills: ["字幕", "剪接"], rate: [300, 2500], rating: 4.9, done: 95, avail: "now", hue: "#8A3F5C",
-      bio: "中文系畢業，專校粵語字幕同檢查 AI 影片穿崩畫面。" },
-    { id: "t12", tier: "mid", name: "Fiona", head: "AI 搵客 · 廣告投放", cat: "leads", skills: ["廣告投放", "客戶名單", "AI 外展訊息", "SEO"], rate: [3000, 12000], rating: 4.8, done: 31, avail: "now", hue: "#2E6B7A",
-      bio: "幫小店同 B2B 公司搵客，AI 整理名單再逐個寫訊息，平均每月多 30 個查詢。" },
-    { id: "t13", tier: "mid", name: "阿Ken", head: "AI 工具教學 · 一對一", cat: "teach", skills: ["ChatGPT", "AI 工具教學", "一對一指導"], rate: [1500, 6000], rating: 4.7, done: 19, avail: "week", hue: "#6A4E8C",
-      bio: "幫公司同個人上 AI 實用堂，小班或者一對一都得，教完有指令範本即刻用到。" },
-  ];
+  const TALENT = [];
 
   const AVAIL = { now: "即時可接", week: "本星期有空", later: "下星期先有空", off: "暫停接單" };
   // order status: 2 等交貨 → 3 等確認（客戶可以要求修改，返去 2）→ 5 互相評分 → 6 完成; money is settled between the two people
@@ -1099,8 +1029,18 @@ body { background: var(--page); }
   const openJobs = () => state.needs.filter(n => !n.example && n.owner && n.owner !== me() && n.status === "open");
   const jobById = id => JOBS.find(j => j.id === id) || state.needs.find(n => n.id === id);
   const needById = id => state.needs.find(n => n.id === id);
+  // someone who replied but whose account is no longer listed still shows as a plain row instead of breaking the page
+  const GONE = id => ({ id, name: "已離開嘅用戶", head: "", cat: "video", tier: "", skills: [], rate: [0, 0], rating: 0, done: 0, avail: "off", hue: "#8A8F98", bio: "", works: [] });
   const talentById = id => TALENT.find(t => t.id === id) || (state.profile && state.profile.id === id ? state.profile : null)
-    || (id && id.startsWith("u:") && known[id.slice(2)] ? known[id.slice(2)].profile : null);
+    || (id && id.startsWith("u:") && known[id.slice(2)] && known[id.slice(2)].profile) || GONE(id);
+  // the 搵人 list: every other signed-up account that has a worker profile
+  function refreshTalent() {
+    TALENT.length = 0;
+    Object.entries(known).forEach(([email, k]) => {
+      if (!k || !k.profile || !k.user || !k.user.onboarded || email === me()) return;
+      TALENT.push({ rating: 0, done: 0, avail: "now", skills: [], rate: [0, 0], works: [], bio: "", ...k.profile, id: "u:" + email, name: k.user.name || k.profile.name });
+    });
+  }
   const reduced = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const wait = ms => new Promise(r => setTimeout(r, reduced() ? 0 : ms));
   const later = (ms, fn) => setTimeout(fn, reduced() ? 200 : ms);
@@ -1608,6 +1548,7 @@ body { background: var(--page); }
 
   // the 搵人 list: same shape as the 搵工 list (heading, numbers, one filter bar, rows that show the work)
   function talentList() {
+    refreshTalent();
     const d = state.draft && state.draft.touched ? state.draft : null;
     let list = TALENT.filter(inFilters).map(t => ({ t, m: d ? match(d, t) : null }));
     const by = {
@@ -1622,8 +1563,8 @@ body { background: var(--page); }
       <div class="v2-head"><div><h2>${d ? `有 <em>${list.length}</em> 位人才啱你嘅需求` : `平台上有 <em>${list.length}</em> 位人才`}</h2>
         <div class="v2-stats">${now ? `<span class="v2-stat new">${now} 位即時可接</span>` : ""}${list.length ? `<span class="v2-stat">平均 ★ ${avg.toFixed(1)}</span><span class="v2-stat">${hk(Math.min(...rs))} 起</span>` : ""}</div></div>${looks()}</div>
       <div class="v2-bar">${catBar(TALENT)}<div class="v2-row2">${tierSeg()}${sortBar((d ? [["match", "最啱你"]] : []).concat([["rating", "評分最高"], ["done", "做得最多"], ["cheap", "價錢最平"]]))}</div></div>
-      <div class="${listCls()}">${list.map(({ t, m }, k) => talentRow(t, m, null, k === 0 && sort === "match" && m && m.total >= 80)).join("") || `<p class="muted">呢個組合暫時未有人才。</p>`}</div>
-      <div class="v2-tip"><div><b>${d ? "睇中邊個？" : "唔知揀邊個？"}</b><p class="muted">${d ? "發佈 job 之後，AI 會即刻通知配對分最高嘅 3 個人。" : "喺左邊講一句需求，AI 會幫你按配對分排好啲人。"}</p></div></div>`;
+      <div class="${listCls()}">${list.map(({ t, m }, k) => talentRow(t, m, null, k === 0 && sort === "match" && m && m.total >= 80)).join("") || (TALENT.length ? `<p class="muted">呢個組合暫時未有人才。</p>` : `<div class="box empty"><h3>暫時未有工作者登記</h3><p class="muted">你都可以照樣發 job，工作者喺「搵工」見到就可以報價或者交試工。</p></div>`)}</div>
+      <div class="v2-tip"><div><b>${d ? "睇中邊個？" : "唔知揀邊個？"}</b><p class="muted">${d ? "發佈 job 之後，配對分最高嘅 3 個人會收到通知；所有工作者都可以喺「搵工」見到你嘅 job。" : "喺左邊講一句需求，AI 會幫你按配對分排好啲人。"}</p></div></div>`;
   }
   // one person: three pieces of work with the face on top, the facts, and what you can do
   function talentRow(t, m, action, best) {
@@ -1687,6 +1628,7 @@ body { background: var(--page); }
     // your sign-up number can arrive after the form was first drawn; fill it in until the form has been read once
     if (d.handle == null && (d.via || "wa") === "wa" && state.user && state.user.phone) d.handle = state.user.phone;
     const guess = [d.budgetGuess && "預算", d.daysGuess && "期限"].filter(Boolean);
+    refreshTalent();
     const top = ranked(d, TALENT.filter(t => t.avail !== "off")).slice(0, 3).map(x => x.t.name);
     $("#draft").innerHTML = `
       <form class="box ${fresh ? "reveal" : ""}${state.formOpen ? "" : " folded"}" id="draft-form">
@@ -1721,7 +1663,7 @@ body { background: var(--page); }
           </div>
           ${uploader("t-files", d.trial.files, { label: "試工素材", hint: "試工要用嘅相、片或者檔案，例如「用我提供嘅產品相」就喺度上載。", limit: 10 })}
           <p class="small muted">試工內容要細，工作者大約一兩個鐘做到。試工作品版權屬工作者，揀中落實先轉畀你。</p>`
-        : `<p class="small muted">發佈後 AI 會即刻通知配對分最高嘅 3 個人：${top.map(esc).join("、")}。</p>`}
+        : `<p class="small muted">${top.length ? `發佈後會通知配對分最高嘅 ${top.length} 個人：${top.map(esc).join("、")}；其他工作者都可以喺「搵工」見到。` : "發佈後所有工作者都可以喺「搵工」見到你嘅 job。"}</p>`}
 
         <div class="step"><span>3</span>落實之後點聯絡你</div>
         <div class="vias" role="radiogroup" aria-label="聯絡方法">${Object.entries(VIAS).map(([k, v]) => `
@@ -1768,35 +1710,21 @@ body { background: var(--page); }
     state.draft = null;
     state.selNeed = need.id;
     state.needTab = "replies";
-    invite(need, ranked(need, TALENT.filter(t => t.avail !== "off")).slice(0, 3).map(x => x.t.id));
-    toast(need.mode === "trial" ? "job 發佈咗，試工任務已經通知工作者" : "job 發佈咗，AI 已經通知 3 個最啱嘅人");
+    refreshTalent();
+    const ids = ranked(need, TALENT.filter(t => t.avail !== "off")).slice(0, 3).map(x => x.t.id);
+    invite(need, ids);
+    toast(ids.length ? `job 發佈咗，已經通知 ${ids.length} 個最啱嘅人` : "job 發佈咗，工作者喺「搵工」會見到");
     go("needs");
   }
 
-  // invite workers: they reply with a quote (direct) or a sample (trial) a moment later
-  const QUOTE_LINES = ["睇咗你嘅需求，呢類我做開，可以先畀你睇一個方向稿。", "我呢個星期有空，可以即刻開工，價錢包兩次修改。", "我建議分兩期交，第一期先確認風格，第二期出成品。"];
-  const SAMPLE_LINES = ["跟足你嘅要求做咗，另外試多一個色調版本畀你比較。", "用咗我慣用嘅流程，正式做會再精細啲。", "時間有限做咗簡單版，睇吓方向啱唔啱。"];
+  // invite workers: each gets a notice in their bell and answers with a real quote or sample from 搵工
   function invite(need, ids) {
-    ids.forEach((id, i) => {
-      if (need.invited.includes(id)) return;
+    ids.forEach(id => {
+      if (need.invited.includes(id) || !String(id).startsWith("u:")) return;
       need.invited.push(id);
-      later(1600 * (i + 1), () => {
-        if (need.status !== "open") return;
-        const t = talentById(id), k = need.invited.indexOf(id) % 3;
-        if (need.mode === "trial") {
-          if (need.subs.length >= need.trial.max) return;
-          need.subs.push({ id: "s" + Date.now() + i, talentId: id, note: SAMPLE_LINES[k], status: "new",
-            files: [samplePicFile(t.hue, t.name + " 嘅樣板")] });
-          toast(`${t.name} 交咗試工樣板（模擬）`);
-          notify(need.owner, `${t.name} 交咗試工樣板：${need.title}`, "needs");
-        } else {
-          need.offers.push({ id: "f" + Date.now() + i, talentId: id, price: quoteFor(need, t), days: Math.max(2, Math.round(need.days * (0.6 + k * 0.15))), msg: QUOTE_LINES[k], status: "new", files: worksOf(t).slice(0, 2) });
-          toast(`${t.name} 報咗價（模擬）`);
-          notify(need.owner, `${t.name} 報咗價 ${hk(need.offers[need.offers.length - 1].price)}：${need.title}`, "needs");
-        }
-        refresh("needs");
-      });
+      notify(id.slice(2), `${need.client} 邀請你${need.mode === "trial" ? "交試工" : "報價"}：${need.title}`, "find");
     });
+    refresh("needs");
   }
 
   // =================== 老闆：我發嘅 job ===================
@@ -1854,12 +1782,12 @@ body { background: var(--page); }
     return `<div class="v2-kpis"><div class="v2-kpi"><small>收緊報價</small><b>${open} 單</b></div><div class="v2-kpi"><small>未睇嘅報價同樣板</small><b>${replies}</b></div><div class="v2-kpi"><small>已請人</small><b>${hired} 單</b></div></div>`;
   }
   function offersHtml(n) {
-    if (!n.offers.length) return `<div class="box thinking">已通知 ${n.invited.map(id => esc(talentById(id).name)).join("、")}，等緊佢哋報價…</div>`;
+    if (!n.offers.length) return `<div class="box thinking">${n.invited.length ? `已通知 ${n.invited.map(id => esc(talentById(id).name)).join("、")}，` : ""}等緊工作者報價。所有工作者都可以喺「搵工」見到呢個 job。</div>`;
     const best = n.offers.length > 1 ? n.offers.map(o => ({ o, m: match(n, talentById(o.talentId)).total })).sort((a, b) => b.m - a.m)[0].o.id : null;
     return `<div class="v2-quotes">${n.offers.map(o => {
       const t = talentById(o.talentId);
       const act = o.status === "accepted" ? `<span class="pill accepted">已接受</span>` : o.status === "declined" ? `<span class="pill declined">冇揀</span>`
-        : n.status === "hired" ? "" : `<button type="button" class="btn btn-ghost btn-sm" data-offerchat="${o.id}">傾吓</button><button type="button" class="btn btn-primary btn-sm" data-accept="${o.id}">接受</button>`;
+        : n.status === "hired" ? "" : `<button type="button" class="btn btn-ghost btn-sm" data-offerchat="${o.id}">睇清楚</button><button type="button" class="btn btn-primary btn-sm" data-accept="${o.id}">接受</button>`;
       const top = o.id === best && n.status !== "hired";
       return `<div class="v2-q${top ? " top1" : ""}">${top ? `<span class="v2-flag">AI 推薦</span>` : ""}
         <button type="button" class="who" data-talent="${t.id}">${avatar(t)}<span><b>${esc(t.name)} ${tierBadge(t.tier)}</b><small>${ratingText(t)}</small></span></button>
@@ -1871,7 +1799,7 @@ body { background: var(--page); }
   }
 
   function subsHtml(n) {
-    if (!n.subs.length) return `<div class="box thinking">已通知 ${n.invited.map(id => esc(talentById(id).name)).join("、")} 試工，等緊佢哋交樣板…</div>`;
+    if (!n.subs.length) return `<div class="box thinking">${n.invited.length ? `已通知 ${n.invited.map(id => esc(talentById(id).name)).join("、")}，` : ""}等緊工作者交試工樣板。所有工作者都可以喺「搵工」見到呢個 job。</div>`;
     return `<div class="subs">${n.subs.map(s => {
       const w = talentById(s.talentId);
       const act = s.status === "passed" ? `<span class="small muted">已略過</span>` : s.status === "picked" ? `<span class="pill accepted">已揀</span>`
@@ -1887,17 +1815,17 @@ body { background: var(--page); }
   }
 
   function moreHtml(n) {
+    refreshTalent();
     const list = ranked(n, TALENT.filter(t => !n.invited.includes(t.id)));
     const label = n.mode === "trial" ? "邀請試工" : "邀請報價";
-    return `<p class="small muted">AI 已經通知咗配對分最高嘅人。想多啲選擇，可以再邀請以下人才。</p>
-      <div class="v2-list">${list.map(({ t, m }) => talentRow(t, m, n.status === "hired" ? "" : `<button type="button" class="btn btn-primary" data-invite="${t.id}">${label}</button>`)).join("") || `<p class="muted">全部人都邀請咗。</p>`}</div>`;
+    return `<p class="small muted">想多啲選擇，可以再邀請以下工作者，佢哋會收到通知。</p>
+      <div class="v2-list">${list.map(({ t, m }) => talentRow(t, m, n.status === "hired" ? "" : `<button type="button" class="btn btn-primary" data-invite="${t.id}">${label}</button>`)).join("") || `<p class="muted">${TALENT.length ? "全部人都邀請咗。" : "暫時未有其他工作者登記。"}</p>`}</div>`;
   }
 
   // accept a quote or a sample: chat opens on the payment step
   function hireFrom(need, t, price, note) {
     openChat(need, t, price);
     pushMsg("sys", note);
-    showConfirm();
   }
 
   // =================== 老闆：進行中 ===================
@@ -1967,8 +1895,8 @@ body { background: var(--page); }
     const r = o.reviews || {};
     const status = ORDER_TEXT[o.status] || "";
     let side = "";
-    if (o.status === 2) side = !boss ? btn(o.revisions ? "重新交貨" : "交貨", "deliver") : o.link ? `<span class="pill waiting">等工作者交貨</span>` : btn("（模擬）對方交貨", "deliver");
-    if (o.status === 3) side = boss ? btn("要求修改", "revise", true) + btn("確認完成", "confirm") : o.link ? `<span class="pill waiting">等客戶確認</span>` : btn("（模擬）客戶確認", "confirm");
+    if (o.status === 2) side = !boss ? btn(o.revisions ? "重新交貨" : "交貨", "deliver") : `<span class="pill waiting">等工作者交貨</span>`;
+    if (o.status === 3) side = boss ? btn("要求修改", "revise", true) + btn("確認完成", "confirm") : `<span class="pill waiting">等客戶確認</span>`;
     if (o.status === 5) side = r.mine ? `<span class="pill waiting">等${esc(o.partner)}評分</span>`
       : `<span class="small muted">${r.theirs ? esc(o.partner) + " 已經評咗你，你評完就會公開" : "雙方都評完先會公開"}</span><button class="btn btn-primary btn-sm" type="button" data-review="${o.id}">評分${boss ? "工作者" : "客戶"}</button>`;
     return `<div class="row" style="grid-template-columns:minmax(0,1fr)">
@@ -2028,10 +1956,7 @@ body { background: var(--page); }
   // both reviews are in: publish them and update both sides' ratings
   function finishReviews(o) {
     o.status = 6;
-    if (o.side === "boss") {
-      const t = TALENT.find(x => x.name === o.partner);
-      if (t) { t.rating = (t.rating * t.done + o.reviews.mine.stars) / (t.done + 1); t.done++; }
-    } else if (state.profile) {
+    if (o.side === "worker" && state.profile) {
       const p = state.profile;
       p.reviews = (p.reviews || []).concat(o.reviews.theirs.stars);
       p.done = p.reviews.length;
@@ -2351,12 +2276,6 @@ body { background: var(--page); }
     const lk = o.link && state.orders.find(x => x.id === o.link);
     if (act === "deliver" && o.side === "worker") return openDeliver(o, lk);
     if (act === "revise") return openRevise(o, lk);
-    if (act === "deliver") {
-      // simulated worker hands in a finished piece
-      Object.assign(o, { status: 3, files: [samplePicFile("#0874AB", o.partner + " 嘅成品")], note: "成品交咗，請睇吓，有要改話我知。" });
-      toast(`${o.partner} 交咗貨（模擬）`);
-      return refresh("hired", "work");
-    }
     if (act === "towork") {
       const p = state.profile; if (!p) return toast("先建立工作者檔案");
       p.works = worksOf(p).concat(o.files.map(f => ({ ...f, cap: f.cap || o.title }))).slice(-20);
@@ -2368,12 +2287,6 @@ body { background: var(--page); }
     if (act === "confirm") {
       o.status = 5;
       if (lk) { lk.status = 5; notify(lk.owner, `${state.user.name} 確認完成：${o.title}，可以互相評分`, "work"); }
-      else later(1500, () => {
-        o.reviews = o.reviews || {};
-        o.reviews.theirs = { ...THEIR_REVIEW[o.side] };
-        if (o.reviews.mine) finishReviews(o);
-        else { toast(`${o.partner} 評咗你，你評完就會公開（模擬）`); notify(me(), `${o.partner} 評咗你：${o.title}`, o.side === "boss" ? "hired" : "work"); refresh("hired", "work"); }
-      });
       toast("已確認完成，可以互相評分");
       return refresh("hired", "work");
     }
@@ -2418,12 +2331,6 @@ body { background: var(--page); }
       const upd = { status: 2, revNote: text, revFiles: revFiles.slice(), revisions: (o.revisions || 0) + 1 };
       Object.assign(o, upd);
       if (lk) { Object.assign(lk, upd); notify(lk.owner, `客戶要求修改：${o.title}`, "work"); }
-      else later(2500, () => {
-        Object.assign(o, { status: 3, revNote: "", revFiles: [], files: [samplePicFile("#0874AB", o.partner + " 改好嘅成品")], note: "跟你嘅意見改好咗，請再睇吓。" });
-        toast(`${o.partner} 改好重新交貨（模擬）`);
-        notify(me(), `${o.partner} 改好重新交貨：${o.title}`, "hired");
-        refresh("hired");
-      });
       closeDrawer();
       toast("已送出修改要求");
       refresh("hired", "work");
@@ -2740,20 +2647,11 @@ body { background: var(--page); }
         : j.mode === "trial" ? `<button class="btn btn-primary" type="button" data-trial="${j.id}">交試工</button>` : `<button class="btn btn-primary" type="button" data-quote="${j.id}">報價</button>`}</div>`);
   }
 
-  // demo: a few made-up client reviews for each listed worker, summed up with their real rating and job count
-  const SAMPLE_REVIEWS = [
-    { from: "觀塘 · 護膚品牌", stars: 5, tags: ["準時交貨", "質素好"], text: "產品鏡頭前後一致，比我預期好。" },
-    { from: "銅鑼灣 · 美甲店", stars: 5, tags: ["溝通清楚", "肯改"], text: "改咗兩次都好有耐性，下個月再搵。" },
-    { from: "荃灣 · 五金批發", stars: 4, tags: ["準時交貨"], text: "交得準時，第一稿有少少唔啱，改完 OK。" },
-    { from: "九龍城 · 泰菜館", stars: 5, tags: ["超出預期", "質素好"], text: "客人都以為係真影，正。" },
-    { from: "灣仔 · 物理治療中心", stars: 5, tags: ["溝通清楚", "準時交貨"], text: "解釋得好清楚，交完仲教埋點用。" },
-    { from: "線上 · 旅遊 YouTuber", stars: 4, tags: ["肯改"], text: "風格要磨合一下，之後越做越順。" },
-  ];
+  // another person's score comes from their finished jobs; the review texts stay with the two sides of each deal
   function talentReviewsHtml(t) {
-    if (t.id.startsWith("u:")) return ratingBlock(received("worker"), "未有客戶評價。");
-    const i = TALENT.indexOf(t), picks = [SAMPLE_REVIEWS[i % 6], SAMPLE_REVIEWS[(i + 2) % 6], SAMPLE_REVIEWS[(i + 4) % 6]];
-    return `<div class="rating-sum"><b class="num">${t.rating.toFixed(1)}</b><div>${starText(Math.round(t.rating))}<div class="small muted">${t.done} 個評價 · 顯示最近 3 個</div></div></div>
-      <div class="review-list">${picks.map(r => reviewHtml(esc(r.from), r)).join("")}</div>`;
+    if (state.profile && t.id === state.profile.id) return ratingBlock(received("worker"), "未有客戶評價。");
+    if (!t.done) return `<p class="small muted">未有客戶評價。</p>`;
+    return `<div class="rating-sum"><b class="num">${t.rating.toFixed(1)}</b><div>${starText(Math.round(t.rating))}<div class="small muted">${t.done} 個客戶評價</div></div></div>`;
   }
 
   function showTalent(id) {
@@ -2779,7 +2677,7 @@ body { background: var(--page); }
     const list = worksOf(p).map(w => ({ ...w }));
     openDrawer(`${head("我嘅作品集", "客戶揀人時最先睇呢度")}
       <form class="drawer-body" id="works-form">
-        <p class="small muted">上載 3–6 件最似你想接嘅 job，每件寫一句說明（例如「護膚品 15 秒廣告」）。相片會縮細儲存；影片同文件只保留到重新整理（網站模型限制）。</p>
+        <p class="small muted">上載 3–6 件最似你想接嘅 job，每件寫一句說明（例如「護膚品 15 秒廣告」）。相片會縮細儲存。</p>
         ${uploader("works-up", list, { label: "加作品", caption: true, limit: 20 })}
       </form>
       <div class="drawer-foot"><button class="btn btn-primary" type="submit" form="works-form">儲存作品集</button></div>`);
@@ -2793,30 +2691,17 @@ body { background: var(--page); }
     });
   }
 
-  // client-side chat about one need with one worker
+  // the confirm step for one worker: what they sent, then 落實
   function openChat(need, t, price) {
-    const days = Math.max(2, Math.round(need.days * 0.8));
+    const o = need.offers.find(x => x.talentId === t.id), sub = need.subs.find(x => x.talentId === t.id);
+    const days = o ? o.days : Math.max(2, Math.round(need.days * 0.8));
     state.chat = { need, t, quote: price, days };
-    openDrawer(`${head("同 " + esc(t.name) + " 傾", esc(need.title))}
-      <div class="drawer-body" id="chat-log" aria-live="polite"></div>
-      <div class="drawer-foot" id="chat-foot">
-        <form class="compose" id="chat-form"><input type="text" id="chat-in" placeholder="打字…" autocomplete="off"><button class="btn btn-ghost btn-sm" type="submit">傳送</button></form>
-        <div class="btns">
-          <button class="btn btn-primary" type="button" id="chat-agree">落實 ${hk(price)}</button>
-          <button class="btn btn-ghost" type="button" id="chat-sum">AI 總結</button>
-        </div>
-      </div>`);
-    pushMsg("sys", "對話有記錄，有爭議時用嚟處理。唔好喺度交換銀行戶口。");
-    pushMsg("them", `你好！「${need.title}」我可以 ${days} 日內交，報價 ${hk(price)}，包括${catById(need.cat).deliver.join("、")}。`);
-    $("#chat-form").addEventListener("submit", e => {
-      e.preventDefault();
-      const v = $("#chat-in").value.trim(); if (!v) return;
-      pushMsg("me", v); $("#chat-in").value = "";
-      const c = state.chat;
-      later(800, () => { if (state.chat === c) pushMsg("them", "冇問題，可以加埋，價錢唔變。"); });
-    });
-    $("#chat-sum").addEventListener("click", () => pushMsg("ai", `AI 總結\njob：${need.title}\n報價：${hk(price)}（預算 ${hk(need.budget)}）\n期限：${days} 日\n未傾清楚：修改次數、版權歸邊個`));
-    $("#chat-agree").addEventListener("click", showConfirm);
+    openDrawer(`${head("落實：" + esc(t.name), esc(need.title))}
+      <div class="drawer-body" id="chat-log" aria-live="polite">
+        ${o && o.msg ? `<div class="msg them">${esc(o.msg)}</div>` : sub && sub.note ? `<div class="msg them">${esc(sub.note)}</div>` : ""}
+      </div>
+      <div class="drawer-foot" id="chat-foot"></div>`);
+    showConfirm();
   }
   function pushMsg(kind, text) {
     if (!state.chat) return;
