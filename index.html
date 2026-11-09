@@ -189,7 +189,12 @@ textarea:focus, input:focus { border-color: var(--accent); outline: none; box-sh
   #draft-form.folded > :not(.form-head):not(.step):not([for="d-desc"]):not(#d-desc) { display: none !important; }
   #draft-form.folded > .step ~ .step { display: none !important; }
   #draft-form.folded #d-desc { min-height: 0; }
+  #draft-form.folded { cursor: pointer; }
 }
+/* the job form stands out in the side colour: a coloured frame, a tinted top and the heading in that colour */
+#draft-form { border: 2px solid var(--accent); background: linear-gradient(180deg, var(--accent-soft), var(--surface) 220px); box-shadow: 0 10px 28px -14px var(--accent); }
+#draft-form .form-head .h-side { color: var(--accent); }
+#draft-form #d-desc { background: var(--surface); border: 1px solid var(--line); }
 /* the name next to the logo stays on one line, and gives way on a narrow phone */
 .logo-text { white-space: nowrap; }
 @media (max-width: 480px) { .logo-text { display: none; } }
@@ -1394,16 +1399,42 @@ body { background: var(--page); }
   const PRIVATE = ["needs", "hired", "sent", "work"];
   const RENDER = {};
 
+  // the number on a tab counts what the other side did since you last opened it: a quote or sample on your job,
+  // your quote accepted or turned down, a new job for you, a delivery, a request for changes, a confirmation, a review.
+  // Your own actions never count, and opening the tab clears it (Rex 2026-11-09)
+  function navKeys(view) {
+    const ev = [];
+    if (view === "needs") myNeeds().forEach(n => { n.offers.forEach(o => ev.push(`${n.id}|${o.id}`)); n.subs.forEach(x => ev.push(`${n.id}|${x.id}`)); });
+    if (view === "sent") myQuotes().concat(mySubs()).forEach(q => { if (q.status !== "waiting") ev.push(`${q.id}|${q.status}`); });
+    if (view === "hired") myOrders("boss").forEach(o => {
+      if (o.status >= 3) ev.push(`${o.id}|d${o.revisions || 0}`);
+      if (o.reviews && o.reviews.theirs) ev.push(`${o.id}|r`);
+    });
+    if (view === "work") myOrders("worker").forEach(o => {
+      ev.push(`${o.id}|new`);
+      if (o.revisions) ev.push(`${o.id}|v${o.revisions}`);
+      if (o.status >= 5) ev.push(`${o.id}|c`);
+      if (o.reviews && o.reviews.theirs) ev.push(`${o.id}|r`);
+    });
+    return ev;
+  }
+  let seenTabs = {};
+  try { seenTabs = JSON.parse(localStorage.getItem("aipd-seen") || "{}") || {}; } catch (e) {}
+  function markSeen(view) {
+    const mine = seenTabs[me()] || (seenTabs[me()] = {}), keys = navKeys(view);
+    if (JSON.stringify(mine[view] || []) === JSON.stringify(keys)) return;
+    mine[view] = keys;
+    try { localStorage.setItem("aipd-seen", JSON.stringify(seenTabs)); } catch (e) {}
+  }
   function navCount(view) {
     if (!signedUp()) return 0;
-    if (view === "needs") return myNeeds().length;
-    if (view === "hired") return myOrders("boss").filter(o => o.status < 6).length;
-    if (view === "sent") return myQuotes().length + mySubs().length;
-    if (view === "work") return myOrders("worker").filter(o => o.status < 6).length;
-    return 0;
+    const seen = new Set((seenTabs[me()] || {})[view] || []);
+    // several things on one job count as one
+    return new Set(navKeys(view).filter(k => !seen.has(k)).map(k => k.split("|")[0])).size;
   }
   function renderNav() {
     const role = roleOf(state.view);
+    if (signedUp() && PRIVATE.includes(state.view)) markSeen(state.view);
     document.body.dataset.side = role;
     document.querySelectorAll(".role [data-role]").forEach(b => b.setAttribute("aria-pressed", b.dataset.role === role));
     $("#nav").innerHTML = (NAV[role] || []).map(([v, n]) => {
@@ -1698,8 +1729,9 @@ body { background: var(--page); }
       requireLogin(publishNeed, "publish");
     });
     const main = $("#v-post .main"); if (main) main.innerHTML = talentList();
-    // starting to write opens the rest of the form
+    // starting to write, or a tap anywhere on the folded form, opens the rest of it (the heading toggles by itself)
     $("#d-desc").addEventListener("focus", () => { if (!state.formOpen) foldForm(true); });
+    $("#draft-form").addEventListener("click", e => { if (!state.formOpen && !e.target.closest(".form-head")) foldForm(true); });
     bindUploaders();
   }
 
