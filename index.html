@@ -834,11 +834,13 @@ body { background: var(--page); }
 .sheet-sec { display: grid; gap: 8px; }
 .sheet-sec .lbl { font-size: 13.5px; color: var(--muted); font-weight: 700; }
 .sheet-sec .v2-cats { flex-wrap: wrap; overflow: visible; }
-.prof-toggle { display: none; }
+.prof-chev { display: none; }
+.prof-edit { justify-self: start; }
 @media (max-width: 980px) {
   /* your worker profile folds to its first lines on a phone or tablet */
-  .prof-toggle { display: inline-flex; justify-self: start; border: 0; background: var(--tile); border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: 14px; cursor: pointer; color: var(--ink); }
-  .prof.folded > :not(.ask-row):not(.v2-done):not(.prof-toggle) { display: none !important; }
+  .prof.folded > :not(.ask-row):not(.v2-done) { display: none !important; }
+  .prof-chev { display: inline-block; border: 0; background: none; padding: 4px; margin-left: auto; font-size: 22px; line-height: 1; color: var(--ink); cursor: pointer; transition: transform .2s ease; }
+  .prof:not(.folded) .prof-chev { transform: rotate(180deg); }
 }
 @media (max-width: 760px) {
   /* a row on a phone: picture, name, where and when, money, match; the rest is in its sheet */
@@ -1566,7 +1568,7 @@ body { background: var(--page); }
     const box = $("#find-side .prof"); if (!box) return;
     state.profOpen = open;
     box.classList.toggle("folded", !open);
-    const t = box.querySelector(".prof-toggle"); if (t) t.textContent = open ? "收埋檔案 ⌃" : "睇晒我嘅檔案 ⌄";
+    const t = box.querySelector(".prof-chev"); if (t) t.setAttribute("aria-expanded", open);
   }
   // open or fold the job form on a phone without redrawing it, so what is typed and the cursor stay put
   function foldForm(open) {
@@ -2126,7 +2128,7 @@ body { background: var(--page); }
       <div class="box prof${state.profOpen ? "" : " folded"}">
         <div class="ask-row">
           <div class="person">${avatar(p)}<div><h3>你嘅檔案 ${tierBadge(p.tier)}</h3><div class="muted small">${esc(cat.name)} · ${p.done ? "★ " + p.rating.toFixed(1) + "（" + p.done + " 個評價）" : "新人，未有評價"}</div></div></div>
-          <button class="link" type="button" data-editprofile="1">改</button>
+          <button type="button" class="prof-chev" data-proftoggle aria-expanded="${!!state.profOpen}" aria-label="展開或者收埋你嘅檔案">⌄</button>
         </div>
         ${profileTodo(p)}
         <p class="small">${esc(p.bio)}</p>
@@ -2140,7 +2142,7 @@ body { background: var(--page); }
           <label>最高（HK$）<input type="number" id="p-max" min="100" step="100" value="${p.rate[1]}"></label>
         </div>
         <div class="group"><span class="small muted">檔期</span>${chipRow("檔期", "avail", Object.entries(AVAIL), p.avail)}</div>
-        <button type="button" class="prof-toggle" data-proftoggle>${state.profOpen ? "收埋檔案 ⌃" : "睇晒我嘅檔案 ⌄"}</button>
+        <button type="button" class="btn btn-ghost btn-sm prof-edit" data-editme>修改個人資料 ›</button>
       </div>`;
     // a tap anywhere on the folded profile opens it; its own buttons (改, 加作品, the toggle) still do their job
     side.querySelector(".prof").addEventListener("click", e => { if (state.profOpen || e.target.closest("button, a, input, label")) return; foldProf(true); });
@@ -2906,7 +2908,8 @@ body { background: var(--page); }
     // 搵工
     if (d.quote) { if (!needProfile("quote", d.quote)) openQuote(d.quote); return; }
     if (d.trial) { if (!needProfile("trial", d.trial)) openSubmit(d.trial); return; }
-    if (d.editprofile) return renderProfile({ edit: true });
+    // changing skills, level or intro happens on the details page, the same place as 修改資料
+    if (d.editprofile) return startEditMe();
     if (d.gologin !== undefined && state.view === "login" && $("#setup-form")) return pointSetup();
     if (d.gologin !== undefined) return requireLogin(() => {}, state.view === "find" ? "profile" : "publish");
     if (d.joinwork !== undefined) return requireLogin(() => { if (!state.profile) startAddWorker(); }, "profile");
