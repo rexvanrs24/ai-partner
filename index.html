@@ -2132,7 +2132,6 @@ body { background: var(--page); }
           <button class="link" type="button" data-editprofile="1">改</button>
         </div>
         ${profileTodo(p)}
-        <button type="button" class="prof-toggle" data-proftoggle>${state.profOpen ? "收埋檔案 ⌃" : "睇晒我嘅檔案 ⌄"}</button>
         <p class="small">${esc(p.bio)}</p>
         <div class="group"><div class="ask-row"><span class="small muted">作品集（${worksOf(p).length}）</span><button class="link" type="button" data-works="1">${worksOf(p).length ? "管理作品" : "加作品"}</button></div>
           ${gallery(worksOf(p), { limit: 6, cap: true, empty: `<p class="small muted">未有作品。上載 3–6 件過往作品，客戶揀人時最睇呢樣。</p>` })}</div>
@@ -2144,6 +2143,7 @@ body { background: var(--page); }
           <label>最高（HK$）<input type="number" id="p-max" min="100" step="100" value="${p.rate[1]}"></label>
         </div>
         <div class="group"><span class="small muted">檔期</span>${chipRow("檔期", "avail", Object.entries(AVAIL), p.avail)}</div>
+        <button type="button" class="prof-toggle" data-proftoggle>${state.profOpen ? "收埋檔案 ⌃" : "睇晒我嘅檔案 ⌄"}</button>
       </div>`;
     ["#p-min", "#p-max"].forEach((sel, i) => $(sel).addEventListener("change", e => {
       p.rate[i] = Math.max(100, parseInt(e.target.value, 10) || p.rate[i]);
@@ -2158,7 +2158,6 @@ body { background: var(--page); }
       ["填好級別同技能", !!(p.tier && p.skills && p.skills.length), ""],
       ["上載 3 件作品", worksOf(p).length >= 3, `<button type="button" class="btn btn-primary" data-works="1">加作品</button>`],
       ["設定檔期", p.avail && p.avail !== "off", ""],
-      ["完成第一單，攞第一個評價", p.done > 0, ""],
     ];
     const pc = Math.round(100 * items.filter(x => x[1]).length / items.length);
     if (pc === 100) return "";
