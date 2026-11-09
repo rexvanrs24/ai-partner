@@ -1095,7 +1095,8 @@ body { background: var(--page); }
   const myQuotes = () => state.quotes.filter(ownedBy);
   const mySubs = () => state.subs.filter(ownedBy);
   // the 搵工 list: listed jobs plus open needs that other accounts posted here
-  const openJobs = () => JOBS.concat(state.needs.filter(n => !n.example && n.owner !== me() && n.status === "open"));
+  // only jobs real clients have posted; the made-up JOBS stay out of the list (Rex 2026-11-09), jobById still finds them for old quotes
+  const openJobs = () => state.needs.filter(n => !n.example && n.owner && n.owner !== me() && n.status === "open");
   const jobById = id => JOBS.find(j => j.id === id) || state.needs.find(n => n.id === id);
   const needById = id => state.needs.find(n => n.id === id);
   const talentById = id => TALENT.find(t => t.id === id) || (state.profile && state.profile.id === id ? state.profile : null)
@@ -2056,7 +2057,7 @@ body { background: var(--page); }
             <div class="v2-stats">${fresh ? `<span class="v2-stat new">${fresh} 單今日新</span>` : ""}${soon ? `<span class="v2-stat hot">${ico("clock")}${soon} 單一星期內交</span>` : ""}${list.length ? `<span class="v2-stat">預算 ${hk(Math.min(...bs))}–${Math.max(...bs).toLocaleString("en-HK")}</span>` : ""}</div></div>${looks()}</div>
           ${p && p.avail === "off" ? `<div class="note">你暫停咗接單，客戶唔會自動通知你。改返檔期就得。</div>` : ""}
           <div class="v2-bar">${catBar(openJobs())}<div class="v2-row2">${tierSeg()}${sortBar((p ? [["match", "最啱你"]] : []).concat([["new", "最新"], ["budget", "預算最高"], ["due", "最快要交"]]))}</div></div>
-          <div class="${listCls()}">${list.map(({ j, m }, k) => jobRow(j, m, k === 0 && sort === "match" && m && m.total >= 80)).join("") || `<p class="muted">呢個組合暫時未有需求。</p>`}</div>
+          <div class="${listCls()}">${list.map(({ j, m }, k) => jobRow(j, m, k === 0 && sort === "match" && m && m.total >= 80)).join("") || (openJobs().length ? `<p class="muted">呢個組合暫時未有需求。</p>` : `<div class="box empty"><h3>暫時未有客戶發 job</h3><p class="muted">有客戶發新 job，右上角鈴會通知你。${p ? "" : "先建立你嘅檔案，客戶發 job 時 AI 會揀你。"}</p></div>`)}</div>
           ${p ? `<div class="v2-tip"><div><b>搵唔到啱你嘅？</b><p class="muted">加多兩個技能或者改級別，配對範圍會闊啲；有新 job 啱你，右上角鈴會通知你。</p></div><button type="button" class="btn btn-primary" data-editprofile="1">改技能</button></div>` : ""}
         </div>
       </div>`;
@@ -2268,13 +2269,6 @@ body { background: var(--page); }
         return toast(`已送出報價，${job.client} 會喺「我發嘅 job」見到`);
       }
       toast("已送出報價，等客戶回覆");
-      later(2500, () => {
-        q.status = "accepted";
-        state.orders.push({ id: "o" + Date.now(), owner: q.owner, side: "worker", title: job.title, partner: job.client, amount: q.price, status: 2, rating: 0 });
-        toast("客戶接受咗你嘅報價，可以開工（模擬）");
-        notify(q.owner, `${job.client} 接受咗你嘅報價：${job.title}`, "work");
-        refresh("find", "sent", "work");
-      });
     });
   }
 
@@ -2310,13 +2304,6 @@ body { background: var(--page); }
         return toast(`已交試工，${job.client} 會喺「我發嘅 job」見到`);
       }
       toast("已交試工，等客戶睇");
-      later(3000, () => {
-        sub.status = "picked";
-        state.orders.push({ id: "o" + Date.now(), owner: sub.owner, side: "worker", title: job.title, partner: job.client, amount: quoteFor(job, state.profile), status: 2, rating: 0 });
-        toast("客戶揀咗你嘅樣板，可以開工（模擬）");
-        notify(sub.owner, `${job.client} 揀咗你嘅樣板：${job.title}`, "work");
-        refresh("find", "sent", "work");
-      });
     });
   }
 
